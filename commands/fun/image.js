@@ -23,12 +23,12 @@ module.exports = {
       const isNSFW = oldIsNSFW.toLowerCase();
 
       if(args[1] === `true`) {
-        if(message.channel.nsfw === false || message.author.id != 669051415074832397) {
+        if(message.author.id != 669051415074832397) {
           return message.reply('due to issues with loli images under NSFW queries, the NSFW part of the image search has been blocked')
         }
-        /*if(message.channel.nsfw === false) {
+        if(message.channel.nsfw === false) {
           return message.reply('you cannot query an NSFW image in a non-NSFW channel')
-        }*/
+        }
       }
 
       if(!query) {
