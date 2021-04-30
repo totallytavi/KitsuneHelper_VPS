@@ -1,6 +1,5 @@
 const { Client, Collection } = require("discord.js");
 const { errorMessage } = require('./functions.js');
-const { config } = require("dotenv");
 const fs = require("fs");
 // to lowercase
 
@@ -48,10 +47,6 @@ process.on('warning', async (name, message, stack) => {
 process.on('uncaughtException', (err, origin) => {
   console.log(`**Uncaught exception!\n\nError: ${err}\nOrigin: ${origin}`)
   errorMessage(err, `Uncaught exception`, '', client)
-});
-
-config({
-    path: __dirname + "/.env"
 });
 
 ["command"].forEach(handler => {
@@ -113,6 +108,6 @@ client.on("guildCreate", async guild => {
     .catch(console.error);
 })
 
-client.login(process.env.TOKEN);
+client.login("Njk5NjcwODQ0MDgyNzQ5NDYx.XtI2-w.z5dH3fXJHAUaL8t2AsQ9zBFHhbc");
 
 // db.close(result => console.log("ON DATABASE CLOSE--\n" + result));
