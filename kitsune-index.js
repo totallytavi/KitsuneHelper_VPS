@@ -12,10 +12,13 @@ const client = new Client({
 });
 /** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
 
-client['db'] = open({
+async function getDb() {
+    return await open({
       filename: './sqlite3_databases/Moderations.db',
       driver: sqlite3.Database
-})
+    })
+}
+const client['db'] = getDb();
 console.log("The current database is: " + client.db.toString())
 
 client.commands = new Collection();
