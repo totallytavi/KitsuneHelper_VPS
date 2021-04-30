@@ -10,6 +10,7 @@ const client = new Client({
 });
 /** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
 
+/*
 client.db = "nothing. this should not happen";
 
 import sqlite3 from 'sqlite3'
@@ -24,6 +25,7 @@ import { open } from 'sqlite'
     })
 })()
 console.log("The current database is: " + client.db.toString())
+*/
 
 client.commands = new Collection();
 client.aliases = new Collection();
