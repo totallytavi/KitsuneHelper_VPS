@@ -31,7 +31,7 @@ module.exports = {
         return message.reply(response)
       }
 
-      // return message.reply('The MUTE command is currently undergoing maintenance to move to a SQLite3 database');
+      return message.reply('The MUTE command is currently undergoing maintenance to move to a SQLite3 database');
 
       const target = message.mentions.members.first() || message.guild.members.cache.get(`${args[0]}`) || message.guild.members.cache.fetch({ query: `${args[0]}` });
 
