@@ -12,14 +12,10 @@ const client = new Client({
 });
 /** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
 
-// this is a top-level await 
-(async () => {
-    // open the database
-    client['db'] = await open({
+client['db'] = open({
       filename: './sqlite3_databases/Moderations.db',
       driver: sqlite3.Database
-    })
-})()
+})
 console.log("The current database is: " + client.db.toString())
 
 client.commands = new Collection();
