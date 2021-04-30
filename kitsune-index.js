@@ -12,7 +12,7 @@ const client = new Client({
 });
 /** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
 
-client['db'] = "nothing. this should not happen"
+client['db'] = "nothing. this should not happen";
 
 (async () => {
     return client['db'] = await open({
