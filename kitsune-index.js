@@ -67,7 +67,7 @@ client.on("ready", async () => {
       .catch(console.error);
 
     process.emitWarning('Custom status set!', 'Custom Status');
-
+/*
     setInterval(() => {
       client.user.setActivity(`kitsune leadership on ${client.guilds.cache.size} servers • kh!commands`, { type: 'LISTENING' })
         .catch(console.error);
@@ -81,6 +81,7 @@ client.on("ready", async () => {
       })
       console.log("-- Ended SQLite mute test!\n")
     }, 20000);
+*/
 });
 
 console.log(`Random string check: ${[...Array(30)].map(i=>(~~(Math.random()*36)).toString(36)).join('')}`)
