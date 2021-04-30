@@ -2,6 +2,8 @@ const { Client, Collection } = require("discord.js");
 const { errorMessage } = require('./functions.js');
 const { config } = require("dotenv");
 const fs = require("fs");
+const sqlite3 = require('sqlite3').verbose();
+const { open } = require('sqlite');
 // to lowercase
 
 const client = new Client({
@@ -9,9 +11,6 @@ const client = new Client({
     partials: ['GUILD_MEMBER']
 });
 /** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
-
-import sqlite3 from 'sqlite3'
-import { open } from 'sqlite'
 
 // this is a top-level await 
 (async () => {
