@@ -12,13 +12,14 @@ const client = new Client({
 });
 /** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
 
-async function getDb() {
-    return await open({
+client['db'] = "nothing. this should not happen"
+
+(async () => {
+    return client['db'] = await open({
       filename: './sqlite3_databases/Moderations.db',
       driver: sqlite3.Database
     }).catch(e => console.log("kitsune-index.js -- SQLite3 load failed: " + e));
-}
-client['db'] = getDb();
+})()
 console.log("The current database is: " + client.db.toString())
 
 client.commands = new Collection();
