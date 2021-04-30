@@ -16,9 +16,9 @@ async function getDb() {
     return await open({
       filename: './sqlite3_databases/Moderations.db',
       driver: sqlite3.Database
-    })
+    }).catch(e => console.log("kitsune-index.js -- SQLite3 load failed: " + e));
 }
-const client['db'] = getDb();
+client['db'] = getDb();
 console.log("The current database is: " + client.db.toString())
 
 client.commands = new Collection();
