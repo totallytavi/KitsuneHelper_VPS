@@ -2,8 +2,6 @@ const { Client, Collection } = require("discord.js");
 const { errorMessage } = require('./functions.js');
 const { config } = require("dotenv");
 const fs = require("fs");
-const sqlite3 = require('sqlite3').verbose();
-const { open } = require('sqlite');
 // to lowercase
 
 const client = new Client({
@@ -12,13 +10,18 @@ const client = new Client({
 });
 /** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
 
-client['db'] = "nothing. this should not happen";
+client.db = "nothing. this should not happen";
 
+import sqlite3 from 'sqlite3'
+import { open } from 'sqlite'
+
+// this is a top-level await 
 (async () => {
-    return client['db'] = await open({
-      filename: './sqlite3_databases/Moderations.db',
+    // open the database
+    client.db = await open({
+      filename: '/tmp/database.db',
       driver: sqlite3.Database
-    }).catch(e => console.log("kitsune-index.js -- SQLite3 load failed: " + e));
+    })
 })()
 console.log("The current database is: " + client.db.toString())
 
