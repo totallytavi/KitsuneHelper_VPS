@@ -46,9 +46,9 @@ module.exports = {
       }
       var url = ""
       if(message.channel.nsfw != "true") {
-        url = "https://CoderTavi:o7YZcCmpiHPZXY6Nm8TDxhjZ@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=s"
+        url = "https://CoderTavi:FdA7hJByS5yzPDt5qEfeLdE9@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=s"
       } else {
-        url = "https://CoderTavi:o7YZcCmpiHPZXY6Nm8TDxhjZ@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true"
+        url = "https://CoderTavi:FdA7hJByS5yzPDt5qEfeLdE9@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true"
       }
       console.log("The URL being used is: " + url)
 
