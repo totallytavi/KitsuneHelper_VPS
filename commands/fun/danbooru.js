@@ -46,7 +46,7 @@ module.exports = {
       }
       var url = ""
       if(message.channel.nsfw != "true") {
-        url = "https://CoderTavi:o7YZcCmpiHPZXY6Nm8TDxhjZ@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=safe"
+        url = "https://CoderTavi:o7YZcCmpiHPZXY6Nm8TDxhjZ@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=s"
       } else {
         url = "https://CoderTavi:o7YZcCmpiHPZXY6Nm8TDxhjZ@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true"
       }
