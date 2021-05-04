@@ -48,7 +48,7 @@ module.exports = {
       if(message.channel.nsfw != "true") {
         url = "https://danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=s" + "&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi"
       } else {
-        url = "danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi"
+        url = "https://danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi"
       }
       console.log("The URL being used is: " + url)
 
