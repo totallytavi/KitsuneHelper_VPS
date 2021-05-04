@@ -66,6 +66,9 @@ module.exports = {
             } else {
               rating = "Unknown"
             }
+
+            if(rating != "Safe" && message.channel.nsfw != "true") return;
+            
             const embed = new MessageEmbed()
             .setTitle(args.slice(1,2).join(" and "))
             .setAuthor("Artist(s): " + posts[post].tag_string_artist)
