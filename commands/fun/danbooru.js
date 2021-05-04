@@ -50,11 +50,13 @@ module.exports = {
       } else {
         url = "https://CoderTavi:o7YZcCmpiHPZXY6Nm8TDxhjZ@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true"
       }
+      console.log("The URL being used is: " + url)
 
       await fetch(url)
         .then(res => res.json())
         .then(json => {
           const newArray = JSON.parse(json)
+          console.log(json + "\n----------\n" + newArray)
           newArray.forEach(post => {
             if(post.rating === "s") {
               const rating = "Safe"
