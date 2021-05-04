@@ -54,7 +54,8 @@ module.exports = {
       fetch(url)
         .then(res => res.json())
         .then(json => {
-          json.forEach(post => {
+          const newArray = JSON.parse(json)
+          newArray.forEach(post => {
             if(post.rating === "s") {
               const rating = "Safe"
             } else if(post.rating === "q") {
