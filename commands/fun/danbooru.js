@@ -40,7 +40,7 @@ module.exports = {
         const response = await errorEmbed("Usage warning: I cannot query more than 2 tags at once. Images will show with the first two tags only", message)
         await message.reply(response)
       }
-      if(channel.nsfw != "true") {
+      if(message.channel.nsfw != "true") {
         const response = await errorEmbed("Usage warning: Due to this channel not being marked as NSFW, I will filter out any posts marked as Explicit or Questionable. This may result in fewer posts", message)
         await message.reply(response)
       }
