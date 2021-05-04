@@ -52,7 +52,7 @@ module.exports = {
       }
 
       fetch(url)
-        .then(res => res.json)
+        .then(res => res.json())
         .then(json => {
           json.forEach(post => {
             if(post.rating === "s") {
