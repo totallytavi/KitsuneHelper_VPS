@@ -4,6 +4,12 @@ const { fetch } = require('node-fetch');
 const fs = require("fs");
 // to lowercase
 
+fetch("https://checkip.amazonaws.com")
+  .then(res => res.text)
+  .then(body => {
+    console.log("This script's IP is: " + body + ". If this does not match with the public IP, node-fetch is not working")
+  })
+
 const client = new Client({
     disableEveryone: true,
     partials: ['GUILD_MEMBER']
