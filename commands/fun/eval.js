@@ -1,5 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { errorMessage } = require('../../functions.js');
+const wait = require('util').promisify(setTimeout);
 const cooldown = new Set();
 const auth = new Set();
 
@@ -34,20 +35,19 @@ module.exports = {
 
       const dateNow = Date.now();
       message.channel.send(embed)
+      const statusMsg = await message.channel.send("<a:PandaWhee:831260045924761692> Evaluating with a 1 second delay...")
+      await wait(1000)
 
       try {
-        const embed2 = new MessageEmbed()
-        .setDescription(`Output: \`\`\`js\n${eval(script)}\`\`\``)
-        .setTimestamp()
+        const result = await eval(script)
         const dateThen = Date.now()
         const time = dateThen - dateNow
-        embed2.setFooter(`Execution time: ${time}ms`)
-        message.channel.send(embed2)
+        await statusMsg.edit(`\`\`\`js\n${result}\`\`\`\nExecution time: ${time} ms`)
       } catch(e) {
         const dateThen = Date.now()
         const time = dateThen - dateNow
         errorMessage(e, "eval command", message, client)
-        return message.reply(`:x: Evaluation failed\n> Error: ${e}\n\nExecution time: ${time}ms`)
+        message.channel.send("Execution time: " + time + " ms")
       }
 
       auth.delete(message.author.id)

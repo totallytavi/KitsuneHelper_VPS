@@ -18,7 +18,7 @@ module.exports = {
         message.reply(`that's a little too fast!`).then(m => m.delete({ timeout: 2500 }));
       } else {
 
-      if(typeof args[0] != "number") {
+      if(typeof parseInt(args[0]) != "number") {
         const response = await errorEmbed("Bad usage: Invalid parameters given (Limit is not a number)", message)
         return message.reply(response)
       }
