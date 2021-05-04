@@ -46,33 +46,32 @@ module.exports = {
       }
       var url = ""
       if(message.channel.nsfw != "true") {
-        url = "https://CoderTavi:FdA7hJByS5yzPDt5qEfeLdE9@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=s"
+        url = "https://danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=s" + "&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi"
       } else {
-        url = "https://CoderTavi:FdA7hJByS5yzPDt5qEfeLdE9@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true"
+        url = "danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi"
       }
       console.log("The URL being used is: " + url)
 
       await fetch(url)
         .then(res => res.json())
         .then(posts => {
-          console.log(posts)
           for(post in posts) {
-            if(posts[post].rating === "s") {
+            if(post.rating === "s") {
               const rating = "Safe"
-            } else if(posts[post].rating === "q") {
+            } else if(post.rating === "q") {
               const rating = "Questionable"
-            } else if(posts[post].rating === "e") {
+            } else if(post.rating === "e") {
               const rating = "Explicit"
             } else {
               const rating = "Unknown"
             }
             const embed = new MessageEmbed()
             .setTitle(args.slice(1,2).join(" and "))
-            .setAuthor("Artist(s): " + posts[post].tag_string_artist)
-            .setDescription("Score: " + posts[post].score + " | Rating: " + rating)
-            .setImage(posts[post].large_file_url || posts[post].file_url)
-            .setFooter(posts[post].tag_string_general + "| Posted on")
-            .setTimestamp(posts[post].created_at)
+            .setAuthor("Artist(s): " + post.tag_string_artist)
+            .setDescription("Score: " + post.score + " | Rating: " + rating)
+            .setImage(post.large_file_url || post.file_url)
+            .setFooter(post.tag_string_general + "| Posted on")
+            .setTimestamp(post.created_at)
 
             message.channel.send(embed)
           }
