@@ -26,9 +26,15 @@ module.exports = {
         const response = await errorEmbed("Bad usage: Invalid parameters given (Number is not within 1 and 10)", message)
         return message.reply(response)
       }
-      if(typeof args.slice(1, 2) != "string") {
+      if(typeof args[1] != "string") {
         const response = await errorEmbed("Bad usage: Invalid parameters given (Tags are not a string)", message)
         return message.reply(response)
+      }
+      if(args[2]) {
+        if(typeof args[2] != "string") {
+          const response = await errorEmbed("Bad usage: Invalid parameters given (Tags are not a string)", message)
+          return message.reply(response)
+        }
       }
       if(args[3]) {
         const response = await errorEmbed("Usage warning: I cannot query more than 2 tags at once. Images will show with the first two tags only", message)
