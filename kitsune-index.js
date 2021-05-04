@@ -1,5 +1,6 @@
 const { Client, Collection } = require("discord.js");
 const { errorMessage } = require('./functions.js');
+const { fetch } = require('node-fetch');
 const fs = require("fs");
 // to lowercase
 
