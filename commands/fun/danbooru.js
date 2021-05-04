@@ -56,14 +56,15 @@ module.exports = {
         .then(res => res.json())
         .then(posts => {
           for(post in posts) {
+            var rating;
             if(posts[post].rating === "s") {
-              const rating = "Safe"
+              rating = "Safe"
             } else if(posts[post].rating === "q") {
-              const rating = "Questionable"
+              rating = "Questionable"
             } else if(posts[post].rating === "e") {
-              const rating = "Explicit"
+              rating = "Explicit"
             } else {
-              const rating = "Unknown"
+              rating = "Unknown"
             }
             const embed = new MessageEmbed()
             .setTitle(args.slice(1,2).join(" and "))
