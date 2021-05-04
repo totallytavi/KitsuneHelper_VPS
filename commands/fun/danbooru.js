@@ -40,12 +40,12 @@ module.exports = {
         const response = await errorEmbed("Usage warning: I cannot query more than 2 tags at once. Images will show with the first two tags only", message)
         await message.reply(response)
       }
-      if(message.channel.nsfw != "true") {
+      if(message.channel.nsfw != true) {
         const response = await errorEmbed("Usage warning: Due to this channel not being marked as NSFW, I will filter out any posts marked as Explicit or Questionable. This may result in fewer posts", message)
         await message.reply(response)
       }
       var url = ""
-      if(message.channel.nsfw != "true") {
+      if(message.channel.nsfw != true) {
         url = "https://danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=s" + "&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi"
       } else {
         url = "https://danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi"
@@ -66,8 +66,6 @@ module.exports = {
             } else {
               rating = "Unknown"
             }
-
-            if(rating != "Safe" && message.channel.nsfw != "true") return;
             
             const embed = new MessageEmbed()
             .setTitle(args.slice(1,2).join(" and "))
