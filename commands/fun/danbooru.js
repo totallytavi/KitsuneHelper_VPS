@@ -45,7 +45,7 @@ module.exports = {
         await message.reply(response)
       }
       var url = ""
-      if(channel.nsfw != "true") {
+      if(message.channel.nsfw != "true") {
         url = "https://CoderTavi:o7YZcCmpiHPZXY6Nm8TDxhjZ@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=safe"
       } else {
         url = "https://CoderTavi:o7YZcCmpiHPZXY6Nm8TDxhjZ@danbooru.donmai.us/posts.json?tag=" + args.slice(1,2).join("+") + "&limit=" + args[0] + "&random=true"
