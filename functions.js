@@ -28,7 +28,7 @@ module.exports = {
         return target;
     },
 
-    formatDate: function(date) {
+    formatDate: async function(date) {
         return new Intl.DateTimeFormat('en-US').format(date)
     },
 
@@ -49,6 +49,12 @@ module.exports = {
             .then(collected => collected.first() && collected.first().emoji.name);
     },
 
+    /**
+     * @param {Error|TypeError|string} e The error. Typically an Error or string
+     * @param {string} cmd The source of the error
+     * @param {Message} message The Message object to gather information from
+     * @param {Client} client Required for the command to send a message to the error log
+     */
     errorMessage: async function (e, cmd, message, client) { // I hate needing to pass in the message + client
         if(message) {
           if(cmd != "index.js (Line 79)") {
@@ -94,7 +100,12 @@ module.exports = {
         }
     },
 
-    errorEmbed: async function (issue, message) { // Have to pass in message because detecting author
+    /**
+     * @param {string} issue The issue with running the command
+     * @param {Message} message A Message object
+     * @returns MessageEmbed A MessageEmbed with the issue
+     */
+    errorEmbed: async function (issue, message) {
         if(!issue || issue === "") {
             return;
         }

@@ -19,23 +19,23 @@ module.exports = {
       } else {
 
       if(typeof args[0] != "number") {
-        const response = errorEmbed("Bad usage: Invalid parameters given (Limit is not a number)", message)
+        const response = await errorEmbed("Bad usage: Invalid parameters given (Limit is not a number)", message)
         return message.reply(response)
       }
       if(args[0] < 1 || args[0] > 10) {
-        const response = errorEmbed("Bad usage: Invalid parameters given (Number is not within 1 and 10)", message)
+        const response = await errorEmbed("Bad usage: Invalid parameters given (Number is not within 1 and 10)", message)
         return message.reply(response)
       }
       if(typeof args.slice(1, 2) != "string") {
-        const response = errorEmbed("Bad usage: Invalid parameters given (Tags are not a string)", message)
+        const response = await errorEmbed("Bad usage: Invalid parameters given (Tags are not a string)", message)
         return message.reply(response)
       }
       if(args[3]) {
-        const response = errorEmbed("Usage warning: I cannot query more than 2 tags at once. Images will show with the first two tags only", message)
+        const response = await errorEmbed("Usage warning: I cannot query more than 2 tags at once. Images will show with the first two tags only", message)
         await message.reply(response)
       }
       if(channel.nsfw != "true") {
-        const response = errorEmbed("Usage warning: Due to this channel not being marked as NSFW, I will filter out any posts marked as Explicit or Questionable. This may result in fewer posts", message)
+        const response = await errorEmbed("Usage warning: Due to this channel not being marked as NSFW, I will filter out any posts marked as Explicit or Questionable. This may result in fewer posts", message)
         await message.reply(response)
       }
       var url = ""
