@@ -1,6 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { errorMessage, errorEmbed } = require('../../functions.js');
-const { fetch } = require('node-fetch');
+const fetch = require('node-fetch');
 const cooldown = new Set();
 
 module.exports = {
