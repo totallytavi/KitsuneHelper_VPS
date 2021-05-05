@@ -2,6 +2,8 @@ const { Client, Collection } = require("discord.js");
 const { errorMessage } = require('./functions.js');
 const fetch = require('node-fetch');
 const fs = require("fs");
+const sqlite = require('sqlite');
+const sqlite3 = require('sqlite3')
 // to lowercase
 
 fetch("https://checkip.amazonaws.com")
@@ -10,28 +12,16 @@ fetch("https://checkip.amazonaws.com")
     console.log("This script's IP is: " + body + ". If this does not match with the public IP, node-fetch is not working")
   })
 
+sqlite.open({ filename: 'Moderations.db', driver: sqlite3.Database })
+.then(db => {
+  console.log("The current database is: " + db + ". If this does not show Moderations.db, sqlite/sqlite3 is not working properly")
+})
+
 const client = new Client({
     disableEveryone: true,
     partials: ['GUILD_MEMBER']
 });
 /** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
-
-/*
-client.db = "nothing. this should not happen";
-
-import sqlite3 from 'sqlite3'
-import { open } from 'sqlite'
-
-// this is a top-level await 
-(async () => {
-    // open the database
-    client.db = await open({
-      filename: '/tmp/database.db',
-      driver: sqlite3.Database
-    })
-})()
-console.log("The current database is: " + client.db.toString())
-*/
 
 client.commands = new Collection();
 client.aliases = new Collection();
@@ -116,5 +106,3 @@ client.on("guildCreate", async guild => {
 })
 
 client.login("Njk5NjcwODQ0MDgyNzQ5NDYx.XtI2-w.z5dH3fXJHAUaL8t2AsQ9zBFHhbc");
-
-// db.close(result => console.log("ON DATABASE CLOSE--\n" + result));
