@@ -130,11 +130,14 @@ const bot = new tmi.Client({
 
 bot.connect();
 
-bot.on('message', (channel, tags, message, self) => {
+bot.on('message', async (channel, tags, message, self) => {
   // Ignore echoed messages.
   if(self) return;
 
-  const allowViewers = fs.readFile("./allowViewers.txt")
+  let allowViewers;
+  fs.readFile("./allowViewers.txt", (err, data) => {
+    allowViewers = data.toString()
+  })
 
   if(message.toLowerCase() === '!roblox') {
     bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. I always leave joining on and FRs won't be accepted`);
