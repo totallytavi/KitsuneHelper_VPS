@@ -142,13 +142,13 @@ bot.on('message', async (channel, tags, message, self) => {
   console.log("C: " + channel)
 
   let allowViewers;
-  fs.readFile('allowViewers.txt', 'utf8', (err, data) => {
+  await fs.readFile('allowViewers.txt', 'utf8', (err, data) => {
     if(err) err => {
       console.log(err)
     }
     // Display the file content
-    console.log(data);
-    allowViewers = data;
+    console.log("D: " + data);
+    return allowViewers = data;
   });
   console.log("AV: " + allowViewers)
 
