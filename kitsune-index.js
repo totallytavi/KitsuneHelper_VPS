@@ -120,8 +120,8 @@ const bot = new tmi.Client({
     reconnect: true
   },
   identity: {
-    username: 'k6n7h737qjpqcdwj9zwwrrys7l5gmx',
-    password: "d7ck9xxid0j8b4cbbz6wps2s1qjbhm"
+    username: 'Tavis_Helper',
+    password: "zm9cwbo23812vwj9326mjfwyqhdn52"
   },
   channels: ['Coder_Tavi']
 });
