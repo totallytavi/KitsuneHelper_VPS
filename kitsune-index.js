@@ -142,12 +142,17 @@ bot.on('message', async (channel, tags, message, self) => {
   console.log("C: " + channel)
 
   let allowViewers;
-  fs.readFile("./allowViewers.txt", (err, data) => {
-    allowViewers = data.toString()
-  })
+  fs.readFile('allowViewers.txt', 'utf8', (err, data) => {
+    if(err) err => {
+      console.log(err)
+    }
+    // Display the file content
+    console.log(data);
+    allowViewers = data;
+  });
   console.log("AV: " + allowViewers)
 
-if(channel === "#coder_tavi") {
+if(channel === "#coder_tavi" || tags.username.toLowerCase() === "coder_tavi") {
   if(message.toLowerCase() === '!roblox') {
     bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. I always leave joining on and FRs won't be accepted`);
   }
@@ -157,16 +162,19 @@ if(channel === "#coder_tavi") {
 }
 if(tags.username.toLowerCase() === "coder_tavi") { // Owner only commands
   if(message.toLowerCase() === "!allowviewers") {
-    fs.writeFile("./allowViewers.txt", "true", () => {
+    fs.writeFile("allowViewers.txt", "true", () => {
       bot.say(channel, `@${tags.username}, viewers are now allowed to join games!`)
     })
     client.channels.cache.get('840448163998728193').send("Stream updated to: `allowvViewers = true`")
   }
   if(message.toLowerCase() === "!declineviewers") {
-    fs.writeFile("./allowViewers.txt", "false", () => {
+    fs.writeFile("allowViewers.txt", "false", () => {
       bot.say(channel, `@${tags.username}, viewers are now not allowed to join games!`)
     })
     client.channels.cache.get('840448163998728193').send("Stream updated to: `allowvViewers = false`")
+  }
+  if(message.toLowerCase().startsWith() === "!eval") {
+    await eval(message.toLowerCase().slice(6))
   }
 }
 });
