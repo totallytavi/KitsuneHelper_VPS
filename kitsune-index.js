@@ -148,7 +148,7 @@ bot.on('message', async (channel, tags, message, self) => {
     }
     // Display the file content
     console.log("D: " + data);
-    return allowViewers = data;
+    allowViewers = data;
   });
   console.log("AV: " + allowViewers)
 
