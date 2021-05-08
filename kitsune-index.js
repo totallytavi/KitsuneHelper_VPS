@@ -121,9 +121,11 @@ const bot = new tmi.Client({
   },
   identity: {
     username: 'Tavis_Helper',
-    password: "zm9cwbo23812vwj9326mjfwyqhdn52"
+    password: "7jx013x1q04m3b1b98p7ktp9xnuuoy" // Codertavi: zm9cwbo23812vwj9326mjfwyqhdn52
   },
-  channels: ['Coder_Tavi']
+  channels: [
+    'Coder_Tavi'
+  ]
 });
 
 bot.connect();
