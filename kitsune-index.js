@@ -158,10 +158,10 @@ bot.on('message', async (channel, tags, message, self) => {
 
 if(channel === "#coder_tavi" || tags.username.toLowerCase() === "coder_tavi") {
   if(message.toLowerCase() === '!roblox') {
-    bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. I always leave joining on and FRs won't be accepted`);
+    bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. Tavi always leaves joining on but friend requests won't be accepted`);
   }
 }
-if(tags.mod === true) { // Mod only commands
+if(channel === "#coder_tavi" && tags.mod === true || tags.username.toLowerCase() === "coder_tavi") { // Mod only commands
   if(message.toLowerCase() === "!allowviewers") {
     fs.writeFile("allowViewers.txt", "true", () => {
       bot.say(channel, `@${tags.username}, viewers are now allowed to join games!`)
