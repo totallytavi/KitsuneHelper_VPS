@@ -106,3 +106,50 @@ client.on("guildCreate", async guild => {
 })
 
 client.login("Njk5NjcwODQ0MDgyNzQ5NDYx.XtI2-w.z5dH3fXJHAUaL8t2AsQ9zBFHhbc");
+
+
+/////////////////////////////////////////
+// Start Twitch bot code
+
+const tmi = require('tmi.js');
+
+const bot = new tmi.Client({
+  options: { debug: true },
+  connection: {
+    secure: true,
+    reconnect: true
+  },
+  identity: {
+    username: 'k6n7h737qjpqcdwj9zwwrrys7l5gmx',
+    password: "d7ck9xxid0j8b4cbbz6wps2s1qjbhm"
+  },
+  channels: ['Coder_Tavi']
+});
+
+bot.connect();
+
+bot.on('message', (channel, tags, message, self) => {
+  // Ignore echoed messages.
+  if(self) return;
+
+  const allowViewers = fs.readFileSync("./allowViewers.txt")
+
+  if(message.toLowerCase() === '!roblox') {
+    bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. I always leave joining on and FRs won't be accepted`);
+  }
+  if(message.toLowerCase() === '!join') {
+    bot.say(channel, `@${tags.username}, hi! Tavi is ${allowViewers === "false" ? "not allowing viewers to join this stream, I'm sorry" : "allowing viewers to join. Please be patient and I will notify him you're interested"}`);
+  }
+if(tags.username.toLowerCase() === "coder_tavi") { // Owner only commands
+  if(message.toLowerCase() === "!allowviewers") {
+    bot.say(channel, `@${tags.username}, viewers are now allowed to join games!`)
+    fs.writeFile("./allowViewers.txt", "true")
+    client.channels.cache.get('840448163998728193').send("Stream updated to: `allowvViewers = true`")
+  }
+  if(message.toLowerCase() === "!declineviewers") {
+    bot.say(channel, `@${tags.username}, viewers are now not allowed to join games!`)
+    fs.writeFile("./allowViewers.txt", "false")
+    client.channels.cache.get('840448163998728193').send("Stream updated to: `allowvViewers = false`")
+  }
+}
+});
