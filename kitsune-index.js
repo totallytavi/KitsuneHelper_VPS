@@ -151,7 +151,7 @@ bot.on('message', async (channel, tags, message, self) => {
     allowViewers = data;
 
     if(message.toLowerCase() === '!join') {
-      bot.say(channel, `@${tags.username}, hi! Tavi is ${allowViewers === "false" ? "not allowing viewers to join this stream, I'm sorry" : "allowing viewers to join. Please be patient and I will notify him you're interested"}`);
+      bot.say(channel, `@${tags.username}, hi! Tavi is ${data === "false" ? "not allowing viewers to join this stream, I'm sorry" : "allowing viewers to join. Please be patient and I will notify him you're interested"}`);
     }
   });
   console.log("AV: " + allowViewers)
