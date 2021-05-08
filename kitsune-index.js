@@ -161,7 +161,7 @@ if(channel === "#coder_tavi" || tags.username.toLowerCase() === "coder_tavi") {
     bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. Tavi always leaves joining on but friend requests won't be accepted`);
   }
 }
-if(channel === "#coder_tavi" && tags.mod === true || tags.username.toLowerCase() === "coder_tavi") { // Mod only commands
+if(tags.mod === true && channel === "#coder_tavi" || tags.username.toLowerCase() === "coder_tavi" && channel === "#coder_tavi") { // Mod only commands
   if(message.toLowerCase() === "!allowviewers") {
     fs.writeFile("allowViewers.txt", "true", () => {
       bot.say(channel, `@${tags.username}, viewers are now allowed to join games!`)
