@@ -149,15 +149,16 @@ bot.on('message', async (channel, tags, message, self) => {
     // Display the file content
     console.log("D: " + data);
     allowViewers = data;
+
+    if(message.toLowerCase() === '!join') {
+      bot.say(channel, `@${tags.username}, hi! Tavi is ${allowViewers === "false" ? "not allowing viewers to join this stream, I'm sorry" : "allowing viewers to join. Please be patient and I will notify him you're interested"}`);
+    }
   });
   console.log("AV: " + allowViewers)
 
 if(channel === "#coder_tavi" || tags.username.toLowerCase() === "coder_tavi") {
   if(message.toLowerCase() === '!roblox') {
     bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. I always leave joining on and FRs won't be accepted`);
-  }
-  if(message.toLowerCase() === '!join') {
-    bot.say(channel, `@${tags.username}, hi! Tavi is ${allowViewers === "false" ? "not allowing viewers to join this stream, I'm sorry" : "allowing viewers to join. Please be patient and I will notify him you're interested"}`);
   }
 }
 if(tags.username.toLowerCase() === "coder_tavi") { // Owner only commands
