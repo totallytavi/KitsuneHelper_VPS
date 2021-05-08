@@ -134,7 +134,7 @@ bot.on('message', (channel, tags, message, self) => {
   // Ignore echoed messages.
   if(self) return;
 
-  const allowViewers = fs.readFileSync("./allowViewers.txt")
+  const allowViewers = fs.readFile("./allowViewers.txt")
 
   if(message.toLowerCase() === '!roblox') {
     bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. I always leave joining on and FRs won't be accepted`);
