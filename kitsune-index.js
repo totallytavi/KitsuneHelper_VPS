@@ -124,7 +124,12 @@ const bot = new tmi.Client({
     password: "7jx013x1q04m3b1b98p7ktp9xnuuoy" // Codertavi: zm9cwbo23812vwj9326mjfwyqhdn52
   },
   channels: [
-    'Coder_Tavi'
+    'Coder_Tavi',
+    'ELT_JBone',
+    'KitsuneHugs',
+    'EyeOfSkaro',
+    'Colvie_Channel',
+    'bunnyzelda'
   ]
 });
 
@@ -134,17 +139,21 @@ bot.on('message', async (channel, tags, message, self) => {
   // Ignore echoed messages.
   if(self) return;
 
+  console.log(channel)
+
   let allowViewers;
   fs.readFile("./allowViewers.txt", (err, data) => {
     allowViewers = data.toString()
   })
 
+if(channel === "coder_tavi") {
   if(message.toLowerCase() === '!roblox') {
     bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. I always leave joining on and FRs won't be accepted`);
   }
   if(message.toLowerCase() === '!join') {
     bot.say(channel, `@${tags.username}, hi! Tavi is ${allowViewers === "false" ? "not allowing viewers to join this stream, I'm sorry" : "allowing viewers to join. Please be patient and I will notify him you're interested"}`);
   }
+}
 if(tags.username.toLowerCase() === "coder_tavi") { // Owner only commands
   if(message.toLowerCase() === "!allowviewers") {
     bot.say(channel, `@${tags.username}, viewers are now allowed to join games!`)
