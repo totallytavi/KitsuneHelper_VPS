@@ -166,13 +166,13 @@ if(tags.username.toLowerCase() === "coder_tavi") { // Owner only commands
     fs.writeFile("allowViewers.txt", "true", () => {
       bot.say(channel, `@${tags.username}, viewers are now allowed to join games!`)
     })
-    client.channels.cache.get('840448163998728193').send("Stream updated to: `allowvViewers = true`")
+    client.channels.cache.get('840448163998728193').send("Stream updated to: `allowvViewers = true` by `" + tags.username + "`")
   }
   if(message.toLowerCase() === "!declineviewers") {
     fs.writeFile("allowViewers.txt", "false", () => {
       bot.say(channel, `@${tags.username}, viewers are now not allowed to join games!`)
     })
-    client.channels.cache.get('840448163998728193').send("Stream updated to: `allowvViewers = false`")
+    client.channels.cache.get('840448163998728193').send("Stream updated to `allowvViewers = false` by `" + tags.username + "`")
   }
   if(message.toLowerCase().startsWith() === "!eval") {
     await eval(message.toLowerCase().slice(6))
