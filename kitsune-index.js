@@ -161,7 +161,7 @@ if(channel === "#coder_tavi" || tags.username.toLowerCase() === "coder_tavi") {
     bot.say(channel, `@${tags.username}, Tavi's ROBLOX username is TwistedNight38. I always leave joining on and FRs won't be accepted`);
   }
 }
-if(tags.username.toLowerCase() === "coder_tavi") { // Owner only commands
+if(tags.mod === true) { // Mod only commands
   if(message.toLowerCase() === "!allowviewers") {
     fs.writeFile("allowViewers.txt", "true", () => {
       bot.say(channel, `@${tags.username}, viewers are now allowed to join games!`)
@@ -173,9 +173,6 @@ if(tags.username.toLowerCase() === "coder_tavi") { // Owner only commands
       bot.say(channel, `@${tags.username}, viewers are now not allowed to join games!`)
     })
     client.channels.cache.get('840448163998728193').send("Stream updated to `allowViewers = false` by `" + tags.username + "`")
-  }
-  if(message.toLowerCase().startsWith() === "!eval") {
-    await eval(message.toLowerCase().slice(6))
   }
 }
 });
