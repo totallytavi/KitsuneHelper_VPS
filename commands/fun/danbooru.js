@@ -70,7 +70,7 @@ module.exports = {
             if(rating != "Safe" && message.channel.nsfw != true) continue; // I CAN FINALLY USE CONTINUE HELL YES
             
             const embed = new MessageEmbed()
-            .setTitle(args.slice(1,2).join(" and "))
+            .setTitle(args.slice(1,3).join(" and "))
             .setAuthor("Artist(s): " + posts[post].tag_string_artist)
             .setDescription("Score: " + posts[post].score + " | Rating: " + rating)
             .setImage(posts[post].large_file_url || posts[post].file_url)
