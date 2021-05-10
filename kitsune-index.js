@@ -79,7 +79,7 @@ client.on("ready", async () => {
 console.log(`Random string check: ${[...Array(30)].map(i=>(~~(Math.random()*36)).toString(36)).join('')}`)
 
 client.on("message", async message => {
-    const prefix = "kh!";
+    const prefix = ";";
 
     if (message.author.bot) return;
     if (!message.guild) return;
@@ -94,15 +94,9 @@ client.on("message", async message => {
     if (!command) command = client.commands.get(client.aliases.get(cmd));
 
     if (command)
-      errorMessage(`Command ran\n> Command: ${cmd}\n> Arguments: ${args.slice(0).join(" ")}`, "index.js (Line 79)", message, client)
+      errorMessage(`Command ran\n> Command: ${cmd}\n> Arguments: ${args.slice(0).join(" ")}`, "index.js (Line 97)", message, client)
       command.run(client, message, args);
 
 });
-
-client.on("guildCreate", async guild => {
-  console.log(`\n[GUILD_CREATE] Added to ${guild.name}\n\n`)
-  client.user.setActivity(`kitsune leadership on ${client.guilds.cache.size} servers • kh!commands`, { type: 'LISTENING' })
-    .catch(console.error);
-})
 
 client.login("Njk5NjcwODQ0MDgyNzQ5NDYx.XtI2-w.z5dH3fXJHAUaL8t2AsQ9zBFHhbc");
