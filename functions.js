@@ -57,7 +57,7 @@ module.exports = {
      */
     errorMessage: async function (e, cmd, message, client) { // I hate needing to pass in the message + client
         if(message) {
-          if(cmd != "index.js (Line 79)") {
+          if(cmd != "index.js (Line 97)") {
             // Basic error message
             message.channel.send(`:x: Error alert! Contact the support server (Found with \`kh!support\`) or fix it if you know what to do\n${e}`)
           }
