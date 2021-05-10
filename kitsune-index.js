@@ -79,7 +79,7 @@ client.on("ready", async () => {
 console.log(`Random string check: ${[...Array(30)].map(i=>(~~(Math.random()*36)).toString(36)).join('')}`)
 
 client.on("message", async message => {
-    const prefix = ";";
+    const prefix = "kh!";
 
     if (message.author.bot) return;
     if (!message.guild) return;
