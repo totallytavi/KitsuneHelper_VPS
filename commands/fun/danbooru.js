@@ -75,12 +75,14 @@ module.exports = {
             if(rating != "Safe" && message.channel.nsfw != true) continue; // I CAN FINALLY USE CONTINUE HELL YES
             if(posts[post].tag_string_artist.split(" ").includes("banned")) continue; // Banned artists
             if(posts[post].tag_string.split(" ").includes("loli")) continue; // Lolis
+            const image = posts[post].large_file_url || posts[post].file_url || posts[post].preview_file_url
+            if(!image.match(/^[.jpg]|[.png]|[.gif]/)) continue; // Bad urls
             
             const embed = new MessageEmbed()
             .setTitle(args.slice(1,3).join(" and "))
             .setAuthor("Artist(s): " + posts[post].tag_string_artist)
             .setDescription("Score: " + posts[post].score + " | Rating: " + rating + " | ID: " + posts[post].id)
-            .setImage(posts[post].large_file_url || posts[post].file_url || posts[post].preview_file_url)
+            .setImage(image)
             .setFooter("Tags: " + posts[post].tag_string.split(" ").join(", ") + " | Posted on")
             .setTimestamp(posts[post].created_at)
 
