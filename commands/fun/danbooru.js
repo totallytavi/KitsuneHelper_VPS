@@ -44,13 +44,18 @@ module.exports = {
         const response = await errorEmbed("Usage warning: Due to this channel not being marked as NSFW, I will filter out any posts marked as Explicit or Questionable. This may result in fewer posts", message)
         await message.reply(response)
       }
+
+      if(!args.slice(1,3).match(/^[1-6]\+/)) {
+        const response = await errorEmbed("Bad usage: Invalid parameters given (You cannot put a + in the tags)", message)
+        await message.reply(response)
+      };
+
       var url = ""
       if(message.channel.nsfw != true) {
         url = "https://danbooru.donmai.us/posts.json?tags=" + args.slice(1,3).join("+") + "&limit=" + args[0] + "&random=true" + "&rating=s" + "&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi"
       } else {
         url = "https://danbooru.donmai.us/posts.json?tags=" + args.slice(1,3).join("+") + "&limit=" + args[0] + "&random=true" + "&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi"
       }
-      console.log("The URL being used is: " + url)
 
       await fetch(url)
         .then(res => res.json())
