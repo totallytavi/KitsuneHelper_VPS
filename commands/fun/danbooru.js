@@ -76,7 +76,7 @@ module.exports = {
             if(posts[post].tag_string_artist.split(" ").includes("banned")) continue; // Banned artists
             if(posts[post].tag_string.split(" ").includes("loli")) continue; // Lolis
             const image = posts[post].large_file_url || posts[post].file_url || posts[post].preview_file_url
-            if(!image.match(/^\.jpg|^\.png|^\.gif/)) continue; // Bad urls
+            if(!/\.jpg|\.png|\.gif/.test(image)) continue; // Bad urls
             
             const embed = new MessageEmbed()
             .setTitle(args.slice(1,3).join(" and "))
