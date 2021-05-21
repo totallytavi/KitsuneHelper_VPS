@@ -45,8 +45,8 @@ module.exports = {
         await message.reply(response)
       }
 
-      if(args.slice(1,3).match(/^[1-6]\+/)) {
-        const response = await errorEmbed("Bad usage: Invalid parameters given (You cannot put a + in the tags)", message)
+      if(args.slice(1,3).join("").match(/[^1-6]\+/)) {
+        const response = await errorEmbed("Bad usage: Invalid parameters given (You cannot put a + in the tags to search more than 2 tags)", message)
         await message.reply(response)
       };
 
