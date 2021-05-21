@@ -45,7 +45,7 @@ module.exports = {
         await message.reply(response)
       }
 
-      if(!args.slice(1,3).match(/^[1-6]\+/)) {
+      if(args.slice(1,3).match(/^[1-6]\+/)) {
         const response = await errorEmbed("Bad usage: Invalid parameters given (You cannot put a + in the tags)", message)
         await message.reply(response)
       };
