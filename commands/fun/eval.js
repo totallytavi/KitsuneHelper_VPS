@@ -54,7 +54,7 @@ module.exports = {
           type: ${result.type},
           rawPosition: ${result.rawPosition}
           }`
-        } else if(result.system) {
+        } else if(result.bot) {
           result = stripIndents`User {
           avatar: ${result.avatar},
           bot: ${result.bot},
