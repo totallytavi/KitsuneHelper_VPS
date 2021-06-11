@@ -1,6 +1,6 @@
 const { MessageEmbed } = require('discord.js');
 const wait = require('util').promisify(setTimeout)
-const { promptMessage } = require('../../functions.js')
+const { promptMessage, responseEmbed } = require('../../functions.js')
 const auth = new Set();
 const cooldown = new Set();
 
@@ -20,12 +20,10 @@ module.exports = {
           .then(m => m.delete({timeout: 2500}))
       } else {
         auth.add('669051415074832397')
-        if(message.member.hasPermission("MANAGE_MESSAGES")) {
+        if(message.member.hasPermission("MANAGE_MESSAGES") && message.member.has("EMBED_LINKS")) {
           auth.add(message.author.id)
         }
-        if(!auth.has(message.author.id)) {
-          return message.reply('kitsune leadership has not allowed you to do that!')
-        }
+        if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE MESSAGES and EMBED LINKS", "CHANNEL", message, client)
 
         const embed = new MessageEmbed()
         const promptEmbed = new MessageEmbed()
@@ -47,7 +45,7 @@ module.exports = {
             }  
             if(collected.first().content.length >= 33) {
                 failed = true
-                return message.reply('the title is too long!')
+                return responseEmbed(3, "Bad Usage: Title is too long", "CHANNEL", message, client)
               }
             embed
             .setTitle(collected.first().content)
@@ -76,7 +74,7 @@ module.exports = {
             "DARK_GREY","LIGHT_GREY","DARK_NAVY","BLURPLE","GREYPLE","DARK_BUT_NOT_BLACK","NOT_QUITE_BLACK"]
             if(!hexRegex.test(color) && jsColorRegex.indexOf(color) === -1) {
               failed = true
-              return message.reply('you did not give me a valid hex code (#123ABC) or Discord.js color code (BLURPLE). The embed will not have a color')
+              return responseEmbed(3, "Bad Usage: You must supply a hex code or Discord.js color code", "CHANNEL", message, client)
             }
             embed
             .setColor(collected.first().content)
@@ -95,7 +93,7 @@ module.exports = {
           .then(collected => {
             if(!collected.first()) {
               failed = true
-              return message.reply('you did not respond in time!')
+              return responseEmbed(3, "Timed Out: You did not respond in time", "CHANNEL", message, client)
             }
             embed
             .setDescription(collected.first().content)
@@ -119,7 +117,7 @@ module.exports = {
           .then(collected => {
             if(!collected.first()) {
               failed = true
-              return message.reply('you did not respond in time!')
+              return responseEmbed(3, "Timed Out: You did not respond in time", "CHANNEL", message, client)
             }
             const array = collected.first().content.split(",")
             embed
@@ -139,7 +137,7 @@ module.exports = {
           .then(collected => {
             if(!collected.first()) {
               failed = true
-              return message.reply('you did not respond in time!')
+              return responseEmbed(3, "Timed Out: You did not respond in time", "CHANNEL", message, client)
             }
             embed
             .setImage(collected.first().content)
@@ -158,7 +156,7 @@ module.exports = {
           .then(collected => {
             if(!collected.first()) {
               failed = true
-              return message.reply('you did not respond in time!')
+              return responseEmbed(3, "Timed Out: You did not respond in time", "CHANNEL", message, client)
             }
             embed.setThumbnail(collected.first().content)
           })
@@ -177,14 +175,14 @@ module.exports = {
           .then(collected => {
             if(!collected.first()) {
               failed = true
-              return message.reply('you did not respond in time!')
+              return responseEmbed(3, "Timed Out: You did not respond in time", "CHANNEL", message, client)
             }
             _channel = message.guild.channels.cache.find(c => c.name === collected.first().content)
             || message.guild.channels.cache.find(c => c.id === collected.first().content)
             || collected.first().mentions.channels.first()
             if(!_channel) {
               failed = true
-              return message.reply('did not find that channel, please retry the command')
+              return responseEmbed(3, "Not Found: I didn't find anything for " + collected.first().content, "CHANNEL", message, client)
             }
           })
 
@@ -211,7 +209,6 @@ module.exports = {
             await _channel.send(embed.setTimestamp())
             _channel.stopTyping(true);
             status.edit(`:white_check_mark: Posted to ${_channel}!\n  If you supplied an invalid value for any of the flags, those flags are disabled!`)
-            partnerChannel.stopTyping(true);
 
           } else if (emoji === "❌") {
             msg.delete();

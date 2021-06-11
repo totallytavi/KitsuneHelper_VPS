@@ -1,5 +1,5 @@
 const { Client, Collection } = require("discord.js");
-const { errorMessage } = require('./functions.js');
+const { toConsole } = require('./functions.js');
 const fetch = require('node-fetch');
 const fs = require("fs");
 const sqlite = require('sqlite');
@@ -31,19 +31,19 @@ client.categories = fs.readdirSync("./commands/");
 // Literally just a big fat cmd watcher
 process.on('unhandledRejection', async promise => {
   console.log(`**A promise was rejected!\n\n${promise}`)
-  errorMessage(promise, `Unhandled promise rejection`, '', client)
+  toConsole(promise, `Unhandled promise rejection`, '', client)
 });
 process.on('exit', async code => {
   console.log(`**PROCESS EXITING\n\nWARNING: The process is exiting!\nCode: ${code}`)
-  errorMessage(code, `Process exit`, '', client)
+  toConsole(code, `Process exit`, '', client)
 });
 process.on('warning', async (name, message, stack) => {
   console.log(`**Warning\n\nName: ${name}\nMessage: ${message}\nStack trace to file: ${stack}`)
-  errorMessage(name, `Process warning`, '', client)
+  toConsole(name, `Process warning`, '', client)
 });
 process.on('uncaughtException', (err, origin) => {
   console.log(`**Uncaught exception!\n\nError: ${err}\nOrigin: ${origin}`)
-  errorMessage(err, `Uncaught exception`, '', client)
+  toConsole(err, `Uncaught exception`, '', client)
 });
 
 ["command"].forEach(handler => {
@@ -59,21 +59,11 @@ client.on("ready", async () => {
       .catch(console.error);
 
     process.emitWarning('Custom status set!', 'Custom Status');
-/*
+
     setInterval(() => {
       client.user.setActivity(`kitsune leadership on ${client.guilds.cache.size} servers • kh!commands`, { type: 'LISTENING' })
         .catch(console.error);
-      
-      console.log("\n-- Starting SQLite mute test!")
-      client.guilds.cache.each(guild => {
-        client.db.each("SELECT * FROM mutes WHERE unmute_date<=$currentDate AND guild_id=$gid", {
-          $currentDate: Date.now(),
-          $gid: guild.id
-        }, result => console.log("Mute SQLite3 results: " + result))
-      })
-      console.log("-- Ended SQLite mute test!\n")
     }, 20000);
-*/
 });
 
 console.log(`Random string check: ${[...Array(30)].map(i=>(~~(Math.random()*36)).toString(36)).join('')}`)
@@ -94,7 +84,7 @@ client.on("message", async message => {
     if (!command) command = client.commands.get(client.aliases.get(cmd));
 
     if (command)
-      errorMessage(`Command ran\n> Command: ${cmd}\n> Arguments: ${args.slice(0).join(" ")}`, "index.js (Line 97)", message, client)
+      toConsole(`Command ran\n> Command: ${cmd}\n> Arguments: ${args.slice(0).join(" ")}`, "index.js (Line 97)", message, client)
       command.run(client, message, args);
 
 });

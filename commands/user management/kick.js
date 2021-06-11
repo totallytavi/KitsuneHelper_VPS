@@ -1,7 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
-const { promptMessage, errorEmbed, errorMessage } = require("../../functions.js");
-let collectErr;
+const { promptMessage, responseEmbed, toConsole } = require("../../functions.js");
 const cooldown = new Set();
 const auth = new Set();
 
@@ -23,43 +22,19 @@ module.exports = {
       if(message.member.hasPermission("KICK_MEMBERS")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) {
-        return message.reply('kitsune leadership has not allowed you to do that!').then(m => m.delete({timeout: 2500}))
-      }
-      if(!message.guild.me.hasPermission("KICK_MEMBERS")) {
-        const response = await errorEmbed("Insufficient permissions: I have not been allowed to kick members", message)
-        return message.reply(response)
-      }
+      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have KICK MEMBERS", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("KICK_MEMBERS")) responseEmbed(3, "Unauthorized: I don't have KICK MEMBERS", "CHANNEL", message, client)
 
-      var target = message.mentions.members.first();
+      var target = message.guild.members.cache.get(`${args[0]}`)
+      || message.mentions.members.first();
       var reason = args.slice(1).join(" ");
 
-      if(!target) {
-        await message.guild.members.fetch(`${args[0]}`)
-        .then(guildMember => target = guildMember)
-        .catch(e => collectErr = e)
-        if(!target) {
-          const response = await errorEmbed("Unknown guild member: No guild member found", message)
-          return message.reply(response)
-        }
-      }
+      if(!target) responseEmbed(3, "Not Found: I couldn't find anything for " + args[0], "CHANNEL", message, client)
       if(!reason) {
         reason = "Not specified!"
       }
 
-      if(!target.manageable) {
-        const response = await errorEmbed("Insufficient permissions: I cannot manage this user", message)
-        return message.reply(response)
-      }
-
-      const embed = new MessageEmbed()
-        .setColor("#ff0000")
-        .setAuthor(message.author.tag)
-        .setThumbnail(message.author.displayAvatarURL({ dynamic: true, size: 2048 }))
-        .setDescription(stripIndents`**- Target:** ${target} (${target.id})
-        **- Moderator:** ${message.member} (${message.member.id})
-        **- Reason:** ${reason}`)
-        .setTimestamp()
+      if(!target.manageable) responseEmbed(3, "Unauthorized: I cannot kick that user", "CHANNEL", message, client)
 
       const promptEmbed = new MessageEmbed()
         .setColor("YELLOW")
@@ -75,15 +50,15 @@ module.exports = {
         if (emoji === "✅") {
           msg.delete();
 
-          target.kick({reason: `Moderator: ${message.author.tag}: ${reason}`})
-            .catch(e => errorMessage(e, "Kick command", message, client));
-          message.channel.send(embed)
+          target.kick({reason: `Moderator ${message.author.tag} (${message.author.id}): ${reason}`})
+            .catch(e => toConsole(e, "kick.js (Line 53)", message, client));
+          
+          responseEmbed(1, `${message.author} (${message.author.id}) banned ${target} (${target.id}) for ${reason}`, "CHANNEL", message, client)
 
         } else if (emoji === "❌") {
           msg.delete();
 
-          message.reply(`kick cancelled, one user enjoys their stay!`)
-            .then(m => m.delete(5000));
+          responseEmbed(1, "Kick cancelled", "CHANNEL", message, client)
           }
       });
 

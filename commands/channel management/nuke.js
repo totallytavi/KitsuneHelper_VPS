@@ -1,4 +1,5 @@
 const { MessageEmbed, Collection } = require("discord.js");
+const { responseEmbed, toConsole } = require("../../functions");
 const cooldown = new Set();
 const auth = new Set();
 
@@ -21,21 +22,16 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_CHANNELS")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) {
-        return message.reply('kitsune leadership has not authorized you to do that!').then(m => m.delete({timeout: 5000}))
-      }
-      if(!message.guild.me.hasPermission("MANAGE_CHANNELS") && !message.channel.permissions.has("MANAGE_CHANNELS")) {
-        return message.reply('I have not been allowed to manage channels. Please check my role has permissions to do so')
-      }
+      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNELS", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNELS", "CHANNEL", message, client)
 
-      const toNuke = message.guild.channels.cache.find(channel => channel.name === `${args.slice(0).join(" ")}`) || message.guild.channels.cache.find(channel => channel.id === `${args[0]}`) || message.mentions.channels.first() || message.channel
+      const toNuke = message.guild.channels.cache.find(channel => channel.name === `${args.slice(0).join(" ")}`)
+      || message.guild.channels.cache.get(`${args[0]}`)
+      || message.mentions.channels.first()
+      || message.channel
 
-      if(!toNuke.manageable) {
-        return message.reply('I am not allowed to manage that channel!')
-      }
-      if(!toNuke.type === "text") {
-        return message.reply(`I cannot nuke non-text channels; the selected channel is a ${toNuke.type} channel`)
-      }
+      if(!toNuke.manageable) responseEmbed(3, "Unauthorized: I cannot manage that channel", "CHANNEL", message, client)
+      if(!toNuke.type === "text") responseEmbed(3, "Unauthorized: I cannot nuke a non-text channel", "CHANNEL", message, client)
 
       // Now just a long list of grabbing values
       const oldName = toNuke.name
@@ -47,8 +43,8 @@ module.exports = {
       const oldTopic = toNuke.topic
 
       toNuke.delete({reason: `Moderator: ${message.author.tag}`})
-        .catch(err => message.channel.send(`Error while deleting the channel! Please report this to the support server or fix it if you know what to do\n${err}`))
-      const newChannel = await message.guild.channels.create(oldName, {
+        .catch(err => toConsole("nuke.js (Line 45)", err, message, client))
+      await message.guild.channels.create(oldName, {
         topic: oldTopic,
         nsfw: oldNSFW,
         parent: oldParent,
@@ -57,10 +53,9 @@ module.exports = {
         rateLimitPerUser: oldRatelimit,
         reason: `Moderator: ${message.author.tag}`
       })
-        .catch(err => message.channel.send(`Error while creating the new channel! Please report this to the support server or fix it if you know what to do\n${err}`))
+      .catch(err => toConsole("nuke.js (Line 47)", err, message, client))
 
-      newChannel.send(":boom:")
-      newChannel.send("This channel got nuked! :wink:")
+      responseEmbed(1, "I successfully nuked the channel, clearing all messages", "DM", message, client)
 
       auth.delete(message.author.id)
       cooldown.add(message.author.id);

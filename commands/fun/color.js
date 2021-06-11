@@ -1,6 +1,6 @@
 const { stripIndents } = require("common-tags");
 const { MessageEmbed } = require("discord.js");
-const { errorMessage } = require('../../functions.js');
+const { toConsole, responseEmbed } = require('../../functions.js');
 const cooldown = new Set();
 
 module.exports = {
@@ -24,9 +24,7 @@ module.exports = {
       var jsColorRegex = ["DEFAULT","WHITE","AQUA","GREEN","BLUE","YELLOW","PURPLE","LUMINOUS_VIVID_PINK","GOLD","ORANGE","RED","GREY",
       "DARKER_GREY","NAVY","DARK_AQUA","DARK_GREEN","DARK_BLUE","DARK_PURPLE","DARK_VIVID_PINK","DARK_GOLD","DARK_ORANGE","DARK_RED",
       "DARK_GREY","LIGHT_GREY","DARK_NAVY","BLURPLE","GREYPLE","DARK_BUT_NOT_BLACK","NOT_QUITE_BLACK"]
-      if(!hexRegex.test(color) && jsColorRegex.indexOf(color) === -1) {
-        return message.reply('you did not give me a valid hex code (#123ABC) or Discord.js color code')
-      }
+      if(!hexRegex.test(color) && jsColorRegex.indexOf(color) === -1) responseEmbed(3, "Bad Usage: You must supply a hex code or Discord.js color code", "CHANNEL", message, client)
 
       const embed = new MessageEmbed()
       .setTitle("Color")
@@ -39,7 +37,7 @@ module.exports = {
       .setTimestamp();
 
       message.channel.send(embed)
-      .catch(e => errorMessage(e, "color command", message, client));
+      .catch(e => toConsole(e, "color.js (Line 39)", message, client));
 
       cooldown.add(message.author.id);
       setTimeout(() => {

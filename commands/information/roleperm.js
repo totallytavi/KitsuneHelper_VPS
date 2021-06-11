@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { errorEmbed } = require("../../functions");
+const { responseEmbed } = require("../../functions");
 const cooldown = new Set();
 
 module.exports = {
@@ -17,23 +17,14 @@ module.exports = {
         message.reply(`that's a little too fast!`).then(m => m.delete({ timeout: 2500 }));
       } else {
 
-      if(!args[0]) {
-        message.reply('please provide a role!').then(m => m.delete({timeout: 5000}))
-      }
+      if(!args[0]) responseEmbed(3, "Bad Usage: You must supply a role", "CHANNEL", message, client)
 
       const roleInfo = message.guild.roles.cache.find(r => r.name === `${args.slice(0).join(" ")}`) 
       || message.guild.roles.cache.find(r => r.id === `${args[0]}`)
       || message.mentions.roles.first()
-      || message.guild.roles.cache.each(r => {
-        if(r.name.includes(args.slice(0).join(" "))) {
-          return r;
-        }
-      })
+      || message.guild.roles.cache.find(r => r.name.includes(args.slice(0).join(" ")))
 
-      if(!roleInfo) {
-        const response = await errorEmbed("Unknown role: No role found", message)
-        message.reply(response)
-      }
+      if(!roleInfo) responseEmbed(3, "Not Found: I couldn't find anything for " + args.slice(0).join(" "), "CHANNEL", message, client)
 
       var rolePerms = [];
 

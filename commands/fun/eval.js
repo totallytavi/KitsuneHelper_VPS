@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { errorMessage } = require('../../functions.js');
+const { toConsole } = require('../../functions.js');
 const { stripIndents } = require('common-tags');
 const wait = require('util').promisify(setTimeout);
 const cooldown = new Set();
@@ -117,7 +117,8 @@ module.exports = {
       } catch(e) {
         const dateThen = Date.now()
         const time = dateThen - dateNow
-        errorMessage(e, "eval command", message, client)
+        await statusMsg.edit(":x: ERRORED")
+        toConsole(e, "eval.js (Line 43, but mainly the try loop)", message, client)
         message.channel.send("Execution time: " + time + " ms")
       }
 

@@ -1,6 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const cooldown = new Set();
-const { getMember, formatDate, errorMessage } = require('../../functions.js');
+const { getMember, toConsole } = require('../../functions.js');
 
 module.exports = {
     name: "userinfo",
@@ -22,10 +22,7 @@ module.exports = {
         member = message.member
       }
 
-      if(member === "Unknown" || !member) {
-        const response = await errorEmbed("Unknwon guild member: No guild member found")
-        return message.reply(response)
-      }
+      if(member === "Unknown" || !member) responseEmbed(3, "Not Found: I couldn't find anything for" + args.join(" "), "CHANNEL", message, client)
       var roles = member.roles.cache
             .filter(r => r.id !== message.guild.id)
             .map(r => r)
@@ -51,7 +48,7 @@ module.exports = {
       .setTimestamp();
 
       message.channel.send(embed)
-      .catch(e => errorMessage(e, "Userinfo command", message, client));
+      .catch(e => toConsole(e, "userinfo.js (Line 50)", message, client));
 
       cooldown.add(message.author.id);
       setTimeout(() => {

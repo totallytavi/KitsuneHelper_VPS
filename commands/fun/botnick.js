@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const { responseEmbed, toConsole } = require("../../functions");
 const cooldown = new Set();
 const auth = new Set();
 
@@ -20,30 +21,17 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_NICKNAMES")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) {
-        return message.reply('kitsune leadership has not authorized you to do that!').then(m => m.delete({timeout: 5000}))
-      }
-      if(!message.guild.me.hasPermission("CHANGE_NICKNAME")) {
-        return message.reply('I have not been allowed to change my nickname. Please check my role has permissions to do so')
-      }
+      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE NICKNAMES", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("CHANGE_NICKNAME")) responseEmbed(3, "Unauthorized: I cannot change my own nickname", "CHANNEL", message, client)
 
       var nickname = args.slice(0).join(" ")
       if(!nickname) {
         nickname = "Kitsune Helper"
       }
 
-      const embed = new MessageEmbed()
-      .setTitle('Nickname Update')
-      .addFields(
-        { name: 'Moderator', value: message.author, inline: true },
-        { name: 'Target', value: client.user, inline: true },
-        { name: 'Nickname', value: nickname, inline: true }
-      )
-      .setTimestamp();
-
       message.guild.me.setNickname(nickname, `Moderator: ${message.author.tag}`)
-        .then(fulfilled => message.channel.send(`Updated!`, embed))
-        .catch(err => errorMessage(err, 'Nickname command', message, client));;
+        .then(member => responseEmbed(1, "I set my nickname to " + member.nickname))
+        .catch(err => toConsole(err, 'nickname.js (Line 32)', message, client));
 
       auth.delete(message.author.id)
       cooldown.add(message.author.id);

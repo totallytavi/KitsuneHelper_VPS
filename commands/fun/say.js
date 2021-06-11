@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { errorEmbed } = require("../../functions.js");
+const { errorEmbed, responseEmbed } = require("../../functions.js");
 const cooldown = new Set()
 const auth = new Set()
 
@@ -22,17 +22,12 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_MESSAGES")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) {
-        return message.reply("kitsune leadership has not granted you the power to do this!").then(m => m.delete({timeout: 5000}));
-      }
-      if (args.length < 0) {
-        const response = await errorEmbed("Bad usage: No input given", message)
-        message.reply(response)
-      }
+      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE MESSAGES", "CHANNEL", message, client)
+      if (args.length < 0) responseEmbed(3, "Bad usage: You must supply input", "CHANNEL", message, client)
 
       let sOwner;
       await client.users.fetch(`${message.guild.ownerID}`)
-      .then(user => sOwner = user);
+      .then(user => sOwner === user);
 
       message.channel.send(args.slice(0).join(" "), {disableMentions: 'everyone'})
       const iAMchannel = client.channels.cache.find(channel => channel.id === "767340595039436820")

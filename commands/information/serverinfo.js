@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const { responseEmbed } = require("../../functions");
 const cooldown = new Set();
 
 module.exports = {
@@ -6,7 +7,7 @@ module.exports = {
     aliases: ['si','guildinfo','gi'],
     category: "information",
     description: "Provides an embed filled with information about your server (Note: This is a big embed!)",
-    usage: '[yes (advanced?)]',
+    usage: '[advanced? (yes)]',
     timeout: "5 seconds",
     run: async (client, message, args) => {
       if (message.deletable) {

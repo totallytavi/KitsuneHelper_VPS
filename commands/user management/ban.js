@@ -1,7 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
-const { promptMessage, errorEmbed } = require("../../functions.js");
-let collectErr;
+const { promptMessage, toConsole, responseEmbed } = require("../../functions.js");
 const cooldown = new Set();
 const auth = new Set();
 
@@ -23,49 +22,23 @@ module.exports = {
       if(message.member.hasPermission("BAN_MEMBERS")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) {
-        return message.reply('kitsune leadership has not allowed you to do that!').then(m => m.delete({timeout: 2500}))
-      }
-      if(!message.guild.me.hasPermission("BAN_MEMBERS")) {
-        const response = await errorEmbed("Insufficient permissions: I have not been allowed to ban members")
-        message.reply(response)
-      }
+      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have BAN MEMBERS", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("BAN_MEMBERS")) responseEmbed(3, "Unauthorized: I don't have BAN MEMBERS", "CHANNEL", message, client)
 
-      var target = message.mentions.members.first();
+      var target = message.guild.members.cache.get(`${args[0]}`)
+      || message.mentions.members.first();
       var reason = args.slice(1).join(" ");
 
-      if(!target) {
-        await message.guild.members.fetch(`${args[0]}`)
-        .then(guildMember => target = guildMember)
-        .catch(e => collectErr = e)
-        if(!target) {
-          const response = await errorEmbed("Unknown guild member: No guild member found")
-          return message.reply(response)
-        }
-      }
+      if(!target) responseEmbed(3, "Not Found: I couldn't find anything for " + args[0], "CHANNEL", message, client)
       if(!reason) {
         reason = "Not specified!"
       }
 
       // Can't ban urself
-      if (target.id === message.author.id) {
-        const response = await errorEmbed("Bad usage: You cannot kick yourself")
-        message.reply(response)
-      }
+      if (target.id === message.author.id) responseEmbed(3, "Bad Usage: You cannot ban yourself", "CHANNEL", message, client)
 
       // Check if the user's banable
-      if (!target.bannable) {
-        return message.reply("due to Discord hierarchy, I can't ban them. Check my highest role position").then(m => m.delete({timeout: 2500}));
-      }
-
-      const embed = new MessageEmbed()
-        .setColor("#ff0000")
-        .setThumbnail(target.user.displayAvatarURL)
-        .setFooter(message.member.displayName, message.author.displayAvatarURL)
-        .setTimestamp()
-        .setDescription(stripIndents`**- Target:** ${target} (${target.id})
-        **- Moderator:** ${message.member} (${message.member.id})
-        **- Reason:** ${reason}`);
+      if (!target.bannable) responseEmbed(3, "Unauthorized: I cannot ban that user", "CHANNEL", message, client)
 
       const promptEmbed = new MessageEmbed()
         .setColor("GREEN")
@@ -81,14 +54,16 @@ module.exports = {
           if (emoji === "✅") {
             msg.delete();
 
-            target.ban({reason: `Moderator: ${message.author.tag}: ${reason}`, days: 7})
-            .catch(err => message.reply(`Error! Please report this to the support server or fix it if you know what to do\n${err}`))
+            target.ban({reason: `Moderator ${message.author.tag} (${message.author.id}): ${reason}`})
+            .catch(err => toConsole(err, "ban.js (Line 66)", message, client))
+
+            responseEmbed(1, `${message.author} (${message.author.id}) banned ${target} (${target.user.id}) for ${reason}`, "CHANNEL", message, client)
 
             message.channel.send(embed);
           } else if (emoji === "❌") {
             msg.delete();
 
-            message.reply(`ban cancelled, one user doesn't get banned today!`).then(m => m.delete({timeout: 7500}));
+            responseEmbed(1, "Ban cancelled", "CHANNEL", message, client)
           }
       });
 

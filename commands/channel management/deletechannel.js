@@ -1,5 +1,4 @@
-const { MessageEmbed } = require("discord.js");
-const { errorMessage } = require("../../functions");
+const { toConsole, responseEmbed } = require("../../functions");
 const cooldown = new Set();
 const auth = new Set();
 
@@ -22,26 +21,20 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_CHANNELS")) {
         auth.add(message.author.id);
       }
-      if(!auth.has(message.author.id)) {
-        return message.reply('you are not authorized to delete channels!').then(m => m.delete({timeout: 2500}));
-      }
-      if(!message.guild.me.hasPermission("MANAGE_CHANNELS") && !message.channel.permissions.has("MANAGE_CHANNELS")) {
-        return message.reply('I have not been allowed to delete channels').then(m => m.delete({timeout: 2500}));
-      }
+      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNELS", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNELS", "CHANNEL", message, client)
 
-      if(!args[0]) {
-        return message.reply('you must provide me with a channel!')
-      }
+      if(!args[0]) responseEmbed(3, "Bad Usage: You must supply a channel", "CHANNEL", message, client)
 
-      const toDelete = message.guild.channels.cache.find(channel => channel.id === `${args[0]}`) || message.guild.channels.cache.find(channel => channel.name === `${args.slice(0).join(" ")}`) || message.mentions.channels.first();
+      const toDelete = message.guild.channels.cache.get(`${args[0]}`)
+      || message.guild.channels.cache.find(c => c.name === `${args.slice(0).join(" ")}`)
+      || message.mentions.channels.first();
 
-      if(!toDelete) {
-        return message.reply("I couldn't find that channel, please try again").then(m => m.delete({timeout: 2500}));
-      }
+      if(!toDelete) responseEmbed(3, "Not Found: No channel found for " + toDelete)
 
       toDelete.delete({ reason: `Moderator: ${message.author.tag}` })
-        .then(message.channel.send(':white_check_mark: The channel was deleted!'))
-        .catch(e => errorMessage(e, "delchannel command", message, client))
+        .then(responseEmbed(1, "The channel was deleted", "CHANNEL", message, client))
+        .catch(e => toConsole(e, "deletechannel.js (Line 35)", message, client))
 
       auth.delete(message.author.id);
       cooldown.add(message.author.id);

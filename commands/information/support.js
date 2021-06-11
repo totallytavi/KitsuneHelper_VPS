@@ -1,5 +1,5 @@
 const { MessageEmbed, Message } = require("discord.js");
-const { errorMessage } = require('../../functions.js');
+const { toConsole } = require('../../functions.js');
 const cooldown = new Set();
 
 module.exports = {
@@ -22,7 +22,7 @@ module.exports = {
       .setDescription(`Need help? Don't worry! We have a server dedicated to receiving support with any issues you might have. You can join it [here](https://discord.com/invite/5WhRxzy 'Kitsune Helper support server')`)
 
       message.channel.send(embed)
-      .catch(e => errorMessage(e, "Support command", message, client))
+      .catch(e => toConsole(e, "support.js (Line 24)", message, client))
 
       cooldown.add(message.author.id);
       setTimeout(() => {

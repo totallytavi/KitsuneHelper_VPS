@@ -1,4 +1,4 @@
-const { MessageEmbed } = require("discord.js");
+const { toConsole, responseEmbed } = require("../../functions");
 const cooldown = new Set();
 const auth = new Set();
 
@@ -21,28 +21,20 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_CHANNELS")) {
         auth.add(message.author.id);
       }
-      if(!auth.has(message.author.id)) {
-        return message.reply('you are not allowed to manage channels').then(m => m.delete({timeout: 2500}));
-      }
+      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNELS", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNELS", "CHANNEL", message, client)
 
-      if(!message.guild.me.hasPermission("MANAGE_CHANNELS") && !message.channel.permissions.has("MANAGE_CHANNELS")) {
-        return message.reply('I cannot change channel permissions').then(m => m.delete({timeout: 2500}))
-      }
+      if(!args[0]) responseEmbed(3, "Bad Usage: You must supply a channel", "CHANNEL", message, client)
 
-      if(!args[0]) {
-        return message.reply('you must provide me a channel').then(m => m.delete({timeout: 2500}))
-      }
+      const toPL = message.guild.channels.cache.find(channel => channel.id === `${args[0]}`)
+      || message.guild.channels.cache.find(channel => channel.name === `${args[0]}`)
+      || message.mentions.channels.first()
 
-      const myGuild = message.guild
-      const toPL = myGuild.channels.cache.find(channel => channel.id === `${args[0]}`) || myGuild.channels.cache.find(channel => channel.name === `${args[0]}`) || message.mentions.channels.first()
-
-      if(!toPL) {
-        return message.reply('I couldn\'t find that channel, please try again').then(m => m.delete({timeout: 2500}))
-      }
+      if(!toPL) responseEmbed(3, "Not Found: No channel found for " + toPL, "CHANNEL", message, client)
 
       toPL.lockPermissions(true, `Moderator: ${message.author.tag} (ID: ${message.author.id})`)
-        .then(fulfilled => message.channel.send(`:white_check_mark: I updated the channel's permissions!`))
-        .catch(err => errorMessage(err, 'Nickname command', message, client));
+        .then(responseEmbed(1, "I synced the permissions with the category", "CHANNEL", message, client))
+        .catch(err => toConsole(err, 'permlock.js (Line 35)', message, client));
 
       auth.delete(message.author.id);
       cooldown.add(message.author.id);

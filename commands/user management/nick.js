@@ -1,5 +1,5 @@
 const { MessageEmbed } = require("discord.js");
-const { errorMessage, errorEmbed } = require("../../functions");
+const { errorMessage, errorEmbed, responseEmbed, toConsole } = require("../../functions");
 const cooldown = new Set();
 const auth = new Set();
 
@@ -22,29 +22,22 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_NICKNAMES")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) {
-        return message.reply('kitsune leadership has not authorized you to do that!').then(m => m.delete({timeout: 2500}))
-      }
-      if(!message.guild.me.hasPermission("MANAGE_NICKNAMES")) {
-        const response = await errorEmbed("Insufficient permissions: I cannot manage nicknames", message)
-        return message.reply(response)
-      }
+      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE NICKNAMES", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("MANAGE_NICKNAMES")) responseEmbed(3, "Unauthorized: You don't have MANAGE NICKNAMES", "CHANNEL", message, client)
 
-      var target = message.mentions.members.first() || await message.guild.members.fetch(`${args[0]}`).then(gM => target = gM)
-      if(!target) {
-        return errorMessage("Unknwon guild member", "Nickname command", message, client)
-      }
-      if(!target.manageable) {
-        return message.reply('I cannot manage this user!').then(m => m.delete({timeout: 2500}));
-      }
+      if(!args[0]) return responseEmbed(3, "Bad Usage: You must supply a user", "CHANNEL", message, client)
+      if(!args[1]) return responseEmbed(3, "Bad Usage: You must supply a nickname", "CHANNEL", message, client)
+
+      var target = message.mentions.members.first()
+      || message.guild.members.cache.get(`${args[0]}`)
+      if(!target) return responseEmbed(3, "Not Found: I couldn't find anything for " + args[0], "CHANNEL", message, client)
+      if(!target.manageable) responseEmbed(3, "Unauthorized: I cannot manage that user", "CHANNEL", message, client)
 
       var nickname = args.slice(1).join(" ")
       if(!nickname) {
         nickname = target.user.tag.slice(0, -5);
       }
-      if(nickname.length >= 33) {
-        return errorEmbed("Nickname is too long (Limit: 32)", message)
-      }
+      if(nickname.length >= 33) responseEmbed(3, "Bad Usage: That nickname is too long", "CHANNEL", message, client)
 
       const embed = new MessageEmbed()
       .setTitle('Nickname Update')
@@ -55,19 +48,9 @@ module.exports = {
       )
       .setTimestamp();
 
-      if(target === message.member) {
-        if(!message.member.hasPermission("CHANGE_NICKNAME")) {
-          const response = await errorEmbed("Unauthorized: You do not have CHANGE NICKNAME", message)
-          return message.reply(response)
-        }
-        target.setNickname(nickname)
-          .then(member => message.reply(`I updated your nickname to ${member.nickname}`))
-          .catch(err => errorMessage(err, 'Nickname command', message, client));
-      }
-
       target.setNickname(nickname, `Moderator: ${message.author.tag}`)
-        .then(member => message.channel.send(`Updated ${member}'s nickname to ${nickname}!`, embed))
-        .catch(err => errorMessage(err, 'Nickname command', message, client));
+        .then(member => responseEmbed(1, `I updated ${target}'s (${target.user.id}) nickname to ${member.nickname}`, "CHANNEL", message, client))
+        .catch(err => toConsole(err, 'nick.js (Line 51)', message, client));
 
       auth.delete(message.author.id)
       cooldown.add(message.author.id);

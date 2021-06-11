@@ -1,4 +1,5 @@
 const { MessageEmbed } = require("discord.js");
+const { responseEmbed, toConsole } = require("../../functions");
 const cooldown = new Set();
 const auth = new Set();
 
@@ -20,24 +21,20 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_CHANNELS")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) {
-        return message.reply("you are not allowed to modify channels").then(m => m.delete({timeout: 2500}))
-      }
+      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNELS", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNELS", "CHANNEL", message, client)
 
-      if(!args[0]) {
-        return message.reply('please give me a channel!').then(m => m.delete({timeout: 2500}))
-      }
-      if(!args[1]) {
-        return message.reply('please give me a name!').then(m => m.delete({timeout: 2500}))
-      }
+      if(!args[0]) responseEmbed(3, "Bad Usage: You must supply a channel", "CHANNEL", message, client)
+      if(!args[1]) responseEmbed(3, "Bad Usage: You must supply a name", "CHANNEL", message, client)
 
-      const myGuild = message.guild;
-      const _channel = myGuild.channels.cache.find(channel => channel.name === `${args[0]}`) || myGuild.channels.cache.find(channel => channel.id === `${args[0]}`) || message.mentions.channels.first();
+      const _channel = message.guild.channels.cache.find(channel => channel.name === `${args[0]}`)
+      || message.guild.channels.cache.get(`${args[0]}`)
+      || message.mentions.channels.first();
       const name = args.slice(1).join(" ")
 
       _channel.setName(name, `Moderator: ${message.author.tag}`)
-        .then(fulfilled => message.channel.send(`:white_check_mark: I updated the channel!`))
-        .catch(err => errorMessage(err, 'Nickname command', message, client));
+        .then(channel => responseEmbed(1, "I updated the channel's name to " + channel.name, "CHANNEL", message, client))
+        .catch(err => toConsole(err, 'nickname.js (Line 35)', message, client));
 
       cooldown.add(message.author.id);
       setTimeout(() => {

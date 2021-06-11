@@ -1,5 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { stripIndents } = require("common-tags");
+const { responseEmbed } = require("../../functions");
 
 module.exports = {
     name: "help",
@@ -42,7 +43,7 @@ function getCMD(client, message, input) {
     let info = `No information found for command **${input.toLowerCase()}**`;
 
     if (!cmd) {
-        return message.channel.send(embed.setColor("RED").setDescription(info));
+        return responseEmbed(3, "Not Found: No command found for " + input.toLowerCase())
     }
 
     if (cmd.name) info = `**Command name**: ${cmd.name}`;
