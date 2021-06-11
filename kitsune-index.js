@@ -31,19 +31,19 @@ client.categories = fs.readdirSync("./commands/");
 // Literally just a big fat cmd watcher
 process.on('unhandledRejection', async promise => {
   console.log(`**A promise was rejected!\n\n${promise}`)
-  toConsole(promise, `Unhandled promise rejection`, '', client)
+  toConsole(String(promise), `Unhandled promise rejection`, '', client)
 });
 process.on('exit', async code => {
   console.log(`**PROCESS EXITING\n\nWARNING: The process is exiting!\nCode: ${code}`)
-  toConsole(code, `Process exit`, '', client)
+  toConsole(String(code), `Process exit`, '', client)
 });
 process.on('warning', async (name, message, stack) => {
   console.log(`**Warning\n\nName: ${name}\nMessage: ${message}\nStack trace to file: ${stack}`)
-  toConsole(name, `Process warning`, '', client)
+  toConsole(String(name), `Process warning`, '', client)
 });
 process.on('uncaughtException', (err, origin) => {
   console.log(`**Uncaught exception!\n\nError: ${err}\nOrigin: ${origin}`)
-  toConsole(err, `Uncaught exception`, '', client)
+  toConsole(String(err), `Uncaught exception`, '', client)
 });
 
 ["command"].forEach(handler => {

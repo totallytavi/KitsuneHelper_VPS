@@ -227,11 +227,11 @@ module.exports = {
        */
       toConsole: async function(reason, source, message, client) {
         console.log(0)
-        if(!source) return new SyntaxError("source is a required argument");
-        if(typeof source != 'string') return new SyntaxError("source is not a string");
-        console.log(1)
         if(!reason) return new SyntaxError("reason is a required argument");
         if(typeof reason != 'string') return new SyntaxError("reason is not a string");
+        console.log(1)
+        if(!source) return new SyntaxError("source is a required argument");
+        if(typeof source != 'string') return new SyntaxError("source is not a string");
         console.log(2)
         if(!client) return new SyntaxError("client is a required argument")
         if(typeof client != 'object') return new SyntaxError("client is not an object");
