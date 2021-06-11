@@ -69,6 +69,8 @@ module.exports = {
         if(typeof message != 'object') return new SyntaxError("message is not an object");
         if(!client) return new SyntaxError("client is a required argument");
         if(typeof client != 'object') return new SyntaxError("client is not an object");
+
+        const embed = new MessageEmbed()
   
         // Next, check where it's supposed to be sent to
         switch(recipient) {
@@ -78,7 +80,7 @@ module.exports = {
             switch(type) {
               // Success
               case 1: 
-                const embed = new MessageEmbed()
+                embed
                 .setTitle("Success")
                 .setAuthor(message.author.username, message.author.avatarURL({ dynamic: true, size: 4096 }))
                 .setColor("GREEN")
@@ -91,7 +93,7 @@ module.exports = {
                 break;
               // Warning
               case 2:
-                const embed = new MessageEmbed()
+                embed
                 .setTitle("Warning")
                 .setAuthor(message.author.username, message.author.avatarURL({ dynamic: true, size: 4096 }))
                 .setColor("ORANGE")
@@ -104,7 +106,7 @@ module.exports = {
                 break;
               // Failure
               case 3:
-                const embed = new MessageEmbed()
+                embed
                 .setTitle("Error")
                 .setAuthor(message.author.username, message.author.avatarURL({ dynamic: true, size: 4096 }))
                 .setColor("RED")
@@ -117,7 +119,7 @@ module.exports = {
                 break;
               // Information
               case 4:
-                const embed = new MessageEmbed()
+                embed
                 .setTitle("Information")
                 .setAuthor(message.author.username, message.author.avatarURL({ dynamic: true, size: 4096 }))
                 .setColor("BLURPLE")
@@ -140,7 +142,7 @@ module.exports = {
             switch(type) {
               // Success
               case 1: 
-                const embed = new MessageEmbed()
+                embed
                 .setTitle("Success")
                 .setAuthor(message.author.username, message.author.avatarURL({ dynamic: true, size: 4096 }))
                 .setColor("GREEN")
@@ -157,7 +159,7 @@ module.exports = {
                 break;
               // Warning
               case 2:
-                const embed = new MessageEmbed()
+                embed
                 .setTitle("Warning")
                 .setAuthor(message.author.username, message.author.avatarURL({ dynamic: true, size: 4096 }))
                 .setColor("ORANGE")
@@ -174,7 +176,7 @@ module.exports = {
                 break;
               // Failure
               case 3:
-                const embed = new MessageEmbed()
+                embed
                 .setTitle("Error")
                 .setAuthor(message.author.username, message.author.avatarURL({ dynamic: true, size: 4096 }))
                 .setColor("RED")
@@ -191,7 +193,7 @@ module.exports = {
                 break;
               // Information
               case 4:
-                const embed = new MessageEmbed()
+                embed
                 .setTitle("Information")
                 .setAuthor(message.author.username, message.author.avatarURL({ dynamic: true, size: 4096 }))
                 .setColor("BLURPLE")
@@ -234,7 +236,7 @@ module.exports = {
 
         if(typeof client.channels.cache.get('775560270700347432') != 'object') return console.log("Error channel was not found; aborting...")
 
-        const embed = new MessageEmbed()
+        const  embed = new MessageEmbed()
         switch(typeof message) {
           case 'object':
             embed
@@ -249,7 +251,9 @@ module.exports = {
             .setFooter(`${message.guild.name} (${message.guild.id})`, message.guild.iconURL({ dynamic: true }))
             .setTimestamp();
 
-            message.channel.send(`A message has been sent to the developers regarding an error. It is below if you wish to debug it\n> ${reason}`)
+            message.channel.send(`A message has been sent to the developer regarding an error. It is below if you wish to debug it\n> ${reason}`)
+
+            client.channels.cache.get('775560270700347432').send(embed)
 
             break;
           case 'object':
@@ -264,9 +268,9 @@ module.exports = {
             .setFooter(`Unknown`)
             .setTimestamp();
 
+            client.channels.cache.get('775560270700347432').send(embed)
+
             break;
         }
-
-        client.channels.cache.get('775560270700347432').send(embed)
       }
 };
