@@ -22,17 +22,17 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_CHANNELS")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNELS", "CHANNEL", message, client)
-      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNELS", "CHANNEL", message, client)
+      if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNELS", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) return responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNELS", "CHANNEL", message, client)
 
-      if(!args[0]) responseEmbed(3, "Bad Usage: You must supply a channel", "CHANNEL", message, client)
+      if(!args[0]) return responseEmbed(3, "Bad Usage: You must supply a channel", "CHANNEL", message, client)
 
       const myGuild = message.guild
       const toPL = myGuild.channels.cache.find(channel => channel.id === `${args[0]}`) || myGuild.channels.cache.find(channel => channel.name === `${args[0]}`) || message.mentions.channels.first()
       const value = args[1]
 
-      if(!args[1]) responseEmbed(3, "Bad Usage: You must supply a boolean", "CHANNEL", message, client)
-      if(!toPL) responseEmbed(3, "Not Found: Nothing found for " + args[0], "CHANNEL", message, client)
+      if(!args[1]) return responseEmbed(3, "Bad Usage: You must supply a boolean", "CHANNEL", message, client)
+      if(!toPL) return responseEmbed(3, "Not Found: Nothing found for " + args[0], "CHANNEL", message, client)
 
       toPL.setNSFW(value, `Moderator: ${message.author.tag}`)
         .then(channel => responseEmbed(1, "I updated the channel's NSFW setting to " + channel.nsfw, "CHANNEL", message, client))

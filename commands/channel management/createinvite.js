@@ -21,8 +21,8 @@ module.exports = {
       if(message.member.hasPermission("CREATE_INSTANT_INVITE")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have CREATE INVITES", "CHANNEL", message, client)
-      if(!message.guild.me.hasPermission("CREATE_INSTANT_INVITE")) responseEmbed(3, "Unauthorized: I don't have CREATE INVITES", "CHANNEL", message, client)
+      if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have CREATE INVITES", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("CREATE_INSTANT_INVITE")) return responseEmbed(3, "Unauthorized: I don't have CREATE INVITES", "CHANNEL", message, client)
 
       let _channel = message.guild.channels.cache.find(channel => channel.name === `${args[0]}`)
       || message.guild.channels.cache.find(channel => channel.name === `${args[0]}`)

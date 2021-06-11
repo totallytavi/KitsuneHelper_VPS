@@ -22,16 +22,16 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_CHANNELS")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNELS", "CHANNEL", message, client)
-      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNELS", "CHANNEL", message, client)
+      if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNELS", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) return responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNELS", "CHANNEL", message, client)
 
       const toNuke = message.guild.channels.cache.find(channel => channel.name === `${args.slice(0).join(" ")}`)
       || message.guild.channels.cache.get(`${args[0]}`)
       || message.mentions.channels.first()
       || message.channel
 
-      if(!toNuke.manageable) responseEmbed(3, "Unauthorized: I cannot manage that channel", "CHANNEL", message, client)
-      if(!toNuke.type === "text") responseEmbed(3, "Unauthorized: I cannot nuke a non-text channel", "CHANNEL", message, client)
+      if(!toNuke.manageable) return responseEmbed(3, "Unauthorized: I cannot manage that channel", "CHANNEL", message, client)
+      if(!toNuke.type === "text") return responseEmbed(3, "Unauthorized: I cannot nuke a non-text channel", "CHANNEL", message, client)
 
       // Now just a long list of grabbing values
       const oldName = toNuke.name

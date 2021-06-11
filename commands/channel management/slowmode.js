@@ -21,8 +21,8 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_CHANNELS")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNEL", "CHANNEL", message, client)
-      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNEL", "CHANNEL", message, client) 
+      if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have MANAGE CHANNEL", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("MANAGE_CHANNELS")) return responseEmbed(3, "Unauthorized: I don't have MANAGE CHANNEL", "CHANNEL", message, client) 
 
       let slowmode = parseInt(args[1])
       if(!slowmode) {
@@ -34,8 +34,8 @@ module.exports = {
       let _channel = message.guild.channels.cache.find(c => c.id === `${args[0]}`)
       || message.guild.channels.cache.find(c => c.name === `${args[0]}`)
       || message.mentions.channels.first();
-      if(!_channel) responseEmbed(3, "Not Found: I couldn't find anything for " + args[0], "CHANNEL", message, client)
-      if(!_channel.manageable) responseEmbed(3, "Unauthorized: I cannot manage that channel", "CHANNEL", message, client)
+      if(!_channel) return responseEmbed(3, "Not Found: I couldn't find anything for " + args[0], "CHANNEL", message, client)
+      if(!_channel.manageable) return responseEmbed(3, "Unauthorized: I cannot manage that channel", "CHANNEL", message, client)
 
       _channel.setRateLimitPerUser(slowmode, `Moderator: ${message.author.tag}`)
       .then(channel => responseEmbed(1, "I updated the slowmode to " + channel.rateLimitPerUser + " seconds", "CHANNEL", message, client))

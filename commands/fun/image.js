@@ -24,10 +24,10 @@ module.exports = {
       const isNSFW = oldIsNSFW.toLowerCase();
 
       if(args[1] === `true`) {
-        if(message.channel.nsfw === false) responseEmbed(3, "Unauthorized: You cannot query an NSFW image in a non-NSFW channel", "CHANNEL", message, client);
+        if(message.channel.nsfw === false) return responseEmbed(3, "Unauthorized: You cannot query an NSFW image in a non-NSFW channel", "CHANNEL", message, client);
       }
 
-      if(!query) responseEmbed(3, "Bad usage: You must specify a tag", "CHANNEL", message, client)
+      if(!query) return responseEmbed(3, "Bad usage: You must specify a tag", "CHANNEL", message, client)
       if(!isNSFW) isNSFW === "false"
 
       try {

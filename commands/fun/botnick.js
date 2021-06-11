@@ -21,8 +21,8 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_NICKNAMES")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE NICKNAMES", "CHANNEL", message, client)
-      if(!message.guild.me.hasPermission("CHANGE_NICKNAME")) responseEmbed(3, "Unauthorized: I cannot change my own nickname", "CHANNEL", message, client)
+      if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have MANAGE NICKNAMES", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("CHANGE_NICKNAME")) return responseEmbed(3, "Unauthorized: I cannot change my own nickname", "CHANNEL", message, client)
 
       var nickname = args.slice(0).join(" ")
       if(!nickname) {

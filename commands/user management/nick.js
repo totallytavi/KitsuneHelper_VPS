@@ -22,8 +22,8 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_NICKNAMES")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE NICKNAMES", "CHANNEL", message, client)
-      if(!message.guild.me.hasPermission("MANAGE_NICKNAMES")) responseEmbed(3, "Unauthorized: You don't have MANAGE NICKNAMES", "CHANNEL", message, client)
+      if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have MANAGE NICKNAMES", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("MANAGE_NICKNAMES")) return responseEmbed(3, "Unauthorized: You don't have MANAGE NICKNAMES", "CHANNEL", message, client)
 
       if(!args[0]) return responseEmbed(3, "Bad Usage: You must supply a user", "CHANNEL", message, client)
       if(!args[1]) return responseEmbed(3, "Bad Usage: You must supply a nickname", "CHANNEL", message, client)
@@ -31,13 +31,13 @@ module.exports = {
       var target = message.mentions.members.first()
       || message.guild.members.cache.get(`${args[0]}`)
       if(!target) return responseEmbed(3, "Not Found: I couldn't find anything for " + args[0], "CHANNEL", message, client)
-      if(!target.manageable) responseEmbed(3, "Unauthorized: I cannot manage that user", "CHANNEL", message, client)
+      if(!target.manageable) return responseEmbed(3, "Unauthorized: I cannot manage that user", "CHANNEL", message, client)
 
       var nickname = args.slice(1).join(" ")
       if(!nickname) {
         nickname = target.user.tag.slice(0, -5);
       }
-      if(nickname.length >= 33) responseEmbed(3, "Bad Usage: That nickname is too long", "CHANNEL", message, client)
+      if(nickname.length >= 33) return responseEmbed(3, "Bad Usage: That nickname is too long", "CHANNEL", message, client)
 
       const embed = new MessageEmbed()
       .setTitle('Nickname Update')

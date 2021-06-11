@@ -17,14 +17,14 @@ module.exports = {
         message.reply(`that's a little too fast!`).then(m => m.delete({ timeout: 2500 }));
       } else {
 
-      if(!args[0]) responseEmbed(3, "Bad Usage: You must supply a role", "CHANNEL", message, client)
+      if(!args[0]) return responseEmbed(3, "Bad Usage: You must supply a role", "CHANNEL", message, client)
 
       const roleInfo = message.guild.roles.cache.find(r => r.name === `${args.slice(0).join(" ")}`) 
       || message.guild.roles.cache.find(r => r.id === `${args[0]}`)
       || message.mentions.roles.first()
       || message.guild.roles.cache.find(r => r.name.includes(args.slice(0).join(" ")))
 
-      if(!roleInfo) responseEmbed(3, "Not Found: I couldn't find anything for " + args.slice(0).join(" "), "CHANNEL", message, client)
+      if(!roleInfo) return responseEmbed(3, "Not Found: I couldn't find anything for " + args.slice(0).join(" "), "CHANNEL", message, client)
 
       var rolePerms = [];
 

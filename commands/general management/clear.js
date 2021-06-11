@@ -21,11 +21,11 @@ module.exports = {
         if(message.member.hasPermission("MANAGE_MESSAGES")) {
           auth.add(message.author.id)
         }
-        if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE MESSAGES", "CHANNEL", message, client)
-        if(!message.guild.me.hasPermission("MANAGE_MESSAGES")) responseEmbed(3, "Unauthorized: I don't have MANAGE MESSAGES", "CHANNEL", message, client)
+        if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have MANAGE MESSAGES", "CHANNEL", message, client)
+        if(!message.guild.me.hasPermission("MANAGE_MESSAGES")) return responseEmbed(3, "Unauthorized: I don't have MANAGE MESSAGES", "CHANNEL", message, client)
 
         // Check if args[0] is a number
-        if (isNaN(args[0]) || parseInt(args[0]) <= 0) responseEmbed(3, "Bad Usage: You must supply a number to purge", "CHANNEL", message, client)
+        if (isNaN(args[0]) || parseInt(args[0]) <= 0) return responseEmbed(3, "Bad Usage: You must supply a number to purge", "CHANNEL", message, client)
 
         let deleteAmount;
 

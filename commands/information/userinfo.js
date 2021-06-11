@@ -22,7 +22,7 @@ module.exports = {
         member = message.member
       }
 
-      if(member === "Unknown" || !member) responseEmbed(3, "Not Found: I couldn't find anything for" + args.join(" "), "CHANNEL", message, client)
+      if(member === "Unknown" || !member) return responseEmbed(3, "Not Found: I couldn't find anything for" + args.join(" "), "CHANNEL", message, client)
       var roles = member.roles.cache
             .filter(r => r.id !== message.guild.id)
             .map(r => r)

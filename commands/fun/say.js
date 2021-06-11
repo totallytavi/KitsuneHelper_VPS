@@ -22,8 +22,8 @@ module.exports = {
       if(message.member.hasPermission("MANAGE_MESSAGES")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have MANAGE MESSAGES", "CHANNEL", message, client)
-      if (args.length < 0) responseEmbed(3, "Bad usage: You must supply input", "CHANNEL", message, client)
+      if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have MANAGE MESSAGES", "CHANNEL", message, client)
+      if (args.length < 0) return responseEmbed(3, "Bad usage: You must supply input", "CHANNEL", message, client)
 
       let sOwner;
       await client.users.fetch(`${message.guild.ownerID}`)

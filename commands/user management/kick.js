@@ -22,19 +22,19 @@ module.exports = {
       if(message.member.hasPermission("KICK_MEMBERS")) {
         auth.add(message.author.id)
       }
-      if(!auth.has(message.author.id)) responseEmbed(3, "Unauthorized: You don't have KICK MEMBERS", "CHANNEL", message, client)
-      if(!message.guild.me.hasPermission("KICK_MEMBERS")) responseEmbed(3, "Unauthorized: I don't have KICK MEMBERS", "CHANNEL", message, client)
+      if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have KICK MEMBERS", "CHANNEL", message, client)
+      if(!message.guild.me.hasPermission("KICK_MEMBERS")) return responseEmbed(3, "Unauthorized: I don't have KICK MEMBERS", "CHANNEL", message, client)
 
       var target = message.guild.members.cache.get(`${args[0]}`)
       || message.mentions.members.first();
       var reason = args.slice(1).join(" ");
 
-      if(!target) responseEmbed(3, "Not Found: I couldn't find anything for " + args[0], "CHANNEL", message, client)
+      if(!target) return responseEmbed(3, "Not Found: I couldn't find anything for " + args[0], "CHANNEL", message, client)
       if(!reason) {
         reason = "Not specified!"
       }
 
-      if(!target.manageable) responseEmbed(3, "Unauthorized: I cannot kick that user", "CHANNEL", message, client)
+      if(!target.manageable) return responseEmbed(3, "Unauthorized: I cannot kick that user", "CHANNEL", message, client)
 
       const promptEmbed = new MessageEmbed()
         .setColor("YELLOW")
