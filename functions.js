@@ -258,7 +258,7 @@ module.exports = {
             client.channels.cache.get('775560270700347432').send(embed)
 
             break;
-          case 'undefined':
+          default:
             embed
             .setTitle("Message to Console")
             .setColor("RED")
