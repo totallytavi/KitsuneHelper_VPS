@@ -230,15 +230,15 @@ module.exports = {
         if(typeof source != 'string') return new SyntaxError("source is not a string");
         if(!reason) return new SyntaxError("reason is a required argument");
         if(typeof reason != 'string') return new SyntaxError("reason is not a string");
-        if(typeof message != 'object') return new SyntaxError("message is not an object");
+        if(!message) return new SyntaxError("message is a required argument")
         if(!client) return new SyntaxError("client is a required argument")
         if(typeof client != 'object') return new SyntaxError("client is not an object");
 
         if(typeof client.channels.cache.get('775560270700347432') != 'object') return console.log("Error channel was not found; aborting...")
 
         const  embed = new MessageEmbed()
-        switch(typeof message) {
-          case 'object':
+        switch(message.content) {
+          case true:
             embed
             .setTitle("Message to Console")
             .setColor("RED")
