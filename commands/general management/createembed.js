@@ -45,7 +45,7 @@ module.exports = {
             }  
             if(collected.first().content.length >= 33) {
                 failed = true
-                return return responseEmbed(3, "Bad Usage: Title is too long", "CHANNEL", message, client)
+                return responseEmbed(3, "Bad Usage: Title is too long", "CHANNEL", message, client)
               }
             embed
             .setTitle(collected.first().content)
@@ -74,7 +74,7 @@ module.exports = {
             "DARK_GREY","LIGHT_GREY","DARK_NAVY","BLURPLE","GREYPLE","DARK_BUT_NOT_BLACK","NOT_QUITE_BLACK"]
             if(!hexRegex.test(color) && jsColorRegex.indexOf(color) === -1) {
               failed = true
-              return return responseEmbed(3, "Bad Usage: You must supply a hex code or Discord.js color code", "CHANNEL", message, client)
+              return responseEmbed(3, "Bad Usage: You must supply a hex code or Discord.js color code", "CHANNEL", message, client)
             }
             embed
             .setColor(collected.first().content)
