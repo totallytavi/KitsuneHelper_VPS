@@ -237,8 +237,8 @@ module.exports = {
         if(typeof client.channels.cache.get('775560270700347432') != 'object') return console.log("Error channel was not found; aborting...")
 
         const  embed = new MessageEmbed()
-        switch(message.content) {
-          case true:
+        switch(typeof message.content) {
+          case 'string':
             embed
             .setTitle("Message to Console")
             .setColor("RED")
