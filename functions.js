@@ -219,7 +219,7 @@ module.exports = {
       /**
        * @param {String} reason The message to send
        * @param {String} source Where the message originated from
-       * @param {Message} message Message object, can be left blank
+       * @param {*} message Message object, can be left blank
        * @param {Client} client Client object, cannot be left blank
        * @returns {null}
        * @example toConsole("say.js (Line 69)", "We hit an error!", message, client)
