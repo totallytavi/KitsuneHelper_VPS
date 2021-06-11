@@ -250,8 +250,10 @@ module.exports = {
             )
             .setFooter(`${message.guild.name} (${message.guild.id})`, message.guild.iconURL({ dynamic: true }))
             .setTimestamp();
-
+            
+            if(!reason.includes("**Command ran**")) {
             message.channel.send(`A message has been sent to the developer regarding an error. It is below if you wish to debug it\n> ${reason}`)
+            }
 
             client.channels.cache.get('775560270700347432').send(embed)
 
