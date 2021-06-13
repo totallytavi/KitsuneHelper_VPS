@@ -19,7 +19,7 @@ module.exports = {
         return message.reply('woah, that is too fast for me to keep up!')
           .then(m => m.delete({timeout: 2500}))
       } else {
-        auth.add('669051415074832397')
+        auth.add('409740404636909578')
         if(message.member.hasPermission("MANAGE_MESSAGES") && message.member.has("EMBED_LINKS")) {
           auth.add(message.author.id)
         }

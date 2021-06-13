@@ -19,7 +19,7 @@ module.exports = {
       if (cooldown.has(message.author.id)) {
         message.reply(`that's a little too fast!`).then(m => m.delete({ timeout: 2500 }));
       } else {
-      auth.add('669051415074832397'); // Me
+      auth.add('409740404636909578'); // Me
       auth.add('598457551457353728'); // Rei#8028
 
       if(!auth.has(message.author.id)) {
