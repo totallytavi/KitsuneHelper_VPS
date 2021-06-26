@@ -55,7 +55,7 @@ module.exports = {
       })
       .catch(err => toConsole("nuke.js (Line 47)", err, message, client))
 
-      responseEmbed(1, "I successfully nuked the channel, clearing all messages", "DM", message, client)
+      responseEmbed(1, "I successfully nuked \`" + oldName + "\`, clearing all messages", "DM", message, client)
 
       auth.delete(message.author.id)
       cooldown.add(message.author.id);

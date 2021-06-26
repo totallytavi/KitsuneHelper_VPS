@@ -57,7 +57,7 @@ module.exports = {
             target.ban({reason: `Moderator ${message.author.tag} (${message.author.id}): ${reason}`})
             .catch(err => toConsole(err, "ban.js (Line 66)", message, client))
 
-            return responseEmbed(1, `${message.author} (${message.author.id}) banned ${target} (${target.user.id}) for ${reason}`, "CHANNEL", message, client)
+            responseEmbed(1, `${message.author} (${message.author.id}) banned ${target} (${target.user.id}) for ${reason}`, "CHANNEL", message, client)
 
             message.channel.send(embed);
           } else if (emoji === "❌") {

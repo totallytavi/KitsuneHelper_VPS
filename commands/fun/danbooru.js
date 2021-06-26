@@ -24,8 +24,8 @@ module.exports = {
       if(args[2]) {
         if(typeof args[2] != "string") return responseEmbed(3, "Bad usage: Invalid parameters given (Tags are not a string)", "CHANNEL", message, client)
       }
-      if(args[3]) return responseEmbed(2, "I cannot query more than 2 tags at once. Images will show with the first two tags only", "CHANNEL", message, client)
-      if(message.channel.nsfw != true) return responseEmbed(2, "Due to this channel not being marked as NSFW, I will filter out any posts marked as Explicit or Questionable. This may result in fewer posts", "CHANNEL", message, client)
+      if(args[3]) responseEmbed(2, "I cannot query more than 2 tags at once. Images will show with the first two tags only", "CHANNEL", message, client)
+      if(message.channel.nsfw != true) responseEmbed(2, "Due to this channel not being marked as NSFW, I will filter out any posts marked as Explicit or Questionable. This may result in fewer posts", "CHANNEL", message, client)
 
       if(args.slice(1,3).join("").match(/[^1-6]\+/)) return responseEmbed(3, "Bad usage: Invalid parameters given (You cannot put a + in the tags to search more than 2 tags)", "CHANNEL", message, client)
 

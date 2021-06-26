@@ -60,15 +60,15 @@ module.exports = {
      */
     responseEmbed: async function(type, content, recipient, message, client) {
         // First run checks to make sure the variables are valid for use
-        if(typeof type != 'number') return new SyntaxError("type is not a number");
-        if(type < 1 || type > 4) return new SyntaxError("type is not a valid integer");
-        if(typeof content != 'string') return new SyntaxError("content is not a string");
-        if(typeof recipient != 'string') return new SyntaxError("recipient is a required argument")
-        if(recipient != "CHANNEL" && recipient != "DM") return new SyntaxError("recipient is not a valid string")
-        if(!message) return new SyntaxError("message is a required argument");
-        if(typeof message != 'object') return new SyntaxError("message is not an object");
-        if(!client) return new SyntaxError("client is a required argument");
-        if(typeof client != 'object') return new SyntaxError("client is not an object");
+        if(typeof type != 'number') return Promise.reject("type is not a number");
+        if(type < 1 || type > 4) return Promise.reject("type is not a valid integer");
+        if(typeof content != 'string') return Promise.reject("content is not a string");
+        if(typeof recipient != 'string') return Promise.reject("recipient is a required argument")
+        if(recipient != "CHANNEL" && recipient != "DM") return Promise.reject("recipient is not a valid string")
+        if(!message) return Promise.reject("message is a required argument");
+        if(typeof message != 'object') return Promise.reject("message is not an object");
+        if(!client) return Promise.reject("client is a required argument");
+        if(typeof client != 'object') return Promise.reject("client is not an object");
 
         const embed = new MessageEmbed()
   
@@ -226,12 +226,12 @@ module.exports = {
        * @example toConsole("index.js (Line 69)", "We hit an error!", '', client)
        */
       toConsole: async function(reason, source, message, client) {
-        if(!reason) return new SyntaxError("reason is a required argument");
-        if(typeof reason != 'string') return new SyntaxError("reason is not a string");
-        if(!source) return new SyntaxError("source is a required argument");
-        if(typeof source != 'string') return new SyntaxError("source is not a string");
-        if(!client) return new SyntaxError("client is a required argument")
-        if(typeof client != 'object') return new SyntaxError("client is not an object");
+        if(!reason) return Promise.reject("reason is a required argument");
+        if(typeof reason != 'string') return Promise.reject("reason is not a string");
+        if(!source) return Promise.reject("source is a required argument");
+        if(typeof source != 'string') return Promise.reject("source is not a string");
+        if(!client) return Promise.reject("client is a required argument");
+        if(typeof client != 'object') return Promise.reject("client is not an object");
 
         if(typeof client.channels.cache.get('775560270700347432') != 'object') return console.log("Error channel was not found; aborting...")
 
