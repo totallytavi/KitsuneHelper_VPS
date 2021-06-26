@@ -31,7 +31,7 @@ module.exports = {
 
       message.guild.me.setNickname(nickname, `Moderator: ${message.author.tag}`)
         .then(member => responseEmbed(1, "I set my nickname to " + member.nickname))
-        .catch(err => toConsole(err, 'nickname.js (Line 32)', message, client));
+        .catch(err => toConsole(String(err), 'nickname.js (Line 32)', message, client));
 
       auth.delete(message.author.id)
       cooldown.add(message.author.id);

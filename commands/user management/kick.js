@@ -51,7 +51,7 @@ module.exports = {
           msg.delete();
 
           target.kick({reason: `Moderator ${message.author.tag} (${message.author.id}): ${reason}`})
-            .catch(e => toConsole(e, "kick.js (Line 53)", message, client));
+            .catch(e => toConsole(String(e), "kick.js (Line 53)", message, client));
           
           responseEmbed(1, `${message.author} (${message.author.id}) banned ${target} (${target.id}) for ${reason}`, "CHANNEL", message, client)
 

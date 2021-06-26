@@ -48,7 +48,7 @@ module.exports = {
       .setTimestamp();
 
       message.channel.send(embed)
-      .catch(e => toConsole(e, "userinfo.js (Line 50)", message, client));
+      .catch(e => toConsole(String(e), "userinfo.js (Line 50)", message, client));
 
       cooldown.add(message.author.id);
       setTimeout(() => {

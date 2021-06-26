@@ -34,7 +34,7 @@ module.exports = {
 
       _channel.setName(name, `Moderator: ${message.author.tag}`)
         .then(channel => responseEmbed(1, "I updated the channel's name to " + channel.name, "CHANNEL", message, client))
-        .catch(err => toConsole(err, 'nickname.js (Line 35)', message, client));
+        .catch(err => toConsole(String(err), 'nickname.js (Line 35)', message, client));
 
       cooldown.add(message.author.id);
       setTimeout(() => {

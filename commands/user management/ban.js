@@ -55,7 +55,7 @@ module.exports = {
             msg.delete();
 
             target.ban({reason: `Moderator ${message.author.tag} (${message.author.id}): ${reason}`})
-            .catch(err => toConsole(err, "ban.js (Line 66)", message, client))
+            .catch(err => toConsole(String(err), "ban.js (Line 66)", message, client))
 
             responseEmbed(1, `${message.author} (${message.author.id}) banned ${target} (${target.user.id}) for ${reason}`, "CHANNEL", message, client)
 

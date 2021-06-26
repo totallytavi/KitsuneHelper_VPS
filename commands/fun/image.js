@@ -44,7 +44,7 @@ module.exports = {
 
         message.channel.send(embed)
       } catch(err) {
-        toConsole(err, "image.js (Lines 34-45)", message, client)
+        toConsole(String(err), "image.js (Lines 34-45)", message, client)
       }
 
       cooldown.add(message.author.id);

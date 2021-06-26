@@ -34,7 +34,7 @@ module.exports = {
 
       toDelete.delete({ reason: `Moderator: ${message.author.tag}` })
         .then(responseEmbed(1, "The channel was deleted", "CHANNEL", message, client))
-        .catch(e => toConsole(e, "deletechannel.js (Line 35)", message, client))
+        .catch(e => toConsole(String(e), "deletechannel.js (Line 35)", message, client))
 
       auth.delete(message.author.id);
       cooldown.add(message.author.id);

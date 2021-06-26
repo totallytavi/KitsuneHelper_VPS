@@ -36,7 +36,7 @@ module.exports = {
 
       toPL.setNSFW(value, `Moderator: ${message.author.tag}`)
         .then(channel => responseEmbed(1, "I updated the channel's NSFW setting to " + channel.nsfw, "CHANNEL", message, client))
-        .catch(err => toConsole(err, 'setNSFW.js (Line 37)', message, client));
+        .catch(err => toConsole(String(err), 'setNSFW.js (Line 37)', message, client));
 
       auth.delete(message.author.id)
       cooldown.add(message.author.id);

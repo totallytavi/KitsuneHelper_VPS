@@ -37,7 +37,7 @@ module.exports = {
       .setTimestamp();
 
       message.channel.send(embed)
-      .catch(e => toConsole(e, "color.js (Line 39)", message, client));
+      .catch(e => toConsole(String(e), "color.js (Line 39)", message, client));
 
       cooldown.add(message.author.id);
       setTimeout(() => {

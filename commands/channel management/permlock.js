@@ -34,7 +34,7 @@ module.exports = {
 
       toPL.lockPermissions(true, `Moderator: ${message.author.tag} (ID: ${message.author.id})`)
         .then(responseEmbed(1, "I synced the permissions with the category", "CHANNEL", message, client))
-        .catch(err => toConsole(err, 'permlock.js (Line 35)', message, client));
+        .catch(err => toConsole(String(err), 'permlock.js (Line 35)', message, client));
 
       auth.delete(message.author.id);
       cooldown.add(message.author.id);

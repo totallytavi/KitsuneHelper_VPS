@@ -39,7 +39,7 @@ module.exports = {
 
       _channel.setRateLimitPerUser(slowmode, `Moderator: ${message.author.tag}`)
       .then(channel => responseEmbed(1, "I updated the slowmode to " + channel.rateLimitPerUser + " seconds", "CHANNEL", message, client))
-      .catch(e => toConsole(e, 'slowmode.js (Line 40)', message, client));
+      .catch(e => toConsole(String(e), 'slowmode.js (Line 40)', message, client));
 
       auth.delete(message.author.id)
       cooldown.add(message.author.id);
