@@ -118,7 +118,7 @@ module.exports = {
         const dateThen = Date.now()
         const time = dateThen - dateNow
         await statusMsg.edit(":x: ERRORED")
-        toConsole(e, "eval.js (Line 43, but mainly the try loop)", message, client)
+        toConsole(String(e), "eval.js (Line 43, but mainly the try loop)", message, client)
         message.channel.send("Execution time: " + time + " ms")
       }
 
