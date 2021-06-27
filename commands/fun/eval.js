@@ -49,7 +49,15 @@ module.exports = {
         message.channel.send("Execution time: " + time + " ms")
       }
 
-      if(result.nameAcronym) {
+      if(!result) {
+        const dateThen = Date.now()
+        const time = dateThen - dateNow
+        await statusMsg.edit(":x: ERRORED")
+        toConsole(String(e), "eval.js (Line 43, but mainly the try loop)", message, client)
+        message.channel.send("Execution time: " + time + " ms")
+      }
+
+      if(result.iconURL) {
         result = stripIndents`Guild {
         id: ${result.id},
         icon: ${result.icon},
