@@ -41,6 +41,79 @@ module.exports = {
 
       try {
         var result = await eval(script)
+        if(result.iconURL) {
+          result = stripIndents`Guild {
+          id: ${result.id},
+          icon: ${result.icon},
+          name: ${result.name}
+          }`
+        } else if(result.permissionOverwrites) {
+          result = stripIndents`GuildChannel {
+          id: ${result.id},
+          name: ${result.name},
+          type: ${result.type},
+          rawPosition: ${result.rawPosition}
+          }`
+        } else if(result.bot) {
+          result = stripIndents`User {
+          avatar: ${result.avatar},
+          bot: ${result.bot},
+          id: ${result.id}
+          }`
+        } else if(result.nickname) {
+          result = stripIndents`GuildMember {
+          nickname: ${result.nickname},
+          id: ${result.id}
+          }`
+        } else if(result.color) {
+          result = stripIndents`Role {
+          hexColor: ${result.hexColor},
+          hoist: ${result.hoist}
+          id: ${result.id},
+          name: ${result.name},
+          rawPosition: ${result.rawPosition}
+          }`
+        } else if(result.content) {
+          result = stripIndents`Message {
+          editedAt: ${result.editedAt},
+          tts: ${result.tts},
+          type: ${result.type},
+          system: ${result.system}
+          }`
+        } else if(result.identifier) {
+          result = stripIndents`Emoji {
+          id: ${result.id},
+          identifier: ${result.identifier},
+          url: ${result.url}
+          }`
+        } else if(result.code) {
+          result = stripIndents`Invite {
+          code: ${result.code},
+          expiresAt: ${result.expiresAt},
+          maxAge: ${result.maxAge},
+          maxUses: ${result.maxUses},
+          temporary: ${result.temporary},
+          url: ${result.url},
+          uses: ${result.uses}
+          }`
+        } else if(result.guildID) {
+          result = stripIndents`Webhook {
+          avatar: ${result.avatar},
+          channelID: ${result.channelID},
+          guildID: ${guildiD},
+          id: ${result.id},
+          name: ${result.name},
+          owner: ${result.owner},
+          token: ${result.token},
+          type: ${result.type},
+          url: ${result.url}
+          }`
+        } else {
+          result = result;
+        }
+        const dateThen = Date.now()
+        const time = dateThen - dateNow
+        await statusMsg.edit(`\`\`\`js\n${result}\`\`\`\nExecution time: ${time} ms`)
       } catch(e) {
         const dateThen = Date.now()
         const time = dateThen - dateNow
@@ -48,88 +121,6 @@ module.exports = {
         toConsole(String(e), "eval.js (Line 43, but mainly the try loop)", message, client)
         message.channel.send("Execution time: " + time + " ms")
       }
-
-      if(!result) {
-        const dateThen = Date.now()
-        const time = dateThen - dateNow
-        await statusMsg.edit(":x: ERRORED")
-        toConsole(String(e), "eval.js (Line 43, but mainly the try loop)", message, client)
-        message.channel.send("Execution time: " + time + " ms")
-      }
-
-      if(result.iconURL) {
-        result = stripIndents`Guild {
-        id: ${result.id},
-        icon: ${result.icon},
-        name: ${result.name}
-        }`
-      } else if(result.permissionOverwrites) {
-        result = stripIndents`GuildChannel {
-        id: ${result.id},
-        name: ${result.name},
-        type: ${result.type},
-        rawPosition: ${result.rawPosition}
-        }`
-      } else if(result.bot) {
-        result = stripIndents`User {
-        avatar: ${result.avatar},
-        bot: ${result.bot},
-        id: ${result.id}
-        }`
-      } else if(result.nickname) {
-        result = stripIndents`GuildMember {
-        nickname: ${result.nickname},
-        id: ${result.id}
-        }`
-      } else if(result.color) {
-        result = stripIndents`Role {
-        hexColor: ${result.hexColor},
-        hoist: ${result.hoist}
-        id: ${result.id},
-        name: ${result.name},
-        rawPosition: ${result.rawPosition}
-        }`
-      } else if(result.content) {
-        result = stripIndents`Message {
-        editedAt: ${result.editedAt},
-        tts: ${result.tts},
-        type: ${result.type},
-        system: ${result.system}
-        }`
-      } else if(result.identifier) {
-        result = stripIndents`Emoji {
-        id: ${result.id},
-        identifier: ${result.identifier},
-        url: ${result.url}
-        }`
-      } else if(result.code) {
-        result = stripIndents`Invite {
-        code: ${result.code},
-        expiresAt: ${result.expiresAt},
-        maxAge: ${result.maxAge},
-        maxUses: ${result.maxUses},
-        temporary: ${result.temporary},
-        url: ${result.url},
-        uses: ${result.uses}
-        }`
-      } else if(result.guildID) {
-        result = stripIndents`Webhook {
-        avatar: ${result.avatar},
-        channelID: ${result.channelID},
-        guildID: ${guildiD},
-        id: ${result.id},
-        name: ${result.name},
-        owner: ${result.owner},
-        token: ${result.token},
-        type: ${result.type},
-        url: ${result.url}
-        }`
-      } else {
-        result = result;
-      }
-      const dateThen = Date.now()
-      const time = dateThen - dateNow
-      await statusMsg.edit(`\`\`\`js\n${result}\`\`\`\nExecution time: ${time} ms`)
 
       auth.delete(message.author.id)
       cooldown.add(message.author.id);
