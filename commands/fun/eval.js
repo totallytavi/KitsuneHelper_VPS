@@ -41,6 +41,7 @@ module.exports = {
 
       try {
         var result = await eval(script)
+        if(!result) result = "No value returned"
         if(result.approximateMemberCount) {
           result = stripIndents`Guild {
           id: ${result.id},
@@ -75,7 +76,9 @@ module.exports = {
           }`
         } else if(result.content) {
           result = stripIndents`Message {
+          content: ${result.content.slice(0, 99)},
           editedAt: ${result.editedAt},
+          id: ${result.id},
           tts: ${result.tts},
           type: ${result.type},
           system: ${result.system}
