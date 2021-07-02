@@ -41,7 +41,7 @@ module.exports = {
 
       try {
         var result = await eval(script)
-        if(result.iconURL) {
+        if(result.approximateMemberCount) {
           result = stripIndents`Guild {
           id: ${result.id},
           icon: ${result.icon},
