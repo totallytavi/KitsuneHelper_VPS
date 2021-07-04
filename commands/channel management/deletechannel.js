@@ -42,7 +42,7 @@ module.exports = {
       if(toDelete.type === 'category') {
       message.channel.send("I detected the channel as a category, should I delete the category's channels?\n\n> *This will expire in 30 seconds*")
       .then(m => {
-        const emoji = await promptMessage(m, message.author, 30, ["✅", "❌"])
+        const emoji = promptMessage(m, message.author, 30, ["✅", "❌"])
 
         if(emoji === "✅") {
           message.guild.channels.cache.each(channel => {
