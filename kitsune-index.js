@@ -2,8 +2,6 @@ const { Client, Collection } = require("discord.js");
 const { toConsole } = require('./functions.js');
 const fetch = require('node-fetch');
 const fs = require("fs");
-const sqlite = require('sqlite');
-const sqlite3 = require('sqlite3')
 // to lowercase
 
 fetch("https://checkip.amazonaws.com")
@@ -11,11 +9,6 @@ fetch("https://checkip.amazonaws.com")
   .then(body => {
     console.log("This script's IP is: " + body + ". If this does not match with the public IP, node-fetch is not working")
   })
-
-sqlite.open({ filename: 'Moderations.db', driver: sqlite3.Database })
-.then(db => {
-  console.log("The current database is: " + db + ". If this does not show Moderations.db, sqlite/sqlite3 is not working properly")
-})
 
 const client = new Client({
     disableEveryone: true,

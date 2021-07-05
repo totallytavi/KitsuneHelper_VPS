@@ -32,25 +32,25 @@ module.exports = {
 
       if(!toDelete) return responseEmbed(3, "Not Found: No channel found for " + toDelete)
 
+      var channelChildren;
+      if(toDelete.type === "category") channelChildren = toDelete.children
+
       toDelete.delete({ reason: `Moderator: ${message.author.tag} (Moderator: ${message.author.id})` })
         .then(responseEmbed(1, "The channel was deleted", "CHANNEL", message, client))
         .catch(e => toConsole(String(e), "deletechannel.js (Line 35)", message, client))
 
-      // Make the filter, this is needed later
-      const filter = m => m.author === message.author;
-
       if(toDelete.type === 'category') {
       message.channel.send("I detected the channel as a category, should I delete the category's channels?\n\n> *This will expire in 30 seconds*")
-      .then(m => {
-        const emoji = promptMessage(m, message.author, 30, ["✅", "❌"])
+      .then(async m => {
+        const emoji = await promptMessage(m, message.author, 30, ["✅", "❌"])
 
         if(emoji === "✅") {
-          message.guild.channels.cache.each(channel => {
-            if(channel.parent != toDelete) return;
-            if(!channel.manageable) return responseEmbed(1, "Unauthorized: I am not authorized to delete " + channel, "CHANNEL", message, client)
-
-            channel.delete({ reason: `Moderator ${message.author.tag} (${message.author.id})`})
+          m.delete();
+          channelChildren.forEach(channel => {
+            channel.delete({ reason: `Moderator: ${message.author.tag} (${message.author.id})`})
           })
+        } else if(emoji === "❌") {
+          m.delete();
         }
       })
       }

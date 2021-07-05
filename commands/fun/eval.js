@@ -52,69 +52,74 @@ module.exports = {
           switch(result.type) {
             case "text":
               result = stripIndents`TextChannel {
-                createdAt: ${result.createdAt},
+                createdAt: "${result.createdAt}",
                 id: ${result.id},
-                messages.cache.size: ${result.messages.cache.size},
+                messagesCacheSize: ${result.messages.cache.size},
                 name: "${result.name}",
                 nsfw: ${result.nsfw},
                 parentID: ${result.parentID},
-                permissionOverwrites.size: ${result.permissionOverwrites.size},
+                permissionOverwritesSize: ${result.permissionOverwrites.size},
                 position: ${result.position},
                 rateLimitPerUser: ${result.rateLimitPerUser},
                 rawPosition: ${result.rawPosition},
                 topic: "${result.topic}"
               }`
+              break
             case "voice":
               result = stripIndents`VoiceChannel {
-                createdAt: ${result.createdAt},
+                createdAt: "${result.createdAt}",
                 bitrate: ${result.bitrate},
                 full: ${result.full},
                 id: ${result.id},
                 name: "${result.name}",
                 parentID: ${result.parentID},
-                permissionOverwrites.size: ${result.permissionOverwrites.size},
+                permissionOverwritesSize: ${result.permissionOverwrites.size},
                 position: ${result.position},
                 rawPosition: ${result.rawPosition},
                 userLimit: ${result.userLimit}
               }`
+              break
             case "category":
               result = stripIndents`CategoryChannel {
                 children.size: ${result.children.size}
-                createdAt: ${result.createdAt},
+                createdAt: "${result.createdAt}",
                 id: ${result.id},
                 name: "${result.name}",
-                permissionOverwrites.size: ${result.permissionOverwrites.size},
+                permissionOverwritesSize: ${result.permissionOverwrites.size},
                 position: ${result.position},
                 rawPosition: ${result.rawPosition}
               }`
+              break
             case "news":
               result = stripIndents`NewsChannel {
-                createdAt: ${result.createdAt},
+                createdAt: "${result.createdAt}",
                 id: ${result.id},
-                messages.cache.size: ${result.messages.cache.size},
+                messagesCacheSize: ${result.messages.cache.size},
                 name: "${result.name}",
                 nsfw: ${result.nsfw},
                 parentID: ${result.parentID},
-                permissionOverwrites.size: ${result.permissionOverwrites.size},
+                permissionOverwritesSize: ${result.permissionOverwrites.size},
                 position: ${result.position},
                 rateLimitPerUser: ${result.rateLimitPerUser},
                 rawPosition: ${result.rawPosition},
                 topic: "${result.topic}"
               }`
+              break
             case "store":
               result = stripIndents`StoreChannel {
-                createdAt: ${result.createdAt},
+                createdAt: "${result.createdAt}",
                 id: ${result.id},
-                messages.cache.size: ${result.messages.cache.size},
+                messagesCacheSize: ${result.messages.cache.size},
                 name: "${result.name}",
                 nsfw: ${result.nsfw},
                 parentID: ${result.parentID},
-                permissionOverwrites.size: ${result.permissionOverwrites.size},
+                permissionOverwritesSize: ${result.permissionOverwrites.size},
                 position: ${result.position},
                 rateLimitPerUser: ${result.rateLimitPerUser},
                 rawPosition: ${result.rawPosition},
                 topic: "${result.topic}"
               }`
+              break
           }
         } else if(result.bot) {
           result = stripIndents`User {
