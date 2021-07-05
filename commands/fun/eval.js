@@ -51,10 +51,11 @@ module.exports = {
         } else if(result.permissionOverwrites) {
           switch(result.type) {
             case "text":
+              await result.messages.fetch(); // Cache the message
               result = stripIndents`TextChannel {
                 createdAt: ${result.createdAt},
                 id: ${result.id},
-                messages.cache.size: ${result.messsages.cache.size},
+                messages.cache.size: ${result.messages.cache.size},
                 name: "${result.name}",
                 nsfw: ${result.nsfw},
                 parentID: ${result.parentID},
@@ -88,10 +89,11 @@ module.exports = {
                 rawPosition: ${result.rawPosition}
               }`
             case "news":
+              await result.messages.fetch(); // Cache the messages
               result = stripIndents`NewsChannel {
                 createdAt: ${result.createdAt},
                 id: ${result.id},
-                messages.cache.size: ${result.messsages.cache.size},
+                messages.cache.size: ${result.messages.cache.size},
                 name: "${result.name}",
                 nsfw: ${result.nsfw},
                 parentID: ${result.parentID},
@@ -102,10 +104,11 @@ module.exports = {
                 topic: "${result.topic}"
               }`
             case "store":
+              await result.messages.fetch(); // Cache the messages
               result = stripIndents`StoreChannel {
                 createdAt: ${result.createdAt},
                 id: ${result.id},
-                messages.cache.size: ${result.messsages.cache.size},
+                messages.cache.size: ${result.messages.cache.size},
                 name: "${result.name}",
                 nsfw: ${result.nsfw},
                 parentID: ${result.parentID},
