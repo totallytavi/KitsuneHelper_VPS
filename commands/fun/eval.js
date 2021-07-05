@@ -49,15 +49,79 @@ module.exports = {
           name: ${result.name}
           }`
         } else if(result.permissionOverwrites) {
-          result = stripIndents`GuildChannel {
-          id: ${result.id},
-          name: ${result.name},
-          type: ${result.type},
-          rawPosition: ${result.rawPosition}
-          }`
+          switch(result.type) {
+            case "text":
+              await result.messages.cache.fetch(); // Cache the messages
+              result = stripIndents`TextChannel {
+                createdAt: ${result.createdAt},
+                id: ${result.id},
+                messages.cache.size: ${result.messsages.cache.size},
+                name: "${result.name}",
+                nsfw: ${result.nsfw},
+                parentID: ${result.parentID},
+                permissionOverwrites.size: ${result.permissionOverwrites.size},
+                position: ${result.position},
+                rateLimitPerUser: ${result.rateLimitPerUser},
+                rawPosition: ${result.rawPosition},
+                topic: "${result.topic}"
+              }`
+            case "voice":
+              result = stripIndents`VoiceChannel {
+                createdAt: ${result.createdAt},
+                bitrate: ${result.bitrate},
+                full: ${result.full},
+                id: ${result.id},
+                name: "${result.name}",
+                parentID: ${result.parentID},
+                permissionOverwrites.size: ${result.permissionOverwrites.size},
+                position: ${result.position},
+                rawPosition: ${result.rawPosition},
+                userLimit: ${result.userLimit}
+              }`
+            case "category":
+              result = stripIndents`CategoryChannel {
+                children.size: ${result.children.size}
+                createdAt: ${result.createdAt},
+                id: ${result.id},
+                name: "${result.name}",
+                permissionOverwrites.size: ${result.permissionOverwrites.size}
+                position: ${result.position},
+                rawPosition: ${result.rawPosition}
+              }`
+            case "news":
+              await result.messages.cache.fetch(); // Cache the messages
+              result = stripIndents`NewsChannel {
+                createdAt: ${result.createdAt},
+                id: ${result.id},
+                messages.cache.size: ${result.messsages.cache.size},
+                name: "${result.name}",
+                nsfw: ${result.nsfw},
+                parentID: ${result.parentID},
+                permissionOverwrites.size: ${result.permissionOverwrites.size},
+                position: ${result.position},
+                rateLimitPerUser: ${result.rateLimitPerUser},
+                rawPosition: ${result.rawPosition},
+                topic: "${result.topic}"
+              }`
+            case "store":
+              await result.messages.cache.fetch(); // Cache the messages
+              result = stripIndents`StoreChannel {
+                createdAt: ${result.createdAt},
+                id: ${result.id},
+                messages.cache.size: ${result.messsages.cache.size},
+                name: "${result.name}",
+                nsfw: ${result.nsfw},
+                parentID: ${result.parentID},
+                permissionOverwrites.size: ${result.permissionOverwrites.size},
+                position: ${result.position},
+                rateLimitPerUser: ${result.rateLimitPerUser},
+                rawPosition: ${result.rawPosition},
+                topic: "${result.topic}"
+              }`
+          }
         } else if(result.bot) {
           result = stripIndents`User {
-          avatar: ${result.avatar},
+          avatar: ${result.avatarURL({ dynamic: true, size: 2048 })},
           bot: ${result.bot},
           id: ${result.id}
           }`

@@ -47,7 +47,7 @@ module.exports = {
         if(emoji === "✅") {
           message.guild.channels.cache.each(channel => {
             if(channel.parent != toDelete) return;
-            if(!channel.manageable) return responseEmbed(1, "Unauthorized: I am not authorized to delete " + channel)
+            if(!channel.manageable) return responseEmbed(1, "Unauthorized: I am not authorized to delete " + channel, "CHANNEL", message, client)
 
             channel.delete({ reason: `Moderator ${message.author.tag} (${message.author.id})`})
           })
