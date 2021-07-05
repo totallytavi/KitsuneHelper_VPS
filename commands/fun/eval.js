@@ -51,6 +51,8 @@ module.exports = {
         } else if(result.permissionOverwrites) {
           switch(result.type) {
             case "text":
+              console.log(result.permissionOverwrites.size)
+              console.log(result.messages.cache.size)
               result = stripIndents`TextChannel {
                 createdAt: ${result.createdAt},
                 id: ${result.id},
