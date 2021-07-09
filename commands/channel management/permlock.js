@@ -33,7 +33,7 @@ module.exports = {
       if(!toPL) return responseEmbed(3, "Not Found: No channel found for " + toPL, "CHANNEL", message, client)
 
       toPL.lockPermissions(true, `Moderator: ${message.author.tag} (ID: ${message.author.id})`)
-        .then(responseEmbed(1, "I synced the permissions with the category", "CHANNEL", message, client))
+        .then(responseEmbed(1, "I synced the permissions of \`" + toPL.name + "\` with the category", "CHANNEL", message, client))
         .catch(err => toConsole(String(err), 'permlock.js (Line 35)', message, client));
 
       auth.delete(message.author.id);

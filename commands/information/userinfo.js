@@ -1,6 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const cooldown = new Set();
-const { toConsole } = require('../../functions.js');
+const { responseEmbed, toConsole } = require('../../functions.js');
 
 module.exports = {
     name: "userinfo",
@@ -17,15 +17,17 @@ module.exports = {
         message.reply(`that's a little too fast!`).then(m => m.delete({ timeout: 2500 }));
       } else {
       
-      var member = message.mentions.members.first()
-      || message.guild.members.cache.get(args[0])
-      || message.guild.members.cache.find(m => m.nickname.contains(args.slice(0).join(" "))).first()
-      || message.guild.members.cache.find(m => m.user.username.contains(args.slice(0).join(" "))).first();
-      if(!member) {
+      var member; 
+      
+      if(args.length === 0) {
         member = message.member
-      }
+      } else if(!member) {
+        member = message.mentions.members.first()
+        || message.guild.members.cache.get(args[0])
+        || message.guild.members.cache.find(m => m.displayName.includes(args.slice(0).join(" ")))
+      };
 
-      if(member === "Unknown" || !member) return responseEmbed(3, "Not Found: I couldn't find anything for" + args.join(" "), "CHANNEL", message, client)
+      if(!member) return responseEmbed(3, "Not Found: I couldn't find anything for " + args.join(" "), "CHANNEL", message, client)
       var roles = member.roles.cache
             .filter(r => r.id !== message.guild.id)
             .map(r => r)

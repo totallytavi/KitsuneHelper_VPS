@@ -49,7 +49,7 @@ module.exports = {
       .setTimestamp();
 
       target.setNickname(nickname, `Moderator: ${message.author.tag}`)
-        .then(member => responseEmbed(1, `I updated ${target}'s (${target.user.id}) nickname to ${member.nickname}`, "CHANNEL", message, client))
+        .then(member => responseEmbed(1, `I updated ${target}'s (\`${target.user.id}\`) nickname to \`${member.nickname}\``, "CHANNEL", message, client))
         .catch(err => toConsole(String(err), 'nick.js (Line 51)', message, client));
 
       auth.delete(message.author.id)

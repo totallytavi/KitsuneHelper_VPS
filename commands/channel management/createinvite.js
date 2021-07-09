@@ -34,7 +34,7 @@ module.exports = {
         maxAge: args[2] * 3600,
         maxUses: args[3]
       })
-      .then(invite => responseEmbed(1, "I created an invite! " + invite, "CHANNEL", message, client))
+      .then(invite => responseEmbed(1, "I created an invite! The URL is:\n> " + invite.url, "CHANNEL", message, client))
       .catch(err => toConsole(String(err), 'createinvite.js (Line 32)', message, client));
 
       cooldown.add(message.author.id);

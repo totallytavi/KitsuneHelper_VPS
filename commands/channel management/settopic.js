@@ -35,8 +35,8 @@ module.exports = {
       if(!_channel) return responseEmbed(3, "Not Found: I could not find a channel for " + args[0], "CHANNEL", message, client)
 
       _channel.setTopic(topic, `Moderator: ${message.author.tag}`)
-        .then(channel => responseEmbed(1, "I updated the channel's topic to " + channel.topic, "CHANNEL", message, client))
-        .catch(err => toConsole(String(err), 'nickname.js (Line 37)', message, client));
+        .then(channel => responseEmbed(1, "I updated \`" + channel.name + "\` topic to \`" + channel.topic + "\`", "CHANNEL", message, client))
+        .catch(err => toConsole(String(err), 'settopic.js (Line 37)', message, client));
 
       auth.delete(message.author.id)
       cooldown.add(message.author.id);

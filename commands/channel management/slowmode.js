@@ -38,7 +38,7 @@ module.exports = {
       if(!_channel.manageable) return responseEmbed(3, "Unauthorized: I cannot manage that channel", "CHANNEL", message, client)
 
       _channel.setRateLimitPerUser(slowmode, `Moderator: ${message.author.tag}`)
-      .then(channel => responseEmbed(1, "I updated the slowmode to " + channel.rateLimitPerUser + " seconds", "CHANNEL", message, client))
+      .then(channel => responseEmbed(1, "I updated the slowmode of \`" + channel.name + "\` to \`" + channel.rateLimitPerUser + "\` seconds", "CHANNEL", message, client))
       .catch(e => toConsole(String(e), 'slowmode.js (Line 40)', message, client));
 
       auth.delete(message.author.id)
