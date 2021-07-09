@@ -1,5 +1,5 @@
 const { Client, Collection } = require("discord.js");
-const { toConsole } = require('./functions.js');
+const { toConsole, responseEmbed } = require('./functions.js');
 const fetch = require('node-fetch');
 const fs = require("fs");
 // to lowercase
@@ -77,6 +77,8 @@ client.on("message", async message => {
     if (!command) command = client.commands.get(client.aliases.get(cmd));
 
     if (command)
+      if(!message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return message.author.send("I require the \`SEND MESSAGES\` permission in that channel!")
+      if(!message.channel.permissionsFor(message.guild.me).has("EMBED_LINKS")) return message.channel.send("I require the \`EMBED LINKS\` permission in this channnel!")
       toConsole(`**Command ran**\n> Command: ${cmd}\n> Arguments: ${args.slice(0).join(" ")}`, "index.js (Line 97)", message, client)
       command.run(client, message, args);
 

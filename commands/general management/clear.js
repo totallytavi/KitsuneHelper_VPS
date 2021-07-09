@@ -37,7 +37,7 @@ module.exports = {
 
         setTimeout(() => {
           message.channel.bulkDelete(deleteAmount, true)
-            .then(messages => responseEmbed(1, "Sweep! " + messages.size + " messages were deleted!"))
+            .then(messages => responseEmbed(1, "Sweep! " + messages.size + " messages were deleted!", "CHANNEL", message, client))
             .catch(e => toConsole(String(e), "clear.js (Line 39)", message, client))
         }, 500)
 

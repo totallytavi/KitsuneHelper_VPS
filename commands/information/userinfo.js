@@ -1,6 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const cooldown = new Set();
-const { getMember, toConsole } = require('../../functions.js');
+const { toConsole } = require('../../functions.js');
 
 module.exports = {
     name: "userinfo",
@@ -17,8 +17,11 @@ module.exports = {
         message.reply(`that's a little too fast!`).then(m => m.delete({ timeout: 2500 }));
       } else {
       
-      var member = await getMember(message, args.join(" "))
-      if(!args.join(" ")) {
+      var member = message.mentions.members.first()
+      || message.guild.members.cache.get(args[0])
+      || message.guild.members.cache.find(m => m.nickname.contains(args.slice(0).join(" ")))
+      || message.guild.members.cache.find(m => m.user.username.contains(args.slice(0).join(" ")));
+      if(!member) {
         member = message.member
       }
 
