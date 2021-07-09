@@ -19,8 +19,8 @@ module.exports = {
       
       var member = message.mentions.members.first()
       || message.guild.members.cache.get(args[0])
-      || message.guild.members.cache.find(m => m.nickname.contains(args.slice(0).join(" ")))
-      || message.guild.members.cache.find(m => m.user.username.contains(args.slice(0).join(" ")));
+      || message.guild.members.cache.find(m => m.nickname.contains(args.slice(0).join(" "))).first()
+      || message.guild.members.cache.find(m => m.user.username.contains(args.slice(0).join(" "))).first();
       if(!member) {
         member = message.member
       }
