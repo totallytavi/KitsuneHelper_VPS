@@ -1,4 +1,6 @@
 const { Client, Collection } = require("discord.js");
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
 const { toConsole, responseEmbed } = require('./functions.js');
 const fetch = require('node-fetch');
 const fs = require("fs");
@@ -20,6 +22,45 @@ client.commands = new Collection();
 client.aliases = new Collection();
 
 client.categories = fs.readdirSync("./commands/");
+
+// Begin SlashCmd code
+
+fs.readdirSync("./commands/").forEach(async (dir) => {
+  const commands = [];
+  const commandFiles = readdirSync(`./commands/${dir}/`).filter(file => file.endsWith(".js"));
+  for(command of commandFiles) {
+    commands.push(command.data.toJSON());
+  }
+
+  const rest = new REST({ version: '9' }).setToken("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A");
+
+  try {
+		console.log('Started refreshing application (/) commands.');
+
+		await rest.put(
+			// Routes.applicationGuildCommands(699670844082749461, 766751963076493314),
+      Routes.applicationCommands(699670844082749461),
+			{ body: commands },
+		);
+
+		console.log('Successfully reloaded application (/) commands.');
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+// End SlashCmd code
+// Begin Sequelize code
+
+const Sequelize = require('sequelize');
+const sequelize = new Sequelize('database', 'root', '8Ow8Um*Qj4UF#Uv2qxdG', {
+	host: '64.52.85.122',
+	dialect: 'sqlite',
+	logging: true,
+	storage: 'database.sqlite',
+});
+
+// End Sequelize code
 
 // Literally just a big fat cmd watcher
 process.on('unhandledRejection', async promise => {
@@ -83,5 +124,49 @@ client.on("message", async message => {
       command.run(client, message, args);
 
 });
+
+client.on('interactionCreate', async (interaction) => {
+  if(interaction.isCommand()) {
+    let command = client.commands.get(interaction.commandName)
+    if (!command) command = client.commands.get(client.aliases.get(interaction.commandName))
+
+    if(command) {
+      toConsole(`**Interaction ran**\n> Interaction: ${interaction.commandName}\n> Options: ${String(interaction.options)}`, "index.js (Line 132)", '', client)
+      command.execute(client, interaction);
+    }
+  }
+});
+
+
+client.on("messageReactionAdd", async (reaction, user) => {
+  if (reaction.message.partial) await reaction.message.fetch();
+  if (reaction.partial) await reaction.fetch();
+
+  const member = reaction.message.guild.members.cache.find(member => member.user === user)
+  if(member.user.bot) return;
+
+  /**
+   * TEMPLATE FOR REACTION ROLES
+   * Follow this whenever you are creating a reaction role
+   * Anything with <> around it is a placeholder, remove these
+   * when substituting variables in
+   * 
+   * if(reaction.emoji.id === "<ID of emoji>" && reaction.message.id == "<ID of message>") member.roles.add(['<ID of role>']) // <Name of role>
+   */
+
+  if(reaction.emoji.id === "861998770773295144" && reaction.message.id == "861998149853642772") member.roles.add(['862035778444197938']) // DoL Gamemaster
+  if(reaction.emoji.id === "861998770773295144" && reaction.message.id == "862083724559515648") member.roles.add(['861608781880492062']) // NSFW
+})
+
+client.on("messageReactionRemove", async (reaction, user) => {
+  if (reaction.message.partial) await reaction.message.fetch();
+  if (reaction.partial) await reaction.fetch();
+
+  const member = reaction.message.guild.members.cache.find(member => member.user === user)
+  if(member.user.bot) return;
+
+  if(reaction.emoji.id === "861998770773295144" && reaction.message.id == "861998149853642772") member.roles.remove(['862035778444197938']) // DoL Gamemaster
+  if(reaction.emoji.id === "861998770773295144" && reaction.message.id == "862083724559515648") member.roles.remove(['861608781880492062']) // NSFW
+})
 
 client.login("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A");

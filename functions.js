@@ -1,4 +1,4 @@
-const { Message, Client, MessageEmbed, User, GuildChannel } = require('discord.js');
+const { Message, Client, MessageEmbed, User, GuildChannel, Interaction } = require('discord.js');
 
 module.exports = {
 
@@ -244,6 +244,76 @@ module.exports = {
             .setTimestamp();
 
             client.channels.cache.get('775560270700347432').send(embed)
+
+            break;
+        }
+      },
+      /**
+       * Replies with an embed to the interaction. Alternative for responseEmbed()
+       * @param {Number} type 1- Sucessful, 2- Warning, 3- Error, 4- Information
+       * @param {String} content The information to state
+       * @param {Interaction} interaction The Interaction object for responding
+       * @param {Client} client Client object for logging
+       * @returns 
+       */
+      interactionEmbed: async function(type, content, interaction, client) {
+        if(typeof type != 'number') return Promise.reject("type is not a number");
+        if(type < 1 || type > 4) return Promise.reject("type is not a valid integer");
+        if(typeof content != 'string') return Promise.reject("content is not a string");
+        if(!interaction) return Promise.reject("interaction is a required argument");
+        if(typeof interaction != 'object') return Promise.reject("interaction is not an object");
+        if(!client) return Promise.reject("client is a required argument");
+        if(typeof client != 'object') return Promise.reject("client is not an object");
+
+        const embed = new MessageEmbed();
+
+        switch(type) {
+          case 1:
+            embed
+            .setTitle("Success")
+            .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
+            .setColor("BLURPLE")
+            .setDescription(content)
+            .setFooter("The operation was completed successfully with no errors")
+            .setTimestamp();
+
+            interaction.reply({ embeds: [embed], ephemeral: true })
+
+            break;
+          case 2:
+            embed
+            .setTitle("Warning")
+            .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
+            .setColor("ORANGE")
+            .setDescription(content)
+            .setFooter("The operation was completed successfully with a minor error")
+            .setTimestamp();
+
+            interaction.reply({ embeds: [embed], ephemeral: true })
+
+            break;
+          case 3:
+            embed
+            .setTitle("Error")
+            .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
+            .setColor("RED")
+            .setDescription(content)
+            .setFooter("The operation failed to complete due to an error")
+            .setTimestamp();
+
+            interaction.reply({ embeds: [embed], ephemeral: true })
+
+            break;
+          case 4:
+            embed
+            .setTitle("Information")
+            .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
+            .setColor("BLURPLE")
+            .setDescription(content)
+            .setFooter("The operation is pending completion")
+            .setTimestamp();
+
+            interaction.reply({ embeds: [embed], ephemeral: true })
 
             break;
         }
