@@ -102,18 +102,6 @@ client.on("message", async message => {
 
 });
 
-client.on('interactionCreate', async (interaction) => {
-  if(interaction.isCommand()) {
-    let command = client.commands.get(interaction.commandName)
-    if (!command) command = client.commands.get(client.aliases.get(interaction.commandName))
-
-    if(command) {
-      toConsole(`**Interaction ran**\n> Interaction: ${interaction.commandName}\n> Options: ${String(interaction.options)}`, "index.js (Line 132)", '', client)
-      command.execute(client, interaction);
-    }
-  }
-});
-
 
 client.on("messageReactionAdd", async (reaction, user) => {
   if (reaction.message.partial) await reaction.message.fetch();
