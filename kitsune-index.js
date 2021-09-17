@@ -1,5 +1,6 @@
 const { Client, Collection } = require("discord.js");
-const { REST } = require('@discordjs/rest').setToken("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A");
+const { REST } = require('@discordjs/rest');
+const rest = new REST().setToken("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A")
 const { Routes } = require('discord-api-types/v9');
 const { toConsole, responseEmbed } = require('./functions.js');
 const fetch = require('node-fetch');
