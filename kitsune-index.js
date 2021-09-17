@@ -39,7 +39,7 @@ fs.readdirSync("./commands/").forEach(async (dir) => {
 
 		await rest.put(
 			// Routes.applicationGuildCommands(699670844082749461, 766751963076493314),
-      Routes.applicationCommands(699670844082749461),
+      Routes.applicationCommands("699670844082749461"),
 			{ body: commands },
 		);
 
