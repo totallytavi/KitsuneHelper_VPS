@@ -1,7 +1,4 @@
 const { Client, Collection } = require("discord.js");
-const { REST } = require('@discordjs/rest');
-const rest = new REST().setToken("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A")
-const { Routes } = require('discord-api-types/v9');
 const { toConsole, responseEmbed } = require('./functions.js');
 const fetch = require('node-fetch');
 const fs = require("fs");
@@ -15,7 +12,8 @@ fetch("https://checkip.amazonaws.com")
 
 const client = new Client({
     disableEveryone: true,
-    partials: ['GUILD_MEMBER']
+    partials: ['GUILD_MEMBER'],
+    intents: ['GUILDS','GUILD_BANS','GUILD_EMOJIS_AND_STICKERS','GUILD_INVITES','GUILD_MEMBERS','GUILD_MESSAGES','GUILD_MESSAGE_REACTIONS','GUILD_PRESENCES']
 });
 /** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
 
@@ -26,29 +24,7 @@ client.categories = fs.readdirSync("./commands/");
 
 // Begin SlashCmd code
 
-fs.readdirSync("./commands/").forEach(async (dir) => {
-  const commands = [];
-  const commandFiles = readdirSync(`./commands/${dir}/`).filter(file => file.endsWith(".js"));
-  for(const command of commandFiles) {
-    commands.push(command.data.toJSON());
-  }
-
-  const rest = new REST({ version: '9' }).setToken("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A");
-
-  try {
-		console.log('Started refreshing application (/) commands.');
-
-		await rest.put(
-			// Routes.applicationGuildCommands(699670844082749461, 766751963076493314),
-      Routes.applicationCommands("699670844082749461"),
-			{ body: commands },
-		);
-
-		console.log('Successfully reloaded application (/) commands.');
-	} catch (error) {
-		console.error(error);
-	}
-});
+// Not using it until I roll out FULL support
 
 // End SlashCmd code
 // Begin Sequelize code
