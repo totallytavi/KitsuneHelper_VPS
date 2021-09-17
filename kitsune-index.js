@@ -1,5 +1,5 @@
 const { Client, Collection } = require("discord.js");
-const { REST } = require('@discordjs/rest');
+const { REST } = require('@discordjs/rest').setToken("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A");
 const { Routes } = require('discord-api-types/v9');
 const { toConsole, responseEmbed } = require('./functions.js');
 const fetch = require('node-fetch');
@@ -28,7 +28,7 @@ client.categories = fs.readdirSync("./commands/");
 fs.readdirSync("./commands/").forEach(async (dir) => {
   const commands = [];
   const commandFiles = readdirSync(`./commands/${dir}/`).filter(file => file.endsWith(".js"));
-  for(command of commandFiles) {
+  for(const command of commandFiles) {
     commands.push(command.data.toJSON());
   }
 
