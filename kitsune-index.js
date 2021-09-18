@@ -1,137 +1,83 @@
-const { Client, Collection } = require("discord.js");
-const { toConsole, responseEmbed } = require('./functions.js');
-const fetch = require('node-fetch');
-const fs = require("fs");
-// to lowercase
-
-fetch("https://checkip.amazonaws.com")
-  .then(res => res.text())
-  .then(body => {
-    console.log("This script's IP is: " + body + ". If this does not match with the public IP, node-fetch is not working")
-  })
+const { Client, Collection, Presence } = require(`discord.js`);
+const fs = require(`fs`);
+const { REST } = require(`@discordjs/rest`);
+const rest = new REST().setToken(`Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A`);
+const { Routes } = require(`discord-api-types/v9`);
+const wait = require('util').promisify(setTimeout);
+const { toConsole, interactionToConsole } = require(`./functions.js`);
 
 const client = new Client({
-    disableEveryone: true,
-    partials: ['GUILD_MEMBER'],
-    intents: ['GUILDS','GUILD_BANS','GUILD_EMOJIS_AND_STICKERS','GUILD_INVITES','GUILD_MEMBERS','GUILD_MESSAGES','GUILD_MESSAGE_REACTIONS','GUILD_PRESENCES']
+  intents: [`GUILDS`,`GUILD_BANS`,`GUILD_EMOJIS_AND_STICKERS`,`GUILD_INVITES`,`GUILD_MEMBERS`,`GUILD_MESSAGES`,`GUILD_MESSAGE_REACTIONS`,`GUILD_MESSAGE_TYPING`,`GUILD_PRESENCES`,`GUILD_WEBHOOKS`]
 });
-/** {DO NOT PLACE TEXT ABOVE THIS LINE} **/
+const slashCommands = []; client.commands = new Collection();
 
-client.commands = new Collection();
-client.aliases = new Collection();
+fs.readdirSync(`./commands/`).forEach(async (dir, index, array) => {
+  const commands = fs.readdirSync(`./commands/${dir}`).filter(file => file.endsWith(`.js`));
 
-client.categories = fs.readdirSync("./commands/");
+  for (let file of commands) {
+    let command = require(`./commands/${dir}/${file}`);
 
-// Begin SlashCmd code
+    if(command.name) {
+      console.info(`[FILE-LOAD] Loaded: ${command.name} from ${file}!`)
+      client.commands.set(command.name, command)
+      slashCommands.push(command.data.toJSON())
+    } else {
+      console.info(`[FILE-LOAD] Failed to load: ${file}! Did you forget to add a name property in module.exports?`)
+    }
+  }
 
-// Not using it until I roll out FULL support
+  await wait(500); // Artificial wait to prevent instant sending
+  const now = Date.now();
 
-// End SlashCmd code
-// Begin Sequelize code
+  try {
+    if(index < array.length - 1) return console.log(`[APP-REFR] The refresh was called too early!`)
+    console.log(`[APP-REFR] Started refreshing application (/) commands.`);
 
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize('database', 'root', '8Ow8Um*Qj4UF#Uv2qxdG', {
-	host: '64.52.85.122',
-	dialect: 'sqlite',
-	logging: true,
-	storage: 'database.sqlite',
-});
-
-// End Sequelize code
-
-// Literally just a big fat cmd watcher
-process.on('unhandledRejection', async promise => {
-  console.log(`**A promise was rejected!\n\n${promise}`)
-  toConsole(String(promise), `Unhandled promise rejection`, '', client)
-});
-process.on('exit', async code => {
-  console.log(`**PROCESS EXITING\n\nWARNING: The process is exiting!\nCode: ${code}`)
-  toConsole(String(code), `Process exit`, '', client)
-});
-process.on('warning', async (name, message, stack) => {
-  console.log(`**Warning\n\nName: ${name}\nMessage: ${message}\nStack trace to file: ${stack}`)
-  toConsole(String(name), `Process warning`, '', client)
-});
-process.on('uncaughtException', (err, origin) => {
-  console.log(`**Uncaught exception!\n\nError: ${err}\nOrigin: ${origin}`)
-  toConsole(String(err), `Uncaught exception`, '', client)
+    await rest.put(
+      Routes.applicationGuildCommands(`699670844082749461`, `744914864681517146`),
+      { body: slashCommands },
+    );
+    
+    const then = Date.now();
+    console.log(`[APP-REFR] Successfully reloaded application (/) commands after ` + (then - now) + `ms.`);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
-["command"].forEach(handler => {
-    require(`./handlers/${handler}`)(client);
-});
-
-client.on("ready", async () => {
-    console.log(`I am interacting with ${client.guilds.cache.size} guilds. Wooow!`)
-    console.log(`${client.user.username} is now online!`);
-
-    client.user.setActivity(`kitsune leadership on ${client.guilds.cache.size} servers • kh!commands`, { type: 'LISTENING' })
-      .then(presence => console.log(`Activity set to \n \n Type: ${presence.activities[0].type} \n Text: ${presence.activities[0].name}`))
-      .catch(console.error);
-
-    process.emitWarning('Custom status set!', 'Custom Status');
-
-    setInterval(() => {
-      client.user.setActivity(`kitsune leadership on ${client.guilds.cache.size} servers • kh!commands`, { type: 'LISTENING' })
-        .catch(console.error);
-    }, 20000);
-});
-
-console.log(`Random string check: ${[...Array(30)].map(i=>(~~(Math.random()*36)).toString(36)).join('')}`)
-
-client.on("message", async message => {
-    const prefix = "kh!";
-
-    if (message.author.bot) return;
-    if (!message.guild) return;
-    if (!message.content.toLowerCase().startsWith(prefix)) return;
-
-    const args = message.content.slice(prefix.length).trim().split(/ +/g);
-    const cmd = args.shift().toLowerCase();
-
-    if (cmd.length === 0) return;
-
-    let command = client.commands.get(cmd);
-    if (!command) command = client.commands.get(client.aliases.get(cmd));
-
-    if (command)
-      if(!message.channel.permissionsFor(message.guild.me).has("SEND_MESSAGES")) return message.author.send("I require the \`SEND MESSAGES\` permission in that channel!")
-      if(!message.channel.permissionsFor(message.guild.me).has("EMBED_LINKS")) return message.channel.send("I require the \`EMBED LINKS\` permission in this channnel!")
-      toConsole(`**Command ran**\n> Command: ${cmd}\n> Arguments: ${args.slice(0).join(" ")}`, "index.js (Line 97)", message, client)
-      command.run(client, message, args);
-
-});
-
-
-client.on("messageReactionAdd", async (reaction, user) => {
-  if (reaction.message.partial) await reaction.message.fetch();
-  if (reaction.partial) await reaction.fetch();
-
-  const member = reaction.message.guild.members.cache.find(member => member.user === user)
-  if(member.user.bot) return;
-
-  /**
-   * TEMPLATE FOR REACTION ROLES
-   * Follow this whenever you are creating a reaction role
-   * Anything with <> around it is a placeholder, remove these
-   * when substituting variables in
-   * 
-   * if(reaction.emoji.id === "<ID of emoji>" && reaction.message.id == "<ID of message>") member.roles.add(['<ID of role>']) // <Name of role>
-   */
-
-  if(reaction.emoji.id === "861998770773295144" && reaction.message.id == "861998149853642772") member.roles.add(['862035778444197938']) // DoL Gamemaster
-  if(reaction.emoji.id === "861998770773295144" && reaction.message.id == "862083724559515648") member.roles.add(['861608781880492062']) // NSFW
+client.on(`ready`, async (client) => {
+  const presence = await client.user.setPresence({ activities: [{ name: `${client.guilds.cache.size} servers and ${client.users.cache.size} users!`, type: `LISTENING` }], status: `online` })
+  console.log(`[ACT-SET] The ClientUser's activity was set!\n> Name: ${presence.activities[0].name}\n> Type: ${presence.activities[0].type}\n> Status: ${presence.status}`)
+    // .catch(error => toConsole(`[ACT-ERR] The ClientUser's activity was not set!\n> ${error}`, `index.js (Line 49)`, ``, client));
+  
+  setInterval(() => {
+    client.user.setPresence({ activities: [{ name: `${client.guilds.cache.size} servers and ${client.users.cache.size} users!`, type: `LISTENING` }], status: `online` })
+      // .catch(error => toConsole(`[ACT-ERR] The ClientUser's activity was not set!\n> ${error}`, `index.js (Line 54)`, ``, client));
+  }, 20000);
 })
 
-client.on("messageReactionRemove", async (reaction, user) => {
-  if (reaction.message.partial) await reaction.message.fetch();
-  if (reaction.partial) await reaction.fetch();
+client.on(`interactionCreate`, async (interaction) => {
+  if(interaction.type === `APPLICATION_COMMAND`) {
+    interaction.deferReply(); // Defer right away so Discord won't break.
+    let command = client.commands.get(interaction.commandName)
+    if(command) {
+      command.run(client, interaction, interaction.options)
+      interactionToConsole(`A user ran an interaction: ${interaction.commandName}`, `index.js (Line 81)`, interaction, client)
+    }
+  }
+});
 
-  const member = reaction.message.guild.members.cache.find(member => member.user === user)
-  if(member.user.bot) return;
+client.on(`guildCreate`, async (guild) => {
+  const keywords = [`announcement`,`welcome`,`hi`,`howdy`, `general`, `discussion`];
+  const potentialCandidates = [];
+  guild.channels.cache.forEach(channel => { if(channel.name.includes(keywords)) potentialCandidates.push(channel) });
 
-  if(reaction.emoji.id === "861998770773295144" && reaction.message.id == "861998149853642772") member.roles.remove(['862035778444197938']) // DoL Gamemaster
-  if(reaction.emoji.id === "861998770773295144" && reaction.message.id == "862083724559515648") member.roles.remove(['861608781880492062']) // NSFW
-})
+  for(const channel of potentialCandidates) {
+    channel.send({ content: `Hello everyone! My name is ${client.user.username}! I'm here to help with anything that I can. Before you go all ham and start using me, please read the following:\n> This bot relies entirely on **slash commands** meaning your users must be allowed to use slash commands. Otherwise, they can't use me! If you don't understand that, see this: <https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ> -\> NEW PERMISSIONS\n> \n> I am scripted in Discord.js V13 and this is a relatively new form of the bot so bugs are bound to appear. If you notice any, please let the support server know! So far, Tavi is the only person who knows the bot but he's happy to help with anything\nAgain, thank you for adding me and I hope to be of great use to your server!` })
+    .then(m => {
+      if(m.content === `Hello everyone! My name is ${client.user.username}! I'm here to help with anything that I can. Before you go all ham and start using me, please read the following:\n> This bot relies entirely on **slash commands** meaning your users must be allowed to use slash commands. Otherwise, they can't use me! If you don't understand that, see this: <https://support.discord.com/hc/en-us/articles/1500000368501-Slash-Commands-FAQ> -\> NEW PERMISSIONS\n> \n> I am scripted in Discord.js V13 and this is a relatively new form of the bot so bugs are bound to appear. If you notice any, please let the support server know! So far, Tavi is the only person who knows the bot but he's happy to help with anything\nAgain, thank you for adding me and I hope to be of great use to your server!`) return;
+    })
+  };
+});
 
-client.login("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A");
+client.login(`Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A`);

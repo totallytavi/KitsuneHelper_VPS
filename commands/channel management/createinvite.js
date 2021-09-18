@@ -1,46 +1,65 @@
-const { responseEmbed, toConsole, interactionEmbed } = require("../../functions");
+const { Client, CommandInteraction, ApplicationCommandOption } = require(`discord.js`);
+const { SlashCommandBuilder } = require(`@discordjs/builders`);
+const { interactionToConsole, interactionEmbed } = require(`../../functions.js`);
+const { ms } = require('ms');
 const cooldown = new Set();
-const auth = new Set();
 
 module.exports = {
-    name: "createinvite",
-    aliases: ['ci','createinv'],
-    category: "channel management",
-    description: "Creates an invite for the given channel",
-    usage: '[channel] [true|false] [time in hours for the invite to last] [max uses]',
-    timeout: "5 seconds",
-    run: async (client, message, args) => {
-      if (message.deletable) {
-        message.delete();
+  name: `createinvite`,
+  data: new SlashCommandBuilder()
+  .setName(`createinvite`)
+  .setDescription(`Creates an invite for a certain channel`)
+  .addChannelOption((option) => {
+    return option
+    .setName("channel")
+    .setDescription(`The channel to create the invite for (Default: This channel)`)
+    .setRequired(false)
+  })
+  .addIntegerOption((option) => {
+    return option
+    .setName(`age`)
+    .setDescription(`How many days should the invite last (Default: Unlimited)`)
+    .setRequired(false)
+    .addChoices([
+      ["1hour", 3600],
+      ["1day", 86400],
+      ["1week", 604800],
+      ["forever", 0]
+    ])
+  })
+  .addIntegerOption((option) => {
+    return option
+    .setName(`max_uses`)
+    .setDescription(`The amount of people that can use this invite (Default: Unlimited)`)
+    .setRequired(false)
+  })
+  .addBooleanOption((option) => {
+    return option
+    .setName(`temporary_membership`)
+    .setDescription(`Should the user be kicked after 24 hours and they have no roles? (Default: false)`)
+    .setRequired(false)
+  }),
+  /**
+   * @param {Client} client Client object
+   * @param {CommandInteraction} interaction Interaction Object
+   * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
+   */
+  run: async (client, interaction, options) => {
+    if(cooldown.has(interaction.member.id)) {
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client)
+    } else {
+      const channel = options.getChannel(`channel`) ?? interaction.channel
+      var age = options.getInteger(`age`)
+      const max_uses = options.getInteger(`max_uses`)
+      const temporary_membership = options.getBoolean(`temporary_membership`)
+
+      if(channel) {
+        if(!interaction.member.permissionsIn(channel).has(`CREATE_INSTANT_INVITE`)) return interactionToConsole(`[ERR-UPRM]`, `createinvite.js (Line 54)`, interaction, client);
       }
-      if (cooldown.has(message.author.id)) {
-        message.reply(`that's a little too fast!`).then(m => m.delete({ timeout: 2500 }));
-      } else {
-      auth.add("409740404636909578")
+      if(!interaction.guild.me.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionToConsole(`[ERR-BPRM]`, `createinvite.js (Line 59)`, interaction, client);
 
-      if(message.member.hasPermission("CREATE_INSTANT_INVITE")) {
-        auth.add(message.author.id)
-      }
-      if(!auth.has(message.author.id)) return responseEmbed(3, "Unauthorized: You don't have CREATE INVITES", "CHANNEL", message, client)
-      if(!message.guild.me.hasPermission("CREATE_INSTANT_INVITE")) return responseEmbed(3, "Unauthorized: I don't have CREATE INVITES", "CHANNEL", message, client)
-
-      let _channel = message.guild.channels.cache.find(channel => channel.name === `${args[0]}`)
-      || message.guild.channels.cache.find(channel => channel.name === `${args[0]}`)
-      || message.mentions.channels.first()
-      || message.channel;
-
-      _channel.createInvite({
-        temporary: args[1],
-        maxAge: args[2] * 3600,
-        maxUses: args[3]
-      })
-      .then(invite => responseEmbed(1, "I created an invite! The URL is:\n> " + invite.url, "CHANNEL", message, client))
-      .catch(err => toConsole(String(err), 'createinvite.js (Line 32)', message, client));
-
-      cooldown.add(message.author.id);
-      setTimeout(() => {
-        cooldown.delete(message.author.id);
-      }, 5000);
-      }
+      channel.createInvite({ age: age, max_uses: max_uses, temporary: temporary_membership })
+      .then(invite => interactionEmbed(1, `Here is the invite:\n${invite}`, interaction, client, false));
     }
+  }
 }
