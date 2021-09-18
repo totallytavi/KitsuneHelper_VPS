@@ -34,7 +34,7 @@ fs.readdirSync(`./commands/`).forEach(async (dir, index, array) => {
     console.log(`[APP-REFR] Started refreshing application (/) commands.`);
 
     await rest.put(
-      Routes.applicationGuildCommands(`699670844082749461`, `744914864681517146`),
+      Routes.applicationCommands(`699670844082749461`),
       { body: slashCommands },
     );
     
