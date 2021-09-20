@@ -5,7 +5,6 @@ const rest = new REST({ version: 9 }).setToken(`Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.
 const { Routes } = require(`discord-api-types/v9`);
 const wait = require('util').promisify(setTimeout);
 const { toConsole, interactionToConsole } = require(`./functions.js`);
-const { assertReturnOfBuilder } = require('@discordjs/builders/dist/interactions/slashCommands/Assertions');
 
 const client = new Client({
   intents: [`GUILDS`,`GUILD_BANS`,`GUILD_EMOJIS_AND_STICKERS`,`GUILD_INVITES`,`GUILD_MEMBERS`,`GUILD_MESSAGES`,`GUILD_MESSAGE_REACTIONS`,`GUILD_MESSAGE_TYPING`,`GUILD_PRESENCES`,`GUILD_WEBHOOKS`]
