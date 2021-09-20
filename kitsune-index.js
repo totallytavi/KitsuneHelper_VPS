@@ -1,7 +1,7 @@
 const { Client, Collection, Presence } = require(`discord.js`);
 const fs = require(`fs`);
 const { REST } = require(`@discordjs/rest`);
-const rest = new REST().setToken(`Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A`);
+const rest = new REST({ version: 9 }).setToken(`Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A`);
 const { Routes } = require(`discord-api-types/v9`);
 const wait = require('util').promisify(setTimeout);
 const { toConsole, interactionToConsole } = require(`./functions.js`);
