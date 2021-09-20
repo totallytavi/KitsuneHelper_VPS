@@ -9,7 +9,8 @@ const { toConsole, interactionToConsole } = require(`./functions.js`);
 const client = new Client({
   intents: [`GUILDS`,`GUILD_BANS`,`GUILD_EMOJIS_AND_STICKERS`,`GUILD_INVITES`,`GUILD_MEMBERS`,`GUILD_MESSAGES`,`GUILD_MESSAGE_REACTIONS`,`GUILD_MESSAGE_TYPING`,`GUILD_PRESENCES`,`GUILD_WEBHOOKS`]
 });
-const slashCommands = []; client.commands = new Collection();
+const slashCommands = [];
+client.commands = new Collection();
 
 fs.readdirSync(`./commands/`).forEach(async (dir, index, array) => {
   const commands = fs.readdirSync(`./commands/${dir}`).filter(file => file.endsWith(`.js`));
