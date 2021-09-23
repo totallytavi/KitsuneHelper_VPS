@@ -1,7 +1,8 @@
+const config = requrie(`./config.json`)
 const { Client, Collection } = require(`discord.js`);
 const fs = require(`fs`);
 const { REST } = require(`@discordjs/rest`);
-const rest = new REST({ version: 9 }).setToken(`NzMyODgwMjA0MzYzNzI2OTI4.Xw7B4A.s58PMz7i2MWPP7DOtnqGRM1_-WQ`);
+const rest = new REST({ version: 9 }).setToken(config.token);
 const { Routes } = require(`discord-api-types/v9`);
 const fetch = require(`fetch`).fetchUrl;
 const wait = require('util').promisify(setTimeout);
@@ -36,7 +37,7 @@ client.commands = new Collection();
     console.log(`[APP-REFR] Started refreshing application (/) commands.`);
 
     await rest.put(
-      Routes.applicationCommands(`732880204363726928`),
+      Routes.applicationCommands(config.app_id),
       { body: slashCommands },
     );
     
@@ -91,4 +92,4 @@ client.on(`guildCreate`, async (guild) => {
   };
 });
 
-client.login(`NzMyODgwMjA0MzYzNzI2OTI4.Xw7B4A.s58PMz7i2MWPP7DOtnqGRM1_-WQ`);
+client.login(config.token);
