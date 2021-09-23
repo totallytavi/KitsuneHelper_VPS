@@ -4,7 +4,8 @@ const errors = {
   "[ERR-COLD]": "You are on cooldown!",
   "[ERR-UPRM]": "You do not have the proper permissions to execute this command",
   "[ERR-BPRM]": "I do not have the proper permissions to execute this command",
-  "[ERR-UNK]": "I can't tell why an issue spawned. Please report this to the support server! (/support)"
+  "[ERR-UNK]": "I can't tell why an issue spawned. Please report this to the support server! (/support)",
+  "[INFO-DEV]": "This command is in development. This should not be expected to work"
 }
 
 module.exports = {
@@ -123,6 +124,8 @@ module.exports = {
         .setFooter(`${interaction.guild.name} (${interaction.guild.id})`, interaction.guild.iconURL({ dynamic: true }))
         .setTimestamp();
 
+        if(source != `index.js (Line 81)`) interaction.followUp({ content: `An error occurred and has been logged in the support server. We're sorry and will work to fix this!`, ephemeral: true });
+
         client.channels.cache.get('775560270700347432').send({ embeds: [embed] })
       },
 
@@ -158,7 +161,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 
-            interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            interaction.reply(interaction, { embeds: [embed] })
 
             break;
           case 2:
@@ -166,11 +169,11 @@ module.exports = {
             .setTitle("Warning")
             .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
             .setColor("ORANGE")
-            .setDescription(content)
+            .setDescription(errors[content] ?? content)
             .setFooter("The operation was completed successfully with a minor error")
             .setTimestamp();
 
-            interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 3:
@@ -178,11 +181,11 @@ module.exports = {
             .setTitle("Error")
             .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
             .setColor("RED")
-            .setDescription(content)
+            .setDescription(errors[content])
             .setFooter("The operation failed to complete due to an error")
             .setTimestamp();
 
-            interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 4:
@@ -190,11 +193,11 @@ module.exports = {
             .setTitle("Information")
             .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
             .setColor("BLURPLE")
-            .setDescription(content)
+            .setDescription(errors[content] ?? content)
             .setFooter("The operation is pending completion")
             .setTimestamp();
 
-            interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
         }
