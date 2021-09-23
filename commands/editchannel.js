@@ -149,14 +149,14 @@ module.exports = {
         .setDescription(`New channel bitrate (64kbps is default and recommended)`)
         .setRequired(true)
         .addChoices([
-          [`8kbps`, 8],
-          [`16kbps`, 16],
-          [`32kbps`, 32],
-          [`64kbps`, 64],
-          [`96kbps`, 96],
-          [`128kbps`, 128],
-          [`256kbps`, 256],
-          [`384kbps`, 384]
+          [`8kbps`, "8"],
+          [`16kbps`, "16"],
+          [`32kbps`, "32"],
+          [`64kbps`, "64"],
+          [`96kbps`, "96"],
+          [`128kbps`, "128"],
+          [`256kbps`, "256"],
+          [`384kbps`, "384"]
         ])
       })
     })
@@ -168,11 +168,9 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client)
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
-      interactionEmbed(4, `[INFO-DEV]`, interaction, client);
-      console.log(interaction)
-      fs.writeFileSync(`../console.txt`, interaction.toString());
+      interactionEmbed(4, `[INFO-DEV]`, interaction, client, true);
 
       cooldown.add(interaction.user.id);
       setTimeout(() => {
