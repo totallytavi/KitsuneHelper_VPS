@@ -161,7 +161,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 
-            interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            interaction.reply(interaction, { embeds: [embed] })
 
             break;
           case 2:
@@ -173,7 +173,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with a minor error")
             .setTimestamp();
 
-            interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 3:
@@ -185,7 +185,7 @@ module.exports = {
             .setFooter("The operation failed to complete due to an error")
             .setTimestamp();
 
-            interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 4:
@@ -197,7 +197,7 @@ module.exports = {
             .setFooter("The operation is pending completion")
             .setTimestamp();
 
-            interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
         }

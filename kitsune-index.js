@@ -1,4 +1,4 @@
-const { Client, Collection, Presence } = require(`discord.js`);
+const { Client, Collection } = require(`discord.js`);
 const fs = require(`fs`);
 const { REST } = require(`@discordjs/rest`);
 const rest = new REST({ version: 9 }).setToken(`NzMyODgwMjA0MzYzNzI2OTI4.Xw7B4A.s58PMz7i2MWPP7DOtnqGRM1_-WQ`);
@@ -61,7 +61,6 @@ client.on(`ready`, async (client) => {
 
 client.on(`interactionCreate`, async (interaction) => {
   if(interaction.type === `APPLICATION_COMMAND`) {
-    interaction.deferReply(); // Defer right away so Discord won't break.
     let command = client.commands.get(interaction.commandName)
     if(command) {
       fetch("https://kitsunehelper.codertavi.repl.co/gbans.json", function(e, m, body) {
