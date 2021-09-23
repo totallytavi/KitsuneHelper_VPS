@@ -3,8 +3,15 @@ const fs = require(`fs`);
 const { REST } = require(`@discordjs/rest`);
 const rest = new REST({ version: 9 }).setToken(`NzMyODgwMjA0MzYzNzI2OTI4.Xw7B4A.s58PMz7i2MWPP7DOtnqGRM1_-WQ`);
 const { Routes } = require(`discord-api-types/v9`);
+const fetch = require(`node-fetch`);
 const wait = require('util').promisify(setTimeout);
-const { toConsole, interactionToConsole } = require(`./functions.js`);
+const { toConsole, interactionToConsole, interactionEmbed } = require(`./functions.js`);
+
+var globalBlacklist;
+
+(async () => {
+  globalBlacklist = JSON.parse(await fetch(`https://kitsunehelper.codertavi.repl.co/gbans.json`));
+})()
 
 const client = new Client({
   intents: [`GUILDS`,`GUILD_BANS`,`GUILD_EMOJIS_AND_STICKERS`,`GUILD_INVITES`,`GUILD_MEMBERS`,`GUILD_MESSAGES`,`GUILD_MESSAGE_REACTIONS`,`GUILD_MESSAGE_TYPING`,`GUILD_PRESENCES`,`GUILD_WEBHOOKS`]
@@ -63,6 +70,9 @@ client.on(`interactionCreate`, async (interaction) => {
     interaction.deferReply(); // Defer right away so Discord won't break.
     let command = client.commands.get(interaction.commandName)
     if(command) {
+      if(globalBlacklist[interaction.user.id]) {
+        return interactionEmbed(4, `[ERR-BL] You are banned from using Kitsune Helper for: ${globalBlacklist[interaction.user.id].reason}`, interaction, client);
+      }
       command.run(client, interaction, interaction.options)
       interactionToConsole(`A user ran an interaction: ${interaction.commandName}`, `index.js (Line 81)`, interaction, client)
     }
