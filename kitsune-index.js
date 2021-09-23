@@ -1,7 +1,7 @@
 const { Client, Collection, Presence } = require(`discord.js`);
 const fs = require(`fs`);
 const { REST } = require(`@discordjs/rest`);
-const rest = new REST({ version: 9 }).setToken(`Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A`);
+const rest = new REST({ version: 9 }).setToken(`NzMyODgwMjA0MzYzNzI2OTI4.Xw7B4A.s58PMz7i2MWPP7DOtnqGRM1_-WQ`);
 const { Routes } = require(`discord-api-types/v9`);
 const wait = require('util').promisify(setTimeout);
 const { toConsole, interactionToConsole } = require(`./functions.js`);
@@ -35,7 +35,7 @@ fs.readdirSync(`./commands/`).forEach(async (dir, index, array) => {
     console.log(`[APP-REFR] Started refreshing application (/) commands.`);
 
     await rest.put(
-      Routes.applicationCommands(`699670844082749461`),
+      Routes.applicationCommands(`732880204363726928`),
       { body: slashCommands },
     );
     
@@ -84,4 +84,4 @@ client.on(`guildCreate`, async (guild) => {
   };
 });
 
-client.login(`Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.5mGVwYPEIOmHQIR0UOkqLHzUi7A`);
+client.login(`NzMyODgwMjA0MzYzNzI2OTI4.Xw7B4A.s58PMz7i2MWPP7DOtnqGRM1_-WQ`);
