@@ -1,7 +1,6 @@
-const { Client, CommandInteraction, ApplicationCommandOption } = require(`discord.js`);
+const { Client, CommandInteraction, CommandInteractionOptionResolver } = require(`discord.js`);
 const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { interactionToConsole, interactionEmbed } = require(`../../functions.js`);
-const { ms } = require('ms');
+const { interactionToConsole, interactionEmbed } = require(`../functions.js`);
 const cooldown = new Set();
 
 module.exports = {
@@ -11,7 +10,7 @@ module.exports = {
   .setDescription(`Creates an invite for a certain channel`)
   .addChannelOption((option) => {
     return option
-    .setName("channel")
+    .setName(`channel`)
     .setDescription(`The channel to create the invite for (Default: This channel)`)
     .setRequired(false)
   })
@@ -60,6 +59,11 @@ module.exports = {
 
       channel.createInvite({ age: age, max_uses: max_uses, temporary: temporary_membership })
       .then(invite => interactionEmbed(1, `Here is the invite:\n${invite}`, interaction, client, false));
+
+      cooldown.add(interaction.user.id);
+      setTimeout(() => {
+        cooldown.delete(interaction.user.id);
+      }, 5000);
     }
   }
 }
