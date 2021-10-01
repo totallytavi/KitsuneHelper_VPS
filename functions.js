@@ -4,6 +4,7 @@ const errors = {
   "[ERR-COLD]": "You are on cooldown!",
   "[ERR-UPRM]": "You do not have the proper permissions to execute this command",
   "[ERR-BPRM]": "I do not have the proper permissions to execute this command",
+  "[ERR-ARGS]": "You have not supplied the correct parameters. Please check again",
   "[ERR-UNK]": "I can't tell why an issue spawned. Please report this to the support server! (/support)",
   "[INFO-DEV]": "This command is in development. This should not be expected to work"
 }

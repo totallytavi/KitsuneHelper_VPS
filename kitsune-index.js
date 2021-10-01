@@ -1,6 +1,7 @@
-const config = requrie(`./config.json`)
+const config = require(`./config.json`)
 const { Client, Collection } = require(`discord.js`);
 const fs = require(`fs`);
+const AsciiTable = require('ascii-table');
 const { REST } = require(`@discordjs/rest`);
 const rest = new REST({ version: 9 }).setToken(config.token);
 const { Routes } = require(`discord-api-types/v9`);
@@ -17,16 +18,18 @@ client.commands = new Collection();
 (async () => {
   const commands = fs.readdirSync(`./commands/`).filter(file => file.endsWith(`.js`));
   console.log(`[FILE-LOAD] Expect ${commands.length} files to be imported`)
+  const ascii = new AsciiTable(`Command Loading`);
+  ascii.setHeading(`File`,`Load status`)
 
   for (let file of commands) {
     let command = require(`./commands/${file}`);
 
     if(command.name) {
-      console.info(`[FILE-LOAD] Loaded: ${command.name} from ${file}!`)
+      ascii.addRow(file, `Loaded from module.exports :D`)
       client.commands.set(command.name, command)
       slashCommands.push(command.data.toJSON())
     } else {
-      console.info(`[FILE-LOAD] Failed to load: ${file}! Did you forget to add a name property in module.exports?`)
+      ascii.addRow(file, `Missing module.exports D:`)
     }
   }
 
@@ -43,8 +46,10 @@ client.commands = new Collection();
     
     const then = Date.now();
     console.log(`[APP-REFR] Successfully reloaded application (/) commands after ` + (then - now) + `ms.`);
+    console.log(ascii);
   } catch (error) {
     console.error(error);
+    console.info(ascii);
   }
 })();
 
