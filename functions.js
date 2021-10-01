@@ -4,6 +4,7 @@ const errors = {
   "[ERR-COLD]": "You are on cooldown!",
   "[ERR-UPRM]": "You do not have the proper permissions to execute this command",
   "[ERR-BPRM]": "I do not have the proper permissions to execute this command",
+  "[ERR-ARGS]": "You have not supplied the correct parameters. Please check again",
   "[ERR-UNK]": "I can't tell why an issue spawned. Please report this to the support server! (/support)",
   "[INFO-DEV]": "This command is in development. This should not be expected to work"
 }
@@ -150,6 +151,7 @@ module.exports = {
         if(typeof ephemeral != 'boolean') return Promise.reject("ephemeral is not a boolean");
 
         const embed = new MessageEmbed();
+        console.log(`Run. Run. Run.`)
 
         switch(type) {
           case 1:
@@ -161,7 +163,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 
-            interaction.reply(interaction, { embeds: [embed] })
+            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 2:
@@ -173,7 +175,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with a minor error")
             .setTimestamp();
 
-            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 3:
@@ -181,11 +183,11 @@ module.exports = {
             .setTitle("Error")
             .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
             .setColor("RED")
-            .setDescription(errors[content])
+            .setDescription(errors[content] ?? `I don't understand the error "${content}". Please report this to the support server!`)
             .setFooter("The operation failed to complete due to an error")
             .setTimestamp();
 
-            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 4:
@@ -197,7 +199,7 @@ module.exports = {
             .setFooter("The operation is pending completion")
             .setTimestamp();
 
-            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
         }

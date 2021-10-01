@@ -170,7 +170,66 @@ module.exports = {
     if(cooldown.has(interaction.user.id)) {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
-      interactionEmbed(4, `[INFO-DEV]`, interaction, client, true);
+      const channel = options.getChannel(`channel`);
+      const subcommand = options._subcommand
+      if(options._group === `text`) {
+        if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
+        const option = options.getString(`name`) ?? options.getString(`topic`) ?? options.getBoolean(`nsfw`) ?? options.getNumber(`slowmode`);
+        if(subcommand === `name`) {
+          try {
+            await channel.setName(option);
+            interactionEmbed(1, `${channel}'s name was set to ${channel.name}`, interaction, client, false);
+          } catch(e) {
+            interactionToConsole(`Unable to edit ${channel}'s name due to an error`, `editchannel.js (Line 180)`, interaction, client);
+          };
+        } else if(subcommand === `topic`) {
+          try {
+            await channel.setTopic(option);
+            interactionEmbed(1, `${channel}'s topic was set to ${channel.topic}`, interaction, client, false);
+          } catch(e) {
+            interactionToConsole(`Unable to edit ${channel}'s topic due to an error`, `editchannel.js (Line 187)`, interaction, client)
+          };
+        } else if(subcommand === `slowmode`) {
+          try {
+            await channel.setRateLimitPerUser(option);
+            interactionEmbed(1, `${channel}'s ratelimit was set to ${channel.RateLimitPerUser} second(s)`, interaction, client, false);
+          } catch(e) {
+            interactionToConsole(`Unable to edit ${channel}'s ratelimit due to an error`, `editchannel.js (Line 194)`, interaction, client);
+          };
+        } else if(subcommand === `nsfw`) {
+          try {
+            await channel.setNSFW(option);
+            interactionEmbed(1, `${channel}'s nsfw flag was set to ${channel.nsfw}`, interaction, client, false);
+          } catch(e) {
+            interactionToConsole(`Unable to edit ${channel}'s nsfw flag due to an error`, `editchannel.js (Line 201)`, interaction, client);
+          };
+        }
+      } else if(options._group === `voice`) {
+        if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
+        const option = options.getString(`name`) ?? options.getString(`user_limit`) ?? options.getBoolean(`bitrate`);
+        if(subcommand === `name`) {
+          try {
+            await channel.setName(option);
+            interactionEmbed(1, `${channel}'s name was set to ${channel.name}`, interaction, client, false);
+          } catch(e) {
+            interactionToConsole(`Unable to edit ${channel}'s name due to an error`, `editchannel.js (Line 208)`, interaction, client); 
+          };
+        } else if(subcommand === `user_limit`) {
+          try {
+            await channel.setUserLimit(option);
+            interactionEmbed(1, `${channel}'s user limit was set to ${channel.userLimit}`, interaction, client, false);
+          } catch(e) {
+            interactionToConsole(`Unable to edit ${channel}'s user limit due to an error`, `editchannel.js (Line 215)`, interaction, client);
+          };
+        } else if(subcommand === `bitrate`) {
+          try {
+            await channel.setBitrate(option);
+            interactionEmbed(1, `${channel}'s bitrate was set to ${channel.bitrate} kbps`, interaction, client, false);
+          } catch(e) {
+            interactionToConsole(`Unable to edit ${channel}'s bitrate due to an error`, `editchannel.js (Line 222)`, interaction, client);
+          };
+        }
+      }
 
       cooldown.add(interaction.user.id);
       setTimeout(() => {
