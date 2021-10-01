@@ -49,7 +49,7 @@ client.commands = new Collection();
     console.log(ascii);
   } catch (error) {
     console.error(error);
-    console.info(ascii);
+    console.info(ascii.toString());
   }
 })();
 
