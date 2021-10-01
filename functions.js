@@ -163,8 +163,6 @@ module.exports = {
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 
-            console.log(`Run. Run. Run.`)
-
             await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
