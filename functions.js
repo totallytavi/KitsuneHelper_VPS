@@ -182,7 +182,7 @@ module.exports = {
             .setTitle("Error")
             .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
             .setColor("RED")
-            .setDescription(errors[content])
+            .setDescription(errors[content] ?? `I don't understand the error "${content}". Please report this to the support server!`)
             .setFooter("The operation failed to complete due to an error")
             .setTimestamp();
 

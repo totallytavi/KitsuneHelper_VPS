@@ -170,9 +170,6 @@ module.exports = {
     if(cooldown.has(interaction.user.id)) {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
-      interactionEmbed(4, `[INFO-DEV]`, interaction, client, true);
-      // _group && _subcommand. WHAT
-
       const channel = options.getChannel(`channel`);
       const subcommand = options._subcommand
       if(options._group === `text`) {
