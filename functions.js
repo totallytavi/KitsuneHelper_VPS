@@ -151,6 +151,7 @@ module.exports = {
         if(typeof ephemeral != 'boolean') return Promise.reject("ephemeral is not a boolean");
 
         const embed = new MessageEmbed();
+        console.log(`Run. Run. Run.`)
 
         switch(type) {
           case 1:
@@ -162,7 +163,9 @@ module.exports = {
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 
-            interaction.reply(interaction, { embeds: [embed] })
+            console.log(`Run. Run. Run.`)
+
+            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 2:
@@ -174,7 +177,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with a minor error")
             .setTimestamp();
 
-            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 3:
@@ -186,7 +189,7 @@ module.exports = {
             .setFooter("The operation failed to complete due to an error")
             .setTimestamp();
 
-            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 4:
@@ -198,7 +201,7 @@ module.exports = {
             .setFooter("The operation is pending completion")
             .setTimestamp();
 
-            interaction.reply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
 
             break;
         }

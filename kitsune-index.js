@@ -66,6 +66,7 @@ client.on(`ready`, async (client) => {
 })
 
 client.on(`interactionCreate`, async (interaction) => {
+  await interaction.deferReply();
   if(interaction.type === `APPLICATION_COMMAND`) {
     let command = client.commands.get(interaction.commandName)
     if(command) {
