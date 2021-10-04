@@ -151,7 +151,6 @@ module.exports = {
         if(typeof ephemeral != 'boolean') return Promise.reject("ephemeral is not a boolean");
 
         const embed = new MessageEmbed();
-        console.log(`Run. Run. Run.`)
 
         switch(type) {
           case 1:
