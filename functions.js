@@ -6,6 +6,7 @@ const errors = {
   "[ERR-BPRM]": "I do not have the proper permissions to execute this command",
   "[ERR-ARGS]": "You have not supplied the correct parameters. Please check again",
   "[ERR-UNK]": "I can't tell why an issue spawned. Please report this to the support server! (/support)",
+  "[WARN-NODM]": "Sorry, but all slash commands only work in a server, not DMs",
   "[INFO-DEV]": "This command is in development. This should not be expected to work"
 }
 
@@ -94,7 +95,7 @@ module.exports = {
       /**
        * @param {String} reason The message to send
        * @param {String} source Where the message originated from
-       * @param {Interaction} interaction Interaction object, cannot be left blank
+       * @param {Interaction} interaction Interaction object, can be left blank
        * @param {Client} client Client object, cannot be left blank
        * @returns {null}
        * @example interactionToConsole("say.js (Line 69)", "We hit an error!", message, client)
@@ -104,30 +105,45 @@ module.exports = {
         if(typeof reason != 'string') return Promise.reject("reason is not a string");
         if(!source) return Promise.reject("source is a required argument");
         if(typeof source != 'string') return Promise.reject("source is not a string");
-        if(!interaction) return Promise.reject("interaction is a required argument");
         if(typeof interaction != 'object') return Promise.reject("interaction is not an object");
         if(!client) return Promise.reject("client is a required argument");
         if(typeof client != 'object') return Promise.reject("client is not an object");
 
         if(typeof client.channels.cache.get('775560270700347432') != 'object') return console.log("Error channel was not found; aborting...")
 
-        const embed = new MessageEmbed()
-        embed
-        .setTitle("Message to Console")
-        .setColor("RED")
-        .setThumbnail(interaction.user.avatarURL({ dynamic: true, size: 2048 }))
-        .addFields(
-          { name: "Source", value: source, inline: true },
-          { name: "Author", value: `Author: ${interaction.user} (${interaction.user.tag} - ${interaction.user.id})`, inline: true },
-          { name: "Error", value: reason, inline: true },
-          { name: "Type", value: interaction.type, inline: true }
-        )
-        .setFooter(`${interaction.guild.name} (${interaction.guild.id})`, interaction.guild.iconURL({ dynamic: true }))
-        .setTimestamp();
+        if(interaction) {
+          const embed = new MessageEmbed()
+          embed
+          .setTitle("Message to Console")
+          .setColor("RED")
+          .setThumbnail(interaction.user.avatarURL({ dynamic: true, size: 2048 }))
+          .addFields(
+            { name: "Source", value: source, inline: true },
+            { name: "Author", value: `Author: ${interaction.user} (${interaction.user.tag} - ${interaction.user.id})`, inline: true },
+            { name: "Error", value: reason, inline: true },
+            { name: "Type", value: interaction.type, inline: true }
+          )
+          .setFooter(`${interaction.guild.name} (${interaction.guild.id})`, interaction.guild.iconURL({ dynamic: true }))
+          .setTimestamp();
 
-        if(source != `index.js (Line 81)`) interaction.followUp({ content: `An error occurred and has been logged in the support server. We're sorry and will work to fix this!`, ephemeral: true });
+          if(source != `index.js (Line 81)`) interaction.editReply({ content: `An error occurred and has been logged in the support server. We're sorry and will work to fix this!`, ephemeral: false });
 
-        client.channels.cache.get('775560270700347432').send({ embeds: [embed] })
+          client.channels.cache.get('775560270700347432').send({ embeds: [embed] }) 
+        } else {
+          const embed = new MessageEmbed()
+          embed
+          .setTitle("Message to Console")
+          .setColor("RED")
+          .addFields(
+            { name: "Source", value: source, inline: true },
+            { name: "Author", value: `Unknown Author`, inline: true },
+            { name: "Error", value: reason, inline: false }
+          )
+          .setFooter(`Unknown Guild (Unknown Guild ID)`)
+          .setTimestamp();
+
+          client.channels.cache.get('775560270700347432').send({ embeds: [embed] })
+        }
       },
 
       /**
@@ -158,7 +174,7 @@ module.exports = {
             .setTitle("Success")
             .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
             .setColor("BLURPLE")
-            .setDescription(content)
+            .setDescription(errors[content] ?? content)
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 

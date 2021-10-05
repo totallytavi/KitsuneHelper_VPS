@@ -15,6 +15,17 @@ const client = new Client({
 const slashCommands = [];
 client.commands = new Collection();
 
+// Error logging. This should already be implemented
+process.on(`warning`, async (error) => {
+  return interactionToConsole(`A warning occurred\n> Message: ${error.name} ${error.message}\n> Stacktrace: ${error.stack}`, `process.on(warning)`, ``, client);
+});
+process.on(`unhandledRejection`, async (error, origin) => {
+  return interactionToConsole(`An unhandledRejection occurred\n> Message: ${error.name} ${error.message}\n> Origin: ${origin}`, ``, client);
+});
+process.on(`uncaughtException`, async (reason, promise) => {
+  return interactionToConsole(`An uncaughtException occurred\n> Reason: ${reason}\n> Origin: ${promise}`, ``, client);
+})
+
 (async () => {
   const commands = fs.readdirSync(`./commands/`).filter(file => file.endsWith(`.js`));
   console.log(`[FILE-LOAD] Expect ${commands.length} files to be imported`)
@@ -66,6 +77,7 @@ client.on(`ready`, async (client) => {
 })
 
 client.on(`interactionCreate`, async (interaction) => {
+  if(!interaction.inGuild()) return interactionEmbed(4, `[WARN-NODM]`, interaction, client, true);
   await interaction.deferReply();
   if(interaction.type === `APPLICATION_COMMAND`) {
     let command = client.commands.get(interaction.commandName)

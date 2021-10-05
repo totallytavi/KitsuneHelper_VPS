@@ -8,7 +8,7 @@ module.exports = {
   data: new SlashCommandBuilder()
   .setName(`kick`)
   .setDescription(`Removes a user from the server. They can rejoin with an invite`)
-  .addUserOption(option => {
+  .addMentionableOption(option => {
     return option
     .setName(`user`)
     .setDescription(`The user to kick from the server`)
@@ -29,15 +29,16 @@ module.exports = {
     if(cooldown.has(interaction.user.id)) {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
-      const member = options.getMember(`user`);
+      const member = options.getMentionable(`user`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
 
       if(!interaction.member.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-      if(!interaction.guild.me.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+      if(!interaction.guild.me.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
       if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+      if(member.roles.highest.rawPosition <= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
 
       try {
-        await member.kick({ reason: reason });
+        await member.kick({ reason: `${reason} (Moderator ID: ${interaction.member.id})` });
         interactionEmbed(1, `${member} (${member.id}) was kicked for: ${reason}`);
       } catch(e) {
         interactionToConsole(`Failed to kick \`${member.id}\` from \`${interaction.guild.id}\``, `kick.js (Line 40)`, interaction, client);
