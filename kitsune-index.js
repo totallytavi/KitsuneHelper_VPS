@@ -24,7 +24,7 @@ process.on(`unhandledRejection`, async (error, origin) => {
 });
 process.on(`uncaughtException`, async (reason, promise) => {
   return interactionToConsole(`An uncaughtException occurred\n> Reason: ${reason}\n> Origin: ${promise}`, ``, client);
-})
+});
 
 (async () => {
   const commands = fs.readdirSync(`./commands/`).filter(file => file.endsWith(`.js`));
