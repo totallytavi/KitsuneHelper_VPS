@@ -39,19 +39,18 @@ module.exports = {
       const nickname = options.getString(`new_nickname`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
 
-      if(member === interaction.guild.me) {
-        if(!interaction.guild.me.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(2, `[ERR-BPRM]`, interaction, client, false);
-      } else if(member === interaction.member) {
-        if(!interaction.member.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-      } else {
-        if(!interaction.guild.me.permissions.has(`MANAGE_NICKNAMES`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-      }
-
-      if(nickname.length > 32) {
-        return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-      }
-
       try {
+        if(member === interaction.guild.me) {
+          if(!interaction.guild.me.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(2, `[ERR-BPRM]`, interaction, client, false);
+        } else if(member === interaction.member) {
+          if(!interaction.member.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        } else {
+          if(!interaction.guild.me.permissions.has(`MANAGE_NICKNAMES`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+        }
+        if(nickname.length > 32) {
+          return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+        }
+
         await member.setNickname({ nickname: nickname, reason: `${reason} (Moderator ID: ${interaction.member.id})`});
         interactionEmbed(1, `Updated ${member}'s (${member.id}) nickname to \`${nickname}\` for \`${reason}\``)
       } catch(e) {

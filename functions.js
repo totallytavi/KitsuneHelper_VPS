@@ -105,7 +105,6 @@ module.exports = {
         if(typeof reason != 'string') return Promise.reject("reason is not a string");
         if(!source) return Promise.reject("source is a required argument");
         if(typeof source != 'string') return Promise.reject("source is not a string");
-        if(typeof interaction != 'object') return Promise.reject("interaction is not an object");
         if(!client) return Promise.reject("client is a required argument");
         if(typeof client != 'object') return Promise.reject("client is not an object");
 

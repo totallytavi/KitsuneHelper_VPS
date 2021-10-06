@@ -16,14 +16,14 @@ const slashCommands = [];
 client.commands = new Collection();
 
 // Error logging. This should already be implemented
-process.on(`warning`, async (error) => {
-  return interactionToConsole(`A warning occurred\n> Message: ${error.name} ${error.message}\n> Stacktrace: ${error.stack}`, `process.on(warning)`, ``, client);
+process.on(`warning`, async (name, message, stack) => {
+  return interactionToConsole(`A warning occurred\n> Message: ${name} ${message}\n> Stacktrace: ${stack}`, `process.on(warning)`, ``, client);
 });
-process.on(`unhandledRejection`, async (error, origin) => {
-  return interactionToConsole(`An unhandledRejection occurred\n> Message: ${error.name} ${error.message}\n> Origin: ${origin}`, ``, client);
+process.on(`unhandledRejection`, async (promise) => {
+  return interactionToConsole(`An unhandledRejection occurred\n> Promise: ${promise}`, `process.on(unhandledRejection)`, ``, client);
 });
-process.on(`uncaughtException`, async (reason, promise) => {
-  return interactionToConsole(`An uncaughtException occurred\n> Reason: ${reason}\n> Origin: ${promise}`, ``, client);
+process.on(`uncaughtException`, async (err, origin) => {
+  return interactionToConsole(`An uncaughtException occurred\n> Reason: ${err}\n> Origin: ${origin}`, `process.on(uncaughtException)`, ``, client);
 });
 
 (async () => {
@@ -31,6 +31,7 @@ process.on(`uncaughtException`, async (reason, promise) => {
   console.log(`[FILE-LOAD] Expect ${commands.length} files to be imported`)
   const ascii = new AsciiTable(`Command Loading`);
   ascii.setHeading(`File`,`Load status`)
+  ascii.addRow(`example.js`, `Loaded from module.exports :D`) // Just to show if anything is broken
 
   for (let file of commands) {
     let command = require(`./commands/${file}`);
@@ -51,13 +52,13 @@ process.on(`uncaughtException`, async (reason, promise) => {
     console.log(`[APP-REFR] Started refreshing application (/) commands.`);
 
     await rest.put(
-      Routes.applicationCommands(config.app_id),
+      Routes.applicationGuildCommands(config.app_id, config.guild_id),
       { body: slashCommands },
     );
     
     const then = Date.now();
     console.log(`[APP-REFR] Successfully reloaded application (/) commands after ` + (then - now) + `ms.`);
-    console.log(ascii);
+    console.log(ascii.toString());
   } catch (error) {
     console.error(error);
     console.info(ascii.toString());
