@@ -8,7 +8,7 @@ module.exports = {
   data: new SlashCommandBuilder()
   .setName(`ban`)
   .setDescription(`Permanently a user from the server. They cannot rejoin unless unbanned`)
-  .addUserOption(option => {
+  .addMentionableOption(option => {
     return option
     .setName(`user`)
     .setDescription(`The user to ban from the server`)
@@ -45,17 +45,19 @@ module.exports = {
     if(cooldown.has(interaction.user.id)) {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
-      const member = options.getMember(`user`);
+      const member = options.getMentionable(`user`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
       const days = options.getNumber(`days`) ?? 0;
 
-      if(!interaction.member.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-      if(!interaction.guild.me.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-      if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-
       try {
-        await member.ban({ reason: reason, days: days });
-        interactionEmbed(1, `${member} (${member.id}) was banned for: ${reason}. ${days} day(s) worth of messages were purged`);
+        if(!interaction.member.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        if(!interaction.guild.me.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+
+        await member.ban({ reason: `${reason} (Moderator ID: ${interaction.member.id})`, days: days });
+        interactionEmbed(1, `${member} (${member.id}) was banned for: ${reason}. ${days} day(s) worth of messages were purged`, interaction, client, false);
       } catch(e) {
         interactionToConsole(`Failed to kick \`${member.id}\` from \`${interaction.guild.id}\``, `kick.js (Line 40)`, interaction, client);
       }

@@ -48,17 +48,19 @@ module.exports = {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client)
     } else {
       const channel = options.getChannel(`channel`) ?? interaction.channel
-      var age = options.getInteger(`age`)
-      const max_uses = options.getInteger(`max_uses`)
-      const temporary_membership = options.getBoolean(`temporary_membership`)
+      const age = options.getInteger(`age`);
+      const max_uses = options.getInteger(`max_uses`);
+      const temporary_membership = options.getBoolean(`temporary_membership`);
 
-      if(channel) {
-        if(!interaction.member.permissionsIn(channel).has(`CREATE_INSTANT_INVITE`)) return interactionToConsole(`[ERR-UPRM]`, `createinvite.js (Line 54)`, interaction, client);
+      try {
+        if(!interaction.member.permissionsIn(channel).has(`CREATE_INSTANT_INVITE`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        if(!interaction.guild.me.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionEmbed(3, `[ERR-BPRM]`, `createinvite.js (Line 59)`, interaction, client, false);
+
+        channel.createInvite({ age: age, max_uses: max_uses, temporary: temporary_membership })
+        .then(invite => interactionEmbed(1, `Here is the invite:\n${invite}`, interaction, client, false));
+      } catch(e) {
+        interactionToConsole(`Failed to create an invite for a server\n> ${String(e)}`, `createinvite.js (Line 61)`, interaction, client);
       }
-      if(!interaction.guild.me.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionToConsole(`[ERR-BPRM]`, `createinvite.js (Line 59)`, interaction, client);
-
-      channel.createInvite({ age: age, max_uses: max_uses, temporary: temporary_membership })
-      .then(invite => interactionEmbed(1, `Here is the invite:\n${invite}`, interaction, client, false));
 
       cooldown.add(interaction.user.id);
       setTimeout(() => {

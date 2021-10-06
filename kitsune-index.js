@@ -15,11 +15,23 @@ const client = new Client({
 const slashCommands = [];
 client.commands = new Collection();
 
+// Error logging. This should already be implemented
+process.on(`warning`, async (name, message, stack) => {
+  return interactionToConsole(`A warning occurred\n> Message: ${name} ${message}\n> Stacktrace: ${stack}`, `process.on(warning)`, ``, client);
+});
+process.on(`unhandledRejection`, async (promise) => {
+  return interactionToConsole(`An unhandledRejection occurred\n> Promise: ${promise}`, `process.on(unhandledRejection)`, ``, client);
+});
+process.on(`uncaughtException`, async (err, origin) => {
+  return interactionToConsole(`An uncaughtException occurred\n> Reason: ${err}\n> Origin: ${origin}`, `process.on(uncaughtException)`, ``, client);
+});
+
 (async () => {
   const commands = fs.readdirSync(`./commands/`).filter(file => file.endsWith(`.js`));
   console.log(`[FILE-LOAD] Expect ${commands.length} files to be imported`)
   const ascii = new AsciiTable(`Command Loading`);
   ascii.setHeading(`File`,`Load status`)
+  ascii.addRow(`example.js`, `Loaded from module.exports :D`) // Just to show if anything is broken
 
   for (let file of commands) {
     let command = require(`./commands/${file}`);
@@ -40,13 +52,13 @@ client.commands = new Collection();
     console.log(`[APP-REFR] Started refreshing application (/) commands.`);
 
     await rest.put(
-      Routes.applicationCommands(config.app_id),
+      Routes.applicationGuildCommands(config.app_id, config.guild_id),
       { body: slashCommands },
     );
     
     const then = Date.now();
     console.log(`[APP-REFR] Successfully reloaded application (/) commands after ` + (then - now) + `ms.`);
-    console.log(ascii);
+    console.log(ascii.toString());
   } catch (error) {
     console.error(error);
     console.info(ascii.toString());
@@ -66,6 +78,7 @@ client.on(`ready`, async (client) => {
 })
 
 client.on(`interactionCreate`, async (interaction) => {
+  if(!interaction.inGuild()) return interactionEmbed(4, `[WARN-NODM]`, interaction, client, true);
   await interaction.deferReply();
   if(interaction.type === `APPLICATION_COMMAND`) {
     let command = client.commands.get(interaction.commandName)

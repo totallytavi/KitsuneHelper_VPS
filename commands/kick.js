@@ -32,13 +32,15 @@ module.exports = {
       const member = options.getMember(`user`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
 
-      if(!interaction.member.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-      if(!interaction.guild.me.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-      if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-
       try {
-        await member.kick({ reason: reason });
-        interactionEmbed(1, `${member} (${member.id}) was kicked for: ${reason}`);
+        if(!interaction.member.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        if(!interaction.guild.me.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+
+        await member.kick(`${reason} (Moderator ID: ${interaction.member.id})`);
+        interactionEmbed(1, `${member} (${member.id}) was kicked for: ${reason}`, interaction, client, false);
       } catch(e) {
         interactionToConsole(`Failed to kick \`${member.id}\` from \`${interaction.guild.id}\``, `kick.js (Line 40)`, interaction, client);
       }
