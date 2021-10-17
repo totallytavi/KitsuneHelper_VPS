@@ -177,7 +177,7 @@ module.exports = {
           try {
             if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNEL`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setName(option);
             interactionEmbed(1, `${channel}'s name was set to ${channel.name}`, interaction, client, false);
@@ -188,7 +188,7 @@ module.exports = {
           try {
             if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNEL`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setTopic(option);
             interactionEmbed(1, `${channel}'s topic was set to ${channel.topic}`, interaction, client, false);
@@ -199,7 +199,7 @@ module.exports = {
           try {
             if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNEL`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setRateLimitPerUser(option);
             interactionEmbed(1, `${channel}'s ratelimit was set to ${channel.RateLimitPerUser} second(s)`, interaction, client, false);
@@ -210,7 +210,7 @@ module.exports = {
           try {
             if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNEL`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setNSFW(option);
             interactionEmbed(1, `${channel}'s nsfw flag was set to ${channel.nsfw}`, interaction, client, false);
@@ -225,7 +225,7 @@ module.exports = {
           try {
             if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNEL`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setName(option);
             interactionEmbed(1, `${channel}'s name was set to ${channel.name}`, interaction, client, false);
@@ -236,7 +236,7 @@ module.exports = {
           try {
             if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNEL`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setUserLimit(option);
             interactionEmbed(1, `${channel}'s user limit was set to ${channel.userLimit}`, interaction, client, false);
@@ -247,7 +247,7 @@ module.exports = {
           try {
             if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNEL`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setBitrate(option);
             interactionEmbed(1, `${channel}'s bitrate was set to ${channel.bitrate} kbps`, interaction, client, false);
