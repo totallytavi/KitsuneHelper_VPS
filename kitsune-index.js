@@ -56,10 +56,10 @@ process.on(`uncaughtException`, async (err, origin) => {
     console.log(`[APP-REFR] Started refreshing application (/) commands.`);
 
     await rest.put(
-      Routes.applicationGuildCommands(config.app_id, config.guild_id),
-      { body: slashCommands },
-      // Routes.applicationCommands(config.app_id),
+      // Routes.applicationGuildCommands(config.app_id, config.guild_id),
       // { body: slashCommands },
+      Routes.applicationCommands(config.app_id),
+      { body: slashCommands },
     );
     
     const then = Date.now();
