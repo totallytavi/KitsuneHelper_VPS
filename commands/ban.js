@@ -59,7 +59,7 @@ module.exports = {
         await member.ban({ reason: `${reason} (Moderator ID: ${interaction.member.id})`, days: days });
         interactionEmbed(1, `${member} (${member.id}) was banned for: ${reason}. ${days} day(s) worth of messages were purged`, interaction, client, false);
       } catch(e) {
-        interactionToConsole(`Failed to kick \`${member.id}\` from \`${interaction.guild.id}\``, `kick.js (Line 40)`, interaction, client);
+        interactionToConsole(`Failed to kick \`${member.id}\` from \`${interaction.guild.id}\`\n> ${String(e)}`, `kick.js (Line 40)`, interaction, client);
       }
 
       cooldown.add(interaction.user.id);

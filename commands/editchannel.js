@@ -182,7 +182,7 @@ module.exports = {
             await channel.setName(option);
             interactionEmbed(1, `${channel}'s name was set to ${channel.name}`, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s name due to an error`, `editchannel.js (Line 180)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s name due to an error\n> ${String(e)}`, `editchannel.js (Line 180)`, interaction, client);
           };
         } else if(subcommand === `topic`) {
           try {
@@ -193,7 +193,7 @@ module.exports = {
             await channel.setTopic(option);
             interactionEmbed(1, `${channel}'s topic was set to ${channel.topic}`, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s topic due to an error`, `editchannel.js (Line 187)`, interaction, client)
+            interactionToConsole(`Unable to edit ${channel}'s topic due to an error\n> ${String(e)}`, `editchannel.js (Line 187)`, interaction, client)
           };
         } else if(subcommand === `slowmode`) {
           try {
@@ -204,7 +204,7 @@ module.exports = {
             await channel.setRateLimitPerUser(option);
             interactionEmbed(1, `${channel}'s ratelimit was set to ${channel.RateLimitPerUser} second(s)`, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s ratelimit due to an error`, `editchannel.js (Line 194)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s ratelimit due to an error\n> ${String(e)}`, `editchannel.js (Line 194)`, interaction, client);
           };
         } else if(subcommand === `nsfw`) {
           try {
@@ -215,7 +215,7 @@ module.exports = {
             await channel.setNSFW(option);
             interactionEmbed(1, `${channel}'s nsfw flag was set to ${channel.nsfw}`, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s nsfw flag due to an error`, `editchannel.js (Line 201)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s nsfw flag due to an error\n> ${String(e)}`, `editchannel.js (Line 201)`, interaction, client);
           };
         }
       } else if(options._group === `voice`) {
@@ -230,7 +230,7 @@ module.exports = {
             await channel.setName(option);
             interactionEmbed(1, `${channel}'s name was set to ${channel.name}`, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s name due to an error`, `editchannel.js (Line 208)`, interaction, client); 
+            interactionToConsole(`Unable to edit ${channel}'s name due to an error\n> ${String(e)}`, `editchannel.js (Line 208)`, interaction, client); 
           };
         } else if(subcommand === `user_limit`) {
           try {
@@ -241,7 +241,7 @@ module.exports = {
             await channel.setUserLimit(option);
             interactionEmbed(1, `${channel}'s user limit was set to ${channel.userLimit}`, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s user limit due to an error`, `editchannel.js (Line 215)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s user limit due to an error\n> ${String(e)}`, `editchannel.js (Line 215)`, interaction, client);
           };
         } else if(subcommand === `bitrate`) {
           try {
@@ -252,7 +252,7 @@ module.exports = {
             await channel.setBitrate(option);
             interactionEmbed(1, `${channel}'s bitrate was set to ${channel.bitrate} kbps`, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s bitrate due to an error`, `editchannel.js (Line 222)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s bitrate due to an error\n> ${String(e)}`, `editchannel.js (Line 222)`, interaction, client);
           };
         }
       }

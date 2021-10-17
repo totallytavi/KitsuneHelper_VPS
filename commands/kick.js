@@ -42,7 +42,7 @@ module.exports = {
         await member.kick(`${reason} (Moderator ID: ${interaction.member.id})`);
         interactionEmbed(1, `${member} (${member.id}) was kicked for: ${reason}`, interaction, client, false);
       } catch(e) {
-        interactionToConsole(`Failed to kick \`${member.id}\` from \`${interaction.guild.id}\``, `kick.js (Line 40)`, interaction, client);
+        interactionToConsole(`Failed to kick \`${member.id}\` from \`${interaction.guild.id}\`\n> ${String(e)}`, `kick.js (Line 40)`, interaction, client);
       }
 
       cooldown.add(interaction.user.id);

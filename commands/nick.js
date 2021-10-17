@@ -54,7 +54,7 @@ module.exports = {
         await member.setNickname({ nickname: nickname, reason: `${reason} (Moderator ID: ${interaction.member.id})`});
         interactionEmbed(1, `Updated ${member}'s (${member.id}) nickname to \`${nickname}\` for \`${reason}\``)
       } catch(e) {
-        return interactionToConsole(`Unable to set ${member.id}'s nickname to ${nickname} (Reason: ${reason})`, `nick.js (Line 55)`, interaction, client);
+        return interactionToConsole(`Unable to set ${member.id}'s nickname to ${nickname} (Reason: ${reason})\n> ${String(e)}`, `nick.js (Line 55)`, interaction, client);
       }
       cooldown.add(interaction.user.id);
       setTimeout(() => {
