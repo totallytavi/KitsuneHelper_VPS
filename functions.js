@@ -1,7 +1,7 @@
 const { Message, Client, MessageEmbed, Interaction } = require(`discord.js`);
 
 const errors = {
-  "[ERR-COLD]": "You are on cooldown!",
+  "[ERR-CLD]": "You are on cooldown!",
   "[ERR-UPRM]": "You do not have the proper permissions to execute this command",
   "[ERR-BPRM]": "I do not have the proper permissions to execute this command",
   "[ERR-ARGS]": "You have not supplied the correct parameters. Please check again",
