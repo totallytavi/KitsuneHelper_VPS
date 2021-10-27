@@ -25,9 +25,9 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
     } else {
-      if(!interaction.member.permissions.has(`MANAGE_SERVER`)) return interactionEmbed(2, `[ERR-UPRM]`, interaction, client, true);
+      if(!interaction.member.permissions.has(`MANAGE_SERVER`)) return interactionEmbed(2, `[ERR-UPRM]`, interaction, client);
       const setting = options.getString(`option`);
       const menu = new MessageActionRow();
       const embed = new MessageEmbed();
@@ -67,7 +67,7 @@ module.exports = {
             };
             fs.writeFileSync("guild_settings.json", JSON.stringify(config, null, 4));
             i.deleteReply();
-            interaction.editReply({ content: `Updated!`, embeds: [embed.setDescription(`Set "${i.customId}" to ${value}`)], components: [] })
+            interaction.editReply({ content: `Updated!`, embeds: [embed.setDescription(`Set "${i.customId}" to \`${value}\``)], components: [] })
             break
         }
       })

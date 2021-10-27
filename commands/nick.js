@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver } = require(`discord.js`);
 const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { interactionEmbed } = require(`../functions.js`);
+const { interactionEmbed, interactionToConsole } = require(`../functions.js`);
 const cooldown = new Set();
 
 module.exports = {
@@ -33,7 +33,7 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
     } else {
       const member = options.getMentionable(`user`);
       const nickname = options.getString(`new_nickname`);
@@ -43,18 +43,18 @@ module.exports = {
         if(member === interaction.guild.me) {
           if(!interaction.guild.me.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(2, `[ERR-BPRM]`, interaction, client, false);
         } else if(member === interaction.member) {
-          if(!interaction.member.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+          if(!interaction.member.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
         } else {
           if(!interaction.guild.me.permissions.has(`MANAGE_NICKNAMES`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
         }
         if(nickname.length > 32) {
-          return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+          return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
         }
 
-        await member.setNickname({ nickname: nickname, reason: `${reason} (Moderator ID: ${interaction.member.id})`});
-        interactionEmbed(1, `Updated ${member}'s (${member.id}) nickname to \`${nickname}\` for \`${reason}\``)
+        await member.setNickname(nickname, `${reason} (Moderator ID: ${interaction.member.id})`);
+        interactionEmbed(1, `Updated ${member}'s (${member.id}) nickname to \`${nickname}\` for \`${reason}\``, interaction, client);
       } catch(e) {
-        return interactionToConsole(`Unable to set ${member.id}'s nickname to ${nickname} (Reason: ${reason})\n> ${String(e)}`, `nick.js (Line 55)`, interaction, client);
+        return interactionToConsole(`Unable to set ${member.id}'s nickname to \`${nickname}\` (Reason: \`${reason}\`)\n> ${String(e)}`, `nick.js (Line 54)`, interaction, client);
       }
       cooldown.add(interaction.user.id);
       setTimeout(() => {

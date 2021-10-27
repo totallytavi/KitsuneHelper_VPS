@@ -62,7 +62,7 @@ module.exports = {
             .addFields(
               { name: "Source", value: source, inline: true },
               { name: "Author", value: `Author: ${message.author} (${message.author.tag} - ${message.author.id})`, inline: true },
-              { name: "Error", value: reason, inline: true }
+              { name: "Error", value: reason, inline: false }
             )
             .setFooter(`${message.guild.name} (${message.guild.id})`, message.guild.iconURL({ dynamic: true }))
             .setTimestamp();
@@ -81,7 +81,7 @@ module.exports = {
             .addFields(
               { name: "Source", value: source, inline: true },
               { name: "Author", value: `Unknown`, inline: true },
-              { name: "Error", value: reason, inline: true }
+              { name: "Error", value: reason, inline: false }
             )
             .setFooter(`Unknown`)
             .setTimestamp();
@@ -119,13 +119,13 @@ module.exports = {
           .addFields(
             { name: "Source", value: source, inline: true },
             { name: "Author", value: `Author: ${interaction.user} (${interaction.user.tag} - ${interaction.user.id})`, inline: true },
-            { name: "Error", value: reason, inline: true },
-            { name: "Type", value: interaction.type, inline: true }
+            { name: "Type", value: interaction.type, inline: true },
+            { name: "Error", value: reason, inline: false }
           )
           .setFooter(`${interaction.guild.name} (${interaction.guild.id})`, interaction.guild.iconURL({ dynamic: true }))
           .setTimestamp();
 
-          if(source != `index.js (Line 81)`) interaction.editReply({ content: `An error occurred and has been logged in the support server. We're sorry and will work to fix this!`, ephemeral: false });
+          if(source != `index.js (Line 87)`) interaction.editReply({ content: `An error occurred and has been logged in the support server. We're sorry and will work to fix this!` });
 
           client.channels.cache.get('775560270700347432').send({ embeds: [embed] }) 
         } else {
@@ -151,10 +151,9 @@ module.exports = {
        * @param {String} content The information to state
        * @param {Interaction} interaction The Interaction object for responding
        * @param {Client} client Client object for logging
-       * @param {Boolean} ephemeral Should the response be silent?
        * @returns {null}
        */
-      interactionEmbed: async function(type, content, interaction, client, ephemeral) {
+      interactionEmbed: async function(type, content, interaction, client) {
         if(typeof type != 'number') return Promise.reject("type is not a number");
         if(type < 1 || type > 4) return Promise.reject("type is not a valid integer");
         if(typeof content != 'string') return Promise.reject("content is not a string");
@@ -162,8 +161,6 @@ module.exports = {
         if(typeof interaction != 'object') return Promise.reject("interaction is not an object");
         if(!client) return Promise.reject("client is a required argument");
         if(typeof client != 'object') return Promise.reject("client is not an object");
-        if(ephemeral === null) return Promise.reject("ephemeral is a required argument");
-        if(typeof ephemeral != 'boolean') return Promise.reject("ephemeral is not a boolean");
 
         const embed = new MessageEmbed();
 
@@ -177,7 +174,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed] })
 
             break;
           case 2:
@@ -189,7 +186,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with a minor error")
             .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed] })
 
             break;
           case 3:
@@ -201,7 +198,7 @@ module.exports = {
             .setFooter("The operation failed to complete due to an error")
             .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed] })
 
             break;
           case 4:
@@ -213,7 +210,7 @@ module.exports = {
             .setFooter("The operation is pending completion")
             .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed], ephemeral: ephemeral })
+            await interaction.editReply({ embeds: [embed] })
 
             break;
         }

@@ -85,7 +85,7 @@ client.on(`ready`, async (client) => {
 })
 
 client.on(`interactionCreate`, async (interaction) => {
-  if(!interaction.inGuild()) return interactionEmbed(4, `[WARN-NODM]`, interaction, client, true);
+  if(!interaction.inGuild()) return interactionEmbed(4, `[WARN-NODM]`, interaction, client);
   await interaction.deferReply();
   if(interaction.isCommand()) {
     let command = client.commands.get(interaction.commandName)
@@ -93,10 +93,10 @@ client.on(`interactionCreate`, async (interaction) => {
       fetch("https://kitsunehelper.codertavi.repl.co/gbans.json", function(_e, _m, body) {
         const json = JSON.parse(body);
         if(json[interaction.user.id]) {
-          interactionEmbed(4, `You are ${json[interaction.user.id].appealable === false ? `permanently banned` : `banned (appealable)`} for: ${json[interaction.user.id].reason}`, interaction, client, true)
+          interactionEmbed(4, `You are ${json[interaction.user.id].appealable === false ? `permanently banned` : `banned (appealable)`} for: ${json[interaction.user.id].reason}`, interaction, client)
         } else {
           command.run(client, interaction, interaction.options)
-          interactionToConsole(`[TESTING] A user ran an interaction: ${interaction.commandName}`, `index.js (Line 81)`, interaction, client)
+          interactionToConsole(`[TESTING] A user ran an interaction: ${interaction.commandName}\n> options.size: ${interaction.options.data.length}`, `index.js (Line 87)`, interaction, client)
         }
       })
     }

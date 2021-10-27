@@ -159,6 +159,22 @@ module.exports = {
         ])
       })
     })
+  })
+  .addSubcommandGroup(group => {
+    return group
+    .setName(`permissions`)
+    .setDescription(`Channel permissions`)
+    .addSubcommand(command => {
+      return command
+      .setName(`permlock`)
+      .setDescription(`Set's a channel's permissions to the category's permissions`)
+      .addChannelOption(option => {
+        return option
+        .setName(`channel`)
+        .setDescription(`Channel to be updated`)
+        .setRequired(true)
+      })
+    })
   }),
   /**
    * @param {Client} client Client object
@@ -167,7 +183,7 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client)
     } else {
       const channel = options.getChannel(`channel`);
       const subcommand = options._subcommand
@@ -175,47 +191,47 @@ module.exports = {
         const option = options.getString(`name`) ?? options.getString(`topic`) ?? options.getBoolean(`nsfw`) ?? options.getNumber(`slowmode`);
         if(subcommand === `name`) {
           try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setName(option);
-            interactionEmbed(1, `${channel}'s name was set to ${channel.name}`, interaction, client, false);
+            interactionEmbed(1, `${channel}'s name was set to \`${channel.name}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s name due to an error\n> ${String(e)}`, `editchannel.js (Line 180)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s name due to an error\n> ${String(e)}`, `editchannel.js (Line 194)`, interaction, client);
           };
         } else if(subcommand === `topic`) {
           try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setTopic(option);
-            interactionEmbed(1, `${channel}'s topic was set to ${channel.topic}`, interaction, client, false);
+            interactionEmbed(1, `${channel}'s topic was set to \`${channel.topic}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s topic due to an error\n> ${String(e)}`, `editchannel.js (Line 187)`, interaction, client)
+            interactionToConsole(`Unable to edit ${channel}'s topic due to an error\n> ${String(e)}`, `editchannel.js (Line 205)`, interaction, client)
           };
         } else if(subcommand === `slowmode`) {
           try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setRateLimitPerUser(option);
-            interactionEmbed(1, `${channel}'s ratelimit was set to ${channel.RateLimitPerUser} second(s)`, interaction, client, false);
+            interactionEmbed(1, `${channel}'s ratelimit was set to \`${channel.RateLimitPerUser} second(s)\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s ratelimit due to an error\n> ${String(e)}`, `editchannel.js (Line 194)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s ratelimit due to an error\n> ${String(e)}`, `editchannel.js (Line 216)`, interaction, client);
           };
         } else if(subcommand === `nsfw`) {
           try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setNSFW(option);
-            interactionEmbed(1, `${channel}'s nsfw flag was set to ${channel.nsfw}`, interaction, client, false);
+            interactionEmbed(1, `${channel}'s nsfw flag was set to \`${channel.nsfw}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s nsfw flag due to an error\n> ${String(e)}`, `editchannel.js (Line 201)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s nsfw flag due to an error\n> ${String(e)}`, `editchannel.js (Line 227)`, interaction, client);
           };
         }
       } else if(options._group === `voice`) {
@@ -223,36 +239,48 @@ module.exports = {
         const option = options.getString(`name`) ?? options.getString(`user_limit`) ?? options.getBoolean(`bitrate`);
         if(subcommand === `name`) {
           try {
-            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setName(option);
-            interactionEmbed(1, `${channel}'s name was set to ${channel.name}`, interaction, client, false);
+            interactionEmbed(1, `${channel}'s name was set to \`${channel.name}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s name due to an error\n> ${String(e)}`, `editchannel.js (Line 208)`, interaction, client); 
+            interactionToConsole(`Unable to edit ${channel}'s name due to an error\n> ${String(e)}`, `editchannel.js (Line 242)`, interaction, client); 
           };
         } else if(subcommand === `user_limit`) {
           try {
-            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setUserLimit(option);
-            interactionEmbed(1, `${channel}'s user limit was set to ${channel.userLimit}`, interaction, client, false);
+            interactionEmbed(1, `${channel}'s user limit was set to \`${channel.userLimit}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s user limit due to an error\n> ${String(e)}`, `editchannel.js (Line 215)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s user limit due to an error\n> ${String(e)}`, `editchannel.js (Line 253)`, interaction, client);
           };
         } else if(subcommand === `bitrate`) {
           try {
-            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
             if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
             if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
             await channel.setBitrate(option);
-            interactionEmbed(1, `${channel}'s bitrate was set to ${channel.bitrate} kbps`, interaction, client, false);
+            interactionEmbed(1, `${channel}'s bitrate was set to \`${channel.bitrate}\` kbps for \`${reason}\``, interaction, client, false);
           } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s bitrate due to an error\n> ${String(e)}`, `editchannel.js (Line 222)`, interaction, client);
+            interactionToConsole(`Unable to edit ${channel}'s bitrate due to an error\n> ${String(e)}`, `editchannel.js (Line 264)`, interaction, client);
+          };
+        }
+      } else if(options._group === `permissions`) {
+        if(subcommand === `permlock`) {
+          try {
+            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
+            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            await channel.lockPermissions();
+            interactionEmbed(1, `${channel}'s permissions were set to the category's permission for \`${reason}\``, interaction, client, false);
+          } catch(e) {
+            interactionToConsole(`Unable to permission lock ${channel} due to an error\n> ${String(e)}`, `editchannel.js (Line 277)`, interaction, client);
           };
         }
       }

@@ -116,7 +116,7 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
     } else {
       const subcommand = options._subcommand;
       const embed = new MessageEmbed();

@@ -57,10 +57,10 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
     } else {
-      let tag1 = options.getString(`tag1`, true);
-      if(tag1.match(/[^1-6]\+/)) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+      let tag1 = options.getString(`tag1`);
+      if(tag1.match(/[^1-6]\+/)) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
       let tag2;
       if(options.getString(`tag2`) && options.getString(`tag2`).match(/[^1-6]\+/)) {
         tag1.concat("+", options.getString(`tag2`));
@@ -81,7 +81,7 @@ module.exports = {
       }
 
       if(interaction.channel.nsfw === false) {
-        interactionEmbed(4, `This channel is not set to NSFW. Therefore, the query will only search for SAFE posts. This may result in less or no images found`, interaction, client, true);
+        interactionEmbed(4, `This channel is not set to NSFW. Therefore, the query will only search for SAFE posts. This may result in less or no images found`, interaction, client);
       }
 
       let url = "";
@@ -103,11 +103,13 @@ module.exports = {
             client.channels.cache.get(`899115176635269190`).send({ content: `Danbooru has failed to filter an image during a \`rating=s\` request!`, embeds: [new MessageEmbed().setTitle(`ID: ${post.id}`).setDescription(`Request URL: ${url}`).setFooter(`Rating: ${post.rating}`)] });
             continue;
           }
+          if(rating != `any` && post.rating != rating) {
+            client.channels.cache.get(`899115176635269190`).send({ content: `Danbooru has failed to filter an image during a \`rating=${rating}_var\` request!`, embeds: [new MessageEmbed().setTitle(`ID: ${post.id}`).setDescription(`Request URL: ${url}`).setFooter(`Rating: ${post.rating}`)] });
+            continue;
+          }
           // The above is because Danbooru fails to filter by rating when I specify it in this code
-          if(tag2) tag1 = options.getString(`tag1`) + ` and ` + options.getString(tag2);
 
           const embed = new MessageEmbed()
-          .setTitle(tag1)
           .setAuthor("Artist(s): " + post.tag_string_artist)
           .setDescription(`ID: ${post.id} :-: Score: ${post.score}`)
           .setImage(image)

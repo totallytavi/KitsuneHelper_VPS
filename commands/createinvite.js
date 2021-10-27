@@ -53,13 +53,13 @@ module.exports = {
       const temporary_membership = options.getBoolean(`temporary_membership`);
 
       try {
-        if(!interaction.member.permissionsIn(channel).has(`CREATE_INSTANT_INVITE`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        if(!interaction.member.permissionsIn(channel).has(`CREATE_INSTANT_INVITE`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
         if(!interaction.guild.me.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionEmbed(3, `[ERR-BPRM]`, `createinvite.js (Line 59)`, interaction, client, false);
 
         channel.createInvite({ age: age, max_uses: max_uses, temporary: temporary_membership })
         .then(invite => interactionEmbed(1, `Here is the invite:\n${invite}`, interaction, client, false));
       } catch(e) {
-        interactionToConsole(`Failed to create an invite for a server\n> ${String(e)}`, `createinvite.js (Line 61)`, interaction, client);
+        interactionToConsole(`Failed to create an invite for a server\n> ${String(e)}`, `createinvite.js (Line 56)`, interaction, client);
       }
 
       cooldown.add(interaction.user.id);
