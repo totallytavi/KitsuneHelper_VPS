@@ -1,4 +1,5 @@
 const { Message, Client, MessageEmbed, Interaction } = require(`discord.js`);
+const fetch = require(`fetch`).fetchUrl;
 
 const errors = {
   "[ERR-CLD]": "You are on cooldown!",
@@ -38,20 +39,24 @@ module.exports = {
        * @param {String} source Where the message originated from
        * @param {null} message Message object, must be left blank
        * @param {Client} client Client object, cannot be left blank
+       * @param {Boolean} ephemeral Should the result be silent, cannot be left blank
        * @returns {null}
        * @example toConsole("index.js (Line 69)", "We hit an error!", '', client)
        */
-      toConsole: async function(reason, source, message, client) {
-        if(!reason) return Promise.reject("reason is a required argument");
-        if(typeof reason != 'string') return Promise.reject("reason is not a string");
-        if(!source) return Promise.reject("source is a required argument");
-        if(typeof source != 'string') return Promise.reject("source is not a string");
-        if(!client) return Promise.reject("client is a required argument");
-        if(typeof client != 'object') return Promise.reject("client is not an object");
+      toConsole: async function(reason, source, message, client, ephemeral) {
+        if(!reason) return Promise.reject("reason is a required argument, " + source);
+        if(typeof reason != 'string') return Promise.reject("reason is not a string, " + source);
+        if(!source) return Promise.reject("source is a required argument, " + source);
+        if(typeof source != 'string') return Promise.reject("source is not a string, " + source);
+        if(!client) return Promise.reject("client is a required argument, " + source);
+        if(typeof client != 'object') return Promise.reject("client is not an object, " + source);
+        if(!ephemeral) return Promise.reject("ephemeral is a required argument, " + source);
+        if(typeof ephemeral != 'boolean') return Promise.reject("ephemeral is not an object, " + source);
 
         if(typeof client.channels.cache.get('775560270700347432') != 'object') return console.log("Error channel was not found; aborting...")
         reason = errors[reason] ?? `No error code was found with ${reason}. Please forward this to the support server!`;
 
+        if(ephemeral) interaction.ephemeral = true;
         const embed = new MessageEmbed()
         switch(typeof message.content) {
           case 'string':
@@ -100,15 +105,37 @@ module.exports = {
        * @returns {null}
        * @example interactionToConsole("say.js (Line 69)", "We hit an error!", message, client)
        */
-       interactionToConsole: async function(reason, source, interaction, client) {
-        if(!reason) return Promise.reject("reason is a required argument");
-        if(typeof reason != 'string') return Promise.reject("reason is not a string");
-        if(!source) return Promise.reject("source is a required argument");
-        if(typeof source != 'string') return Promise.reject("source is not a string");
-        if(!client) return Promise.reject("client is a required argument");
-        if(typeof client != 'object') return Promise.reject("client is not an object");
+       interactionToConsole: async function(reason, source, interaction, client, ephemeral) {
+        if(!reason) return Promise.reject("reason is a required argument, " + source);
+        if(typeof reason != 'string') return Promise.reject("reason is not a string, " + source);
+        if(!source) return Promise.reject("source is a required argument, " + source);
+        if(typeof source != 'string') return Promise.reject("source is not a string, " + source);
+        if(!client) return Promise.reject("client is a required argument, " + source);
+        if(typeof client != 'object') return Promise.reject("client is not an object, " + source);
 
-        if(typeof client.channels.cache.get('775560270700347432') != 'object') return console.log("Error channel was not found; aborting...")
+        if(typeof client.channels.cache.get('775560270700347432') != 'object') {
+          await fetch('https://discord.com/api/webhooks/856949475058253824/NY1uybEAoKOBReAlvsIU5OsYl2yHoW5Wu38O8otTfVBznMNf_lf2PSxe_9j8Iu5D6DcB?wait=true', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            payload: JSON.stringify({
+              "content": "@everyone",
+              "embeds": [{
+                "title": "Error",
+                "description": reason,
+                "timestamp": new Date(),
+                "footer": {
+                  "text": source
+                }
+              }]
+            })
+          }, (err, meta, body) => {
+            body.toString();
+          });
+          return false;
+          // Above written all with GitHub Co-Pilot and some of my own stuff. Leaving it here in case I need to use it again.
+        }
 
         if(interaction) {
           const embed = new MessageEmbed()
@@ -125,7 +152,8 @@ module.exports = {
           .setFooter(`${interaction.guild.name} (${interaction.guild.id})`, interaction.guild.iconURL({ dynamic: true }))
           .setTimestamp();
 
-          if(source != `index.js (Line 87)`) interaction.editReply({ content: `An error occurred and has been logged in the support server. We're sorry and will work to fix this!` });
+          if(interaction.ephemeral != true) interaction.deleteReply();
+          if(source != `index.js (Line 87)`) interaction.editReply({ content: `An error occurred and has been logged in the support server. We're sorry and will work to fix this!\n\n${reason}` });
 
           client.channels.cache.get('775560270700347432').send({ embeds: [embed] }) 
         } else {
@@ -151,16 +179,19 @@ module.exports = {
        * @param {String} content The information to state
        * @param {Interaction} interaction The Interaction object for responding
        * @param {Client} client Client object for logging
+       * @param {Boolean} ephemeral Whether or not to ephemeral the message
        * @returns {null}
        */
-      interactionEmbed: async function(type, content, interaction, client) {
-        if(typeof type != 'number') return Promise.reject("type is not a number");
-        if(type < 1 || type > 4) return Promise.reject("type is not a valid integer");
-        if(typeof content != 'string') return Promise.reject("content is not a string");
-        if(!interaction) return Promise.reject("interaction is a required argument");
-        if(typeof interaction != 'object') return Promise.reject("interaction is not an object");
-        if(!client) return Promise.reject("client is a required argument");
-        if(typeof client != 'object') return Promise.reject("client is not an object");
+      interactionEmbed: async function(type, content, interaction, client, ephemeral) {
+        if(typeof type != 'number') return Promise.reject("type is not a number, " + source);
+        if(type < 1 || type > 4) return Promise.reject("type is not a valid integer, " + source);
+        if(typeof content != 'string') return Promise.reject("content is not a string, " + source);
+        if(!interaction) return Promise.reject("interaction is a required argument, " + source);
+        if(typeof interaction != 'object') return Promise.reject("interaction is not an object, " + source);
+        if(!client) return Promise.reject("client is a required argument, " + source);
+        if(typeof client != 'object') return Promise.reject("client is not an object, " + source);
+        if(!ephemeral) return Promise.reject("ephemeral is a required argument, " + source);
+        if(typeof ephemeral != 'boolean') return Promise.reject("ephemeral is not an object, " + source);
 
         const embed = new MessageEmbed();
 
@@ -174,7 +205,8 @@ module.exports = {
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed] })
+            if(interaction.ephemeral != true) interaction.deleteReply();
+            await interaction.followUp({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 2:
@@ -186,7 +218,8 @@ module.exports = {
             .setFooter("The operation was completed successfully with a minor error")
             .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed] })
+            if(interaction.ephemeral != true) interaction.deleteReply();
+            await interaction.followUp({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 3:
@@ -198,7 +231,8 @@ module.exports = {
             .setFooter("The operation failed to complete due to an error")
             .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed] })
+            if(interaction.ephemeral != true) interaction.deleteReply();
+            await interaction.followUp({ embeds: [embed], ephemeral: ephemeral })
 
             break;
           case 4:
@@ -210,7 +244,8 @@ module.exports = {
             .setFooter("The operation is pending completion")
             .setTimestamp();
 
-            await interaction.editReply({ embeds: [embed] })
+            if(interaction.ephemeral != true) interaction.deleteReply();
+            await interaction.followUp({ embeds: [embed], ephemeral: ephemeral })
 
             break;
         }

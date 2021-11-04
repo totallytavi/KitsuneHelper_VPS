@@ -24,14 +24,17 @@ module.exports = {
    * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options3
    */
   run: async (client, interaction, options) => {
+    return interactionEmbed(4, `[INFO-DEV]`, interaction, client, true)
+    /*
     if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
     } else {
-      if(!interaction.member.permissions.has(`MANAGE_SERVER`)) return interactionEmbed(2, `[ERR-UPRM]`, interaction, client);
+      if(!interaction.member.permissions.has(`MANAGE_SERVER`)) return interactionEmbed(2, `[ERR-UPRM]`, interaction, client, true);
       const setting = options.getString(`option`);
       const menu = new MessageActionRow();
       const embed = new MessageEmbed();
 
+      interaction.ephemeral = false;
       switch(setting) {
         case `banWithKSoft`:
           menu
@@ -81,5 +84,6 @@ module.exports = {
         cooldown.delete(interaction.user.id);
       }, 10000);
     }
+  */
   }
 }

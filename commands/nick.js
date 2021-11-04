@@ -33,7 +33,7 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
     } else {
       const member = options.getMentionable(`user`);
       const nickname = options.getString(`new_nickname`);
@@ -41,18 +41,18 @@ module.exports = {
 
       try {
         if(member === interaction.guild.me) {
-          if(!interaction.guild.me.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(2, `[ERR-BPRM]`, interaction, client, false);
+          if(!interaction.guild.me.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(2, `[ERR-BPRM]`, interaction, client, true);
         } else if(member === interaction.member) {
-          if(!interaction.member.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
+          if(!interaction.member.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
         } else {
-          if(!interaction.guild.me.permissions.has(`MANAGE_NICKNAMES`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+          if(!interaction.guild.me.permissions.has(`MANAGE_NICKNAMES`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
         }
         if(nickname.length > 32) {
-          return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
+          return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
         }
 
         await member.setNickname(nickname, `${reason} (Moderator ID: ${interaction.member.id})`);
-        interactionEmbed(1, `Updated ${member}'s (${member.id}) nickname to \`${nickname}\` for \`${reason}\``, interaction, client);
+        interactionEmbed(1, `Updated ${member}'s (${member.id}) nickname to \`${nickname}\` for \`${reason}\``, interaction, client, false);
       } catch(e) {
         return interactionToConsole(`Unable to set ${member.id}'s nickname to \`${nickname}\` (Reason: \`${reason}\`)\n> ${String(e)}`, `nick.js (Line 54)`, interaction, client);
       }

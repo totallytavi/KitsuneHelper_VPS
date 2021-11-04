@@ -12,7 +12,12 @@ const { KSoftClient } = require(`@ksoft/api`);
 const ksoft = new KSoftClient(config.ksoft)
 
 const client = new Client({
-  intents: [`GUILDS`,`GUILD_BANS`,`GUILD_EMOJIS_AND_STICKERS`,`GUILD_INVITES`,`GUILD_MEMBERS`,`GUILD_MESSAGES`,`GUILD_MESSAGE_REACTIONS`,`GUILD_MESSAGE_TYPING`,`GUILD_PRESENCES`,`GUILD_WEBHOOKS`]
+  intents: [`GUILDS`,`GUILD_BANS`,`GUILD_INVITES`,`GUILD_MEMBERS`,`GUILD_MESSAGES`,`GUILD_PRESENCES`]
+  // Guilds: Access to guild data (Obvious reasons)
+  // Guild bans: ban.js
+  // Guild invites: createinvite.js
+  // Guild members: kitsune-index.js
+  // Guild presences: web dashboard (To be made!)
 });
 const slashCommands = [];
 client.commands = new Collection();
@@ -74,26 +79,29 @@ process.on(`uncaughtException`, async (err, origin) => {
 
 client.on(`ready`, async (client) => {
   console.log(`[ACT-SET] Client is ready to receive data. Setting Presence`);
-  const presence = await client.user.setPresence({ activities: [{ name: `${client.guilds.cache.size} servers and ${client.users.cache.size} users!`, type: `LISTENING` }], status: `online` })
+  const presence = await client.user.setPresence({ activities: [{ name: `${client.user.username} is starting up!`, type: `PLAYING` }], status: `online` })
   console.log(`[ACT-SET] The ClientUser's activity was set!\n> Name: ${presence.activities[0].name}\n> Type: ${presence.activities[0].type}\n> Status: ${presence.status}`)
     // .catch(error => toConsole(`[ACT-ERR] The ClientUser's activity was not set!\n> ${error}`, `index.js (Line 49)`, ``, client));
   
   setInterval(() => {
-    client.user.setPresence({ activities: [{ name: `${client.guilds.cache.size} servers and ${client.users.cache.size} users!`, type: `LISTENING` }], status: `online` })
+    let memberSize = 0;
+    client.guilds.cache.each(guild => memberSize += guild.memberCount);
+    client.user.setPresence({ activities: [{ name: `and helping ${client.users.cache.size} users across ${client.guilds.cache.size} servers` , type: `WATCHING` }] })
       // .catch(error => toConsole(`[ACT-ERR] The ClientUser's activity was not set!\n> ${error}`, `index.js (Line 54)`, ``, client));
   }, 20000);
 })
 
 client.on(`interactionCreate`, async (interaction) => {
-  if(!interaction.inGuild()) return interactionEmbed(4, `[WARN-NODM]`, interaction, client);
   await interaction.deferReply();
+  if(!interaction.inGuild()) return interactionEmbed(4, `[WARN-NODM]`, interaction, client, true);
   if(interaction.isCommand()) {
     let command = client.commands.get(interaction.commandName)
     if(command) {
-      fetch("https://kitsunehelper.codertavi.repl.co/gbans.json", function(_e, _m, body) {
+      fetch("https://kitsunehelper.codertavi.repl.co/gbans.json", async function(_e, _m, body) {
         const json = JSON.parse(body);
         if(json[interaction.user.id]) {
-          interactionEmbed(4, `You are ${json[interaction.user.id].appealable === false ? `permanently banned` : `banned (appealable)`} for: ${json[interaction.user.id].reason}`, interaction, client)
+          // Defer if they're banned since they don't have access to commands
+          interactionEmbed(4, `You are ${json[interaction.user.id].appealable === false ? `permanently banned` : `banned (appealable)`} for: ${json[interaction.user.id].reason}`, interaction, client, false)
         } else {
           command.run(client, interaction, interaction.options)
           interactionToConsole(`[TESTING] A user ran an interaction: ${interaction.commandName}\n> options.size: ${interaction.options.data.length}`, `index.js (Line 87)`, interaction, client)
@@ -122,13 +130,18 @@ client.on(`guildMemberAdd`, async (member) => {
   const data = fs.readFileSync(`guild_settings.json`);
   const json = JSON.parse(data);
 
+  /* Deprecated until I use a database
+   * See https://stackoverflow.com/a/36856787/13785528
+   * 
   const serverSettings = json[member.guild.id];
+  if(!serverSettings) return;
   if(serverSettings.banWithKSoft === true) {
     const ban = ksoft.bans.check(String(member.id));
     if(ban === true) {
       return member.ban({ reason: `Automatic ban due to a ban on KSoft.Si` });
     };
   };
+  */
 });
 
-client.login(config.token);
+client.login("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.J3670CSiswir1BzraKzkczGq9mk");

@@ -45,7 +45,7 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client)
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
       const channel = options.getChannel(`channel`) ?? interaction.channel
       const age = options.getInteger(`age`);
@@ -53,8 +53,8 @@ module.exports = {
       const temporary_membership = options.getBoolean(`temporary_membership`);
 
       try {
-        if(!interaction.member.permissionsIn(channel).has(`CREATE_INSTANT_INVITE`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-        if(!interaction.guild.me.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionEmbed(3, `[ERR-BPRM]`, `createinvite.js (Line 59)`, interaction, client, false);
+        if(!interaction.member.permissionsIn(channel).has(`CREATE_INSTANT_INVITE`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        if(!interaction.guild.me.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionEmbed(3, `[ERR-BPRM]`, `createinvite.js (Line 59)`, interaction, client, true);
 
         channel.createInvite({ age: age, max_uses: max_uses, temporary: temporary_membership })
         .then(invite => interactionEmbed(1, `Here is the invite:\n${invite}`, interaction, client, false));

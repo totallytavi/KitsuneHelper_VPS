@@ -67,7 +67,7 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client)
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
       const subcommand = options._subcommand;
       const reason = options.getString(`reason`) ?? `No reason specified!`;
@@ -76,15 +76,15 @@ module.exports = {
       switch(subcommand) {
         case `messages`:
           if(!interaction.member.permissionsIn(interaction.channel).has(`MANAGE_MESSAGES`)) {
-            interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
+            interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             break;
           };
           if(!interaction.guild.me.permissionsIn(interaction.channel).has(`VIEW_CHANNEL`)) {
-            interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
+            interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             break;
           }
           if(!interaction.guild.me.permissionsIn(interaction.channel).has(`MANAGE_MESSAGES`)) {
-            interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
+            interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             break;
           }
           let amount = 0;
@@ -99,68 +99,68 @@ module.exports = {
               .then(deleted => amount += deleted.size);
               option = option - option;
             }
-            interactionEmbed(1, `Purged ${(amount === option) ? `\`${amount}\`` : `\`${amount}/${option}\``} messages!`)
+            interactionEmbed(1, `Purged ${(amount === option) ? `\`${amount}\`` : `\`${amount}/${option}\``} messages!`, false)
           } catch(e) {
             interactionToConsole(`Failed to purge messages\n> ${e}`, `delete.js (Line 92)`, interaction, client);
           }
           break;
         case `channel`:
-          if(!interaction.member.permissionsIn(interaction.channel).has(`MANAGE_CHANNEL`)) {
-            interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
+          if(!interaction.member.permissionsIn(interaction.channel).has(`MANAGE_CHANNELS`)) {
+            interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             break;
           };
           if(!interaction.guild.me.permissionsIn(interaction.channel).has(`VIEW_CHANNEL`)) {
-            interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
+            interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             break;
           }
-          if(!interaction.guild.me.permissionsIn(interaction.channel).has(`MANAGE_CHANNEL`)) {
-            interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
+          if(!interaction.guild.me.permissionsIn(interaction.channel).has(`MANAGE_CHANNELS`)) {
+            interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             break;
           }
           try {
             option.delete({ reason: `${reason} (Moderator ID: ${interaction.user.id})` });
-            interactionEmbed(1, `Removed \`${option.name}\` (ID: \`${option.id}\`) for \`${reason}\``, interaction, client);
+            interactionEmbed(1, `Removed \`${option.name}\` (ID: \`${option.id}\`) for \`${reason}\``, interaction, client, false);
           } catch(e) {
             interactionToConsole(`Failed to remove \`${option.name}\` (ID: \`${option.id}\`)\n> ${e}`, `delete.js (Line 122)`, interaction, client);
           }
           break;
         case `role`:
           if(!interaction.member.permissions.has(`MANAGE_ROLES`)) {
-            interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
+            interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             break;
           };
           if(!interaction.guild.me.permissions.has(`MANAGE_ROLES`)) {
-            interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
+            interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             break;
           }
           if(interaction.guild.me.roles.highest.rawPosition <= option.rawPosition) {
-            interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
+            interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             break;
           }
           try {
             option.delete({ reason: `${reason} (Moderator ID: ${interaction.user.id})` });
-            interactionEmbed(1, `Removed \`${option.name}\` (ID: \`${option.id}\`) for \`${reason}\``, interaction, client);
+            interactionEmbed(1, `Removed \`${option.name}\` (ID: \`${option.id}\`) for \`${reason}\``, interaction, client, false);
           } catch(e) {
             interactionToConsole(`Failed to remove \`${option.name}\` (ID: \`${option.id}\`)\n> ${e}`, `delete.js (Line 142)`, interaction, client);
           }
           interactionEmbed(1, `Removed \`${option.name}\` (ID: \`${option.id}\`) for \`${reason}\``, interaction, client);
           break;
         case `channel`:
-          if(!interaction.member.permissions.has(`MANAGE_CHANNEL`)) {
-            interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
+          if(!interaction.member.permissions.has(`MANAGE_CHANNELS`)) {
+            interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
             break;
           }
           if(!interaction.guild.me.permissionsIn(interaction.channel).has(`VIEW_CHANNEL`)) {
-            interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
+            interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             break;
           }
-          if(!interaction.guild.me.permissionsIn(interaction.channel).has(`MANAGE_CHANNEL`)) {
-            interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
+          if(!interaction.guild.me.permissionsIn(interaction.channel).has(`MANAGE_CHANNELS`)) {
+            interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             break;
           }
           try {
             option.delete({ reason: `${reason} (Moderator ID: ${interaction.user.id})` });
-            interactionEmbed(1, `Removed \`${option.name}\` (ID: \`${option.id}\`) for \`${reason}\``, interaction, client);
+            interactionEmbed(1, `Removed \`${option.name}\` (ID: \`${option.id}\`) for \`${reason}\``, interaction, client, false);
           } catch(e) {
             interactionToConsole(`Failed to remove \`${option.name}\` (ID: \`${option.id}\`)\n> ${e}`, `delete.js (Line 162)`, interaction, client);
           };
@@ -192,7 +192,7 @@ module.exports = {
             for(const child of option.children) {
               // If we lack VIEW_CHANNEL, we can't remove the channel
               if(!interaction.guild.me.permissionsIn(interaction.channel).has(`VIEW_CHANNEL`)) continue;
-              if(!interaction.guild.me.permissionsIn(interaction.channel).has(`MANAGE_CHANNEL`)) continue;
+              if(!interaction.guild.me.permissionsIn(interaction.channel).has(`MANAGE_CHANNELS`)) continue;
               // Delete the child
               try {
                 child.delete({ reason: `${reason} (Moderator ID: ${interaction.user.id})` });
@@ -200,7 +200,7 @@ module.exports = {
                 interactionToConsole(`Failed to remove child \`${child.name}\` (ID: \`${child.id}\`)\n> ${e}`, `delete.js (Line 190)`, interaction, client);
               }
             }
-            interactionEmbed(1, `Removed children of \`${option.name}\` (ID: \`${option.id}\`) for \`${reason}\``);
+            interactionEmbed(1, `Removed children of \`${option.name}\` (ID: \`${option.id}\`) for \`${reason}\``, interaction, client, false);
           }
           break;
       }

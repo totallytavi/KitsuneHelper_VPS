@@ -27,17 +27,17 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client)
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
       const member = options.getMember(`user`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
 
       try {
-        if(!interaction.member.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-        if(!interaction.guild.me.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
-        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
+        if(!interaction.member.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        if(!interaction.guild.me.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
 
         await member.kick(`${reason} (Moderator ID: ${interaction.member.id})`);
         interactionEmbed(1, `${member} (\`${member.id}\`) was kicked for: \`${reason}\``, interaction, client, false);

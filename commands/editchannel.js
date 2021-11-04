@@ -183,7 +183,7 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client)
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
       const channel = options.getChannel(`channel`);
       const subcommand = options._subcommand
@@ -191,10 +191,10 @@ module.exports = {
         const option = options.getString(`name`) ?? options.getString(`topic`) ?? options.getBoolean(`nsfw`) ?? options.getNumber(`slowmode`);
         if(subcommand === `name`) {
           try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             await channel.setName(option);
             interactionEmbed(1, `${channel}'s name was set to \`${channel.name}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
@@ -202,10 +202,10 @@ module.exports = {
           };
         } else if(subcommand === `topic`) {
           try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             await channel.setTopic(option);
             interactionEmbed(1, `${channel}'s topic was set to \`${channel.topic}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
@@ -213,10 +213,10 @@ module.exports = {
           };
         } else if(subcommand === `slowmode`) {
           try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             await channel.setRateLimitPerUser(option);
             interactionEmbed(1, `${channel}'s ratelimit was set to \`${channel.RateLimitPerUser} second(s)\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
@@ -224,10 +224,10 @@ module.exports = {
           };
         } else if(subcommand === `nsfw`) {
           try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             await channel.setNSFW(option);
             interactionEmbed(1, `${channel}'s nsfw flag was set to \`${channel.nsfw}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
@@ -239,10 +239,10 @@ module.exports = {
         const option = options.getString(`name`) ?? options.getString(`user_limit`) ?? options.getBoolean(`bitrate`);
         if(subcommand === `name`) {
           try {
-            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             await channel.setName(option);
             interactionEmbed(1, `${channel}'s name was set to \`${channel.name}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
@@ -250,10 +250,10 @@ module.exports = {
           };
         } else if(subcommand === `user_limit`) {
           try {
-            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             await channel.setUserLimit(option);
             interactionEmbed(1, `${channel}'s user limit was set to \`${channel.userLimit}\` for \`${reason}\``, interaction, client, false);
           } catch(e) {
@@ -261,10 +261,10 @@ module.exports = {
           };
         } else if(subcommand === `bitrate`) {
           try {
-            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             await channel.setBitrate(option);
             interactionEmbed(1, `${channel}'s bitrate was set to \`${channel.bitrate}\` kbps for \`${reason}\``, interaction, client, false);
           } catch(e) {
@@ -274,9 +274,9 @@ module.exports = {
       } else if(options._group === `permissions`) {
         if(subcommand === `permlock`) {
           try {
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
+            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
             await channel.lockPermissions();
             interactionEmbed(1, `${channel}'s permissions were set to the category's permission for \`${reason}\``, interaction, client, false);
           } catch(e) {

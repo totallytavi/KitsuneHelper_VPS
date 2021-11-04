@@ -57,10 +57,10 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
     } else {
       let tag1 = options.getString(`tag1`);
-      if(tag1.match(/[^1-6]\+/)) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
+      if(tag1.match(/[^1-6]\+/)) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
       let tag2;
       if(options.getString(`tag2`) && options.getString(`tag2`).match(/[^1-6]\+/)) {
         tag1.concat("+", options.getString(`tag2`));
@@ -81,7 +81,7 @@ module.exports = {
       }
 
       if(interaction.channel.nsfw === false) {
-        interactionEmbed(4, `This channel is not set to NSFW. Therefore, the query will only search for SAFE posts. This may result in less or no images found`, interaction, client);
+        interactionEmbed(4, `This channel is not set to NSFW. Therefore, the query will only search for SAFE posts. This may result in less or no images found`, interaction, client, false);
       }
 
       let url = "";

@@ -43,18 +43,18 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client)
+      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
       const member = options.getMentionable(`user`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
       const days = options.getNumber(`days`) ?? 0;
 
       try {
-        if(!interaction.member.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
-        if(!interaction.guild.me.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, false);
-        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client);
-        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client);
+        if(!interaction.member.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        if(!interaction.guild.me.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
 
         await member.ban({ reason: `${reason} (Moderator ID: ${interaction.member.id})`, days: days });
         interactionEmbed(1, `${member} (\`${member.id}\`) was banned for: \`${reason}\`. \`${days} day(s)\` worth of messages were purged`, interaction, client, false);
