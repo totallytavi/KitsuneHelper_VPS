@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver } = require(`discord.js`);
 const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { interactionToConsole, interactionEmbed } = require(`../functions.js`);
+const { interactionToConsole, interactionEmbed, promptMessage } = require(`../functions.js`);
 const cooldown = new Set();
 
 module.exports = {
@@ -39,8 +39,21 @@ module.exports = {
         if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
         if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
 
-        await member.kick(`${reason} (Moderator ID: ${interaction.member.id})`);
-        interactionEmbed(1, `${member} (\`${member.id}\`) was kicked for: \`${reason}\``, interaction, client, false);
+        // Create an Array of buttons.
+        const buttons = [
+          new MessageButton().setLabel(`Yes`).setCustomId(`yes`).setStyle(`SUCCESS`),
+          new MessageButton().setLabel(`No`).setCustomId(`no`).setStyle(`DANGER`)
+        ];
+        // Get the response from them
+        const button = await promptMessage(interaction, 10, buttons, `Confirm you wish to kick ${member}?`);
+        // Reaction!
+        if(button.customId === `yes`) {
+          await member.kick(`${reason} (Moderator ID: ${interaction.member.id})`);
+          interactionEmbed(1, `${member} (\`${member.id}\`) was kicked for: \`${reason}\``, interaction, client, false);
+        } else {
+          // If they pressed the No button or didn't respond, reject it.
+          interaction.editReply(`:negative_squared_cross_mark: Spell cancelled! No need to worry`)
+        }
       } catch(e) {
         interactionToConsole(`Failed to kick \`${member.id}\` from \`${interaction.guild.id}\`\n> ${String(e)}`, `kick.js (Line 42)`, interaction, client);
       }

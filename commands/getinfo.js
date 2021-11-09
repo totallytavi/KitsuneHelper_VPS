@@ -88,11 +88,6 @@ module.exports = {
       return command
       .setName(`serverinfo`)
       .setDescription(`Shows information about the server`)
-      .addStringOption(option => {
-        return option
-        .setName(`information`)
-        .setDescription(`Type of information to show`)
-      })
     })
   }),
   /**
@@ -123,6 +118,7 @@ module.exports = {
                   { name: `Nickname`, value: `${option.nickname || `None`}`, inline: true },
                   { name: `Roles (${option.roles.cache.size})`, value: Array.from(option.roles.cache.entries()).sort((a,b) => a[1].rawPosition - b[1].rawPosition).map(r => `<@&${r[1].id}>`).join("\n") || `None`, inline: false }
                 )
+                .setColor(option.displayHexColor || `#FFFFFF`)
               ], ephemeral: false });
               break;
             case `permissions`:
@@ -138,16 +134,23 @@ module.exports = {
                 [`Edit Channel`, ser.MANAGE_CHANNELS],
                 [`Edit Permissions`, ser.MANAGE_ROLES],
                 [`Manage Messages`, ser.MANAGE_MESSAGES],
+                [`Manage Threads`, ser.MANAGE_THREADS],
                 [`View Channel`, ser.VIEW_CHANNEL],
                 [`Send Messages`, ser.SEND_MESSAGES],
+                [`Send Text-to-Speech Messages`, ser.SEND_TTS_MESSAGES],
+                [`Send Messages in Threads`, ser.SEND_MESSAGES_IN_THREADS],
+                [`Create Public Threads`, ser.CREATE_PUBLIC_THREADS],
+                [`Create Private Threads`, ser.CREATE_PRIVATE_THREADS],
                 [`Embed Links`, ser.EMBED_LINKS],
                 [`Attach Files`, ser.ATTACH_FILES],
                 [`Read Message History`, ser.READ_MESSAGE_HISTORY],
                 [`Mention Everyone and All Roles`, ser.MENTION_EVERYONE],
                 [`Use External Emojis`, ser.USE_EXTERNAL_EMOJIS],
+                [`Use External Stickers`, ser.USE_EXTERNAL_STICKERS],
                 [`Add Reactions`, ser.ADD_REACTIONS],
+                [`Use Slash Commands`, ser.USE_APPLICATION_COMMANDS],
                 [`Invite People`, ser.CREATE_INSTANT_INVITE]
-              ) : array.push(
+              ).map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`) : array.push(
                 [`Edit Channel`, ser.MANAGE_CHANNELS],
                 [`Edit Permissions`, ser.MANAGE_ROLES],
                 [`View Channel`, ser.VIEW_CHANNEL],
@@ -166,30 +169,42 @@ module.exports = {
                 new MessageEmbed()
                 .setTitle(`Permissions for ${option.displayName} in ${channel.name}`)
                 .setDescription(array.join(`\n`))
+                .setColor(option.displayHexColor || `#FFFFFF`)
               ], ephemeral: false });
               break;
           }
           break;
         case `server`:
+          switch(subcommand) {
           case `roleinfo`:
             option = options.getRole(`role`);
             permissions = option.permissions
             ser = permissions.serialize();
             let array = new Array(
               [`Administrator`, ser.ADMINISTRATOR],
-              [`Manage Server`, ser.MANAGE_SERVER],
+              [`View Guild Insights`, ser.VIEW_GUILD_INSIGHTS],
+              [`Manage Server`, ser.MANAGE_GUILD],
               [`Manage Roles`, ser.MANAGE_ROLES],
               [`Manage Channels`, ser.MANAGE_CHANNELS],
-              [`Manage Emojis and Stickers`, ser.MANAGE_EMOJIS],
+              [`Manage Emojis and Stickers`, ser.MANAGE_EMOJIS_AND_STICKERS],
               [`Manage Webhooks`, ser.MANAGE_WEBHOOKS],
               [`Manage Messages`, ser.MANAGE_MESSAGES],
+              [`Manage Threads`, ser.MANAGE_THREADS],
+              [`Kick Members`, ser.KICK_MEMBERS],
+              [`Ban Member`, ser.BAN_MEMBERS],
+              [`View Audit Log`, ser.VIEW_AUDIT_LOG],
               [`View Channel`, ser.VIEW_CHANNEL],
               [`Send Messages`, ser.SEND_MESSAGES],
+              [`Send Messages in Threads`, ser.SEND_MESSAGES_IN_THREADS],
+              [`Send Text-to-Speech Messages`, ser.SEND_TTS_MESSAGES],
+              [`Create Public Threads`, ser.CREATE_PUBLIC_THREADS],
+              [`Create Private Threads`, ser.CREATE_PRIVATE_THREADS],
               [`Embed Links`, ser.EMBED_LINKS],
               [`Attach Files`, ser.ATTACH_FILES],
               [`Read Message History`, ser.READ_MESSAGE_HISTORY],
               [`Mention Everyone and All Roles`, ser.MENTION_EVERYONE],
               [`Use External Emojis`, ser.USE_EXTERNAL_EMOJIS],
+              [`Use External Stickers`, ser.USE_EXTERNAL_STICKERS],
               [`Add Reactions`, ser.ADD_REACTIONS],
               [`Connect`, ser.CONNECT],
               [`Speak`, ser.SPEAK],
@@ -198,7 +213,8 @@ module.exports = {
               [`Deafen Members`, ser.DEAFEN_MEMBERS],
               [`Move Members Into This Channel`, ser.MOVE_MEMBERS],
               [`Priority Speaker`, ser.PRIORITY_SPEAKER],
-              [`Use Screenshare and Camera`, ser.STREAM]
+              [`Use Screenshare and Camera`, ser.STREAM],
+              [`Request to Speak`, ser.REQUEST_TO_SPEAK]
             ).map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`);
             interaction.followUp({ embeds: [
               new MessageEmbed()
@@ -206,9 +222,10 @@ module.exports = {
               .addFields(
                 { name: `Name`, value: option.name, inline: true },
                 { name: `ID`, value: option.id, inline: true },
-                { name: `Hex`, inline: option.hexColor, inline: false },
-                { name: `Permissions`, value: array.join(`\n`) }
+                { name: `Hex`, value: option.hexColor, inline: true },
+                { name: `Permissions`, value: array.join(`\n`), inline: false }
               )
+              .setColor(option.hexColor || `#FFFFFF`)
             ], ephemeral: false });
             break;
           case `roles_channelpermissions`:
@@ -234,7 +251,7 @@ module.exports = {
               [`Use External Emojis`, ser.USE_EXTERNAL_EMOJIS],
               [`Add Reactions`, ser.ADD_REACTIONS],
               [`Invite People`, ser.CREATE_INSTANT_INVITE]
-            ) : array.push(
+            ).map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`) : array.push(
               [`Edit Channel`, ser.MANAGE_CHANNELS],
               [`Edit Permissions`, ser.MANAGE_ROLES],
               [`View Channel`, ser.VIEW_CHANNEL],
@@ -253,6 +270,7 @@ module.exports = {
               new MessageEmbed()
               .setTitle(`Permissions for ${option.displayName} in ${channel.name}`)
               .setDescription(array.join(`\n`))
+              .setColor(option.displayHexColor || `#FFFFFF`)
             ], ephemeral: false });
             break;
           case `channelinfo`:
@@ -282,23 +300,26 @@ module.exports = {
             interaction.followUp({ embeds: [embed], ephemeral: false });
             break;
           case `serverinfo`:
-            const server = options.getServer(`server`);
+            const server = interaction.guild
             const embed = new MessageEmbed()
             .setTitle(`Server Information for ${server.name}`)
             .setDescription(`Server Made On: <t:${Math.floor(server.createdTimestamp/1000)}:F> (<t:${Math.floor(server.createdTimestamp/1000)}:R>)`)
+            .setThumbnail(server.iconURL())
             .addFields(
               { name: `ID`, value: server.id, inline: true },
-              { name: `Owner ID`, value: server.owner.id, inline: true },
-              { name: `Roles`, value: server.roles.cache.size, inline: true },
-              { name: `Members`, value: server.memberCount, inline: true },
-              { name: `Channels`, value: server.channels.cache.size, inline: true },
-              { name: `Bans`, value: server.fetchBans().then(bans => {return bans.size}), inline: true }
+              { name: `Owner ID`, value: server.ownerId, inline: true },
+              { name: `Roles`, value: String(server.roles.cache.size), inline: true },
+              { name: `Members`, value: String(server.memberCount), inline: true },
+              { name: `Channels`, value: String(server.channels.cache.size), inline: true },
+              { name: `Bans`, value: String(server.bans.cache.size), inline: true }
             );
             interaction.followUp({ embeds: [embed], ephemeral: false });
             break;
+          }
       }
 
       cooldown.add(interaction.member.id);
+      await interaction.editReply(`My magic has worked and the result is below!`)
       setTimeout(() => {
         cooldown.delete(interaction.member.id);
       }, 5000)

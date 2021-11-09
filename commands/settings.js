@@ -24,6 +24,7 @@ module.exports = {
    * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options3
    */
   run: async (client, interaction, options) => {
+    await interaction.editReply(`My magic has worked and the result is below!`)
     return interactionEmbed(4, `[INFO-DEV]`, interaction, client, true)
     /*
     if(cooldown.has(interaction.member.id)) {

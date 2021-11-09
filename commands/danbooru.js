@@ -121,10 +121,8 @@ module.exports = {
       });
 
       cooldown.add(interaction.user.id);
+      await interaction.editReply(`My magic has worked and the result is below!`)
       setTimeout(() => {
-        interaction.fetchReply()
-        .then(m => m.delete({ timeout: 5000 }))
-        .catch(e => Promise.reject(e));
         cooldown.delete(interaction.user.id);
       }, 5000);
     }

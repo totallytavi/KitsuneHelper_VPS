@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver } = require(`discord.js`);
 const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { interactionToConsole, interactionEmbed } = require(`../functions.js`);
+const { interactionToConsole, interactionEmbed, promptMessage } = require(`../functions.js`);
 const cooldown = new Set();
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
   data: new SlashCommandBuilder()
   .setName(`ban`)
   .setDescription(`Permanently a user from the server. They cannot rejoin unless unbanned`)
-  .addMentionableOption(option => {
+  .addUserOption(option => {
     return option
     .setName(`user`)
     .setDescription(`The user to ban from the server`)
@@ -45,7 +45,7 @@ module.exports = {
     if(cooldown.has(interaction.user.id)) {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
     } else {
-      const member = options.getMentionable(`user`);
+      const member = options.getMember(`user`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
       const days = options.getNumber(`days`) ?? 0;
 
@@ -56,8 +56,21 @@ module.exports = {
         if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
         if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
 
-        await member.ban({ reason: `${reason} (Moderator ID: ${interaction.member.id})`, days: days });
-        interactionEmbed(1, `${member} (\`${member.id}\`) was banned for: \`${reason}\`. \`${days} day(s)\` worth of messages were purged`, interaction, client, false);
+        // Create an Array of buttons.
+        const buttons = [
+          new MessageButton().setLabel(`Yes`).setCustomId(`yes`).setStyle(`SUCCESS`),
+          new MessageButton().setLabel(`No`).setCustomId(`no`).setStyle(`DANGER`)
+        ];
+        // Get the response from them
+        const button = await promptMessage(interaction, 10, buttons, `Confirm you wish to ban ${member}?`);
+        // Reaction!
+        if(button.customId === `yes`) {
+          await member.ban({ reason: `${reason} (Moderator ID: ${interaction.member.id})`, days: days });
+          interactionEmbed(1, `${member} (\`${member.id}\`) was banned for: \`${reason}\`. \`${days} day(s)\` worth of messages were purged`, interaction, client, false);
+        } else {
+          // If they pressed the No button or didn't respond, reject it.
+          interaction.editReply(`:negative_squared_cross_mark: Spell cancelled! No need to worry`)
+        }
       } catch(e) {
         interactionToConsole(`Failed to kick \`${member.id}\` from \`${interaction.guild.id}\`\n> ${String(e)}`, `kick.js (Line 53)`, interaction, client);
       }
