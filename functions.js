@@ -105,7 +105,7 @@ module.exports = {
        * @returns {null}
        * @example interactionToConsole("say.js (Line 69)", "We hit an error!", message, client)
        */
-       interactionToConsole: async function(reason, source, interaction, client, ephemeral) {
+       interactionToConsole: async function(reason, source, interaction, client) {
         if(!reason) return Promise.reject("reason is a required argument, " + source);
         if(typeof reason != 'string') return Promise.reject("reason is not a string, " + source);
         if(!source) return Promise.reject("source is a required argument, " + source);
