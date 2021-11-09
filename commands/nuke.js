@@ -45,20 +45,21 @@ module.exports = {
       const oldParent = channel.parent;
       const oldPosition = channel.rawPosition;
       const oldPermissions = channel.permissionOverwrites;
+      let oldNSFW, oldRatelimit, oldTopic, oldBitrate, oldUserlimit;
       switch(channel.type) {
         case `GUILD_TEXT`:
-          const oldNSFW = channel.nsfw;
-          const oldRatelimit = channel.rateLimitPerUser;
-          const oldTopic = channel.topic;
+          oldNSFW = channel.nsfw;
+          oldRatelimit = channel.rateLimitPerUser;
+          oldTopic = channel.topic;
           break;
         case `GUILD_VOICE`:
-          const oldBitrate = channel.bitrate;
-          const oldUserlimit = channe.userLimit;
+          oldBitrate = channel.bitrate;
+          oldUserlimit = channe.userLimit;
           break;
         default:
-          const oldNSFW = channel.nsfw;
-          const oldRatelimit = channel.rateLimitPerUser;
-          const oldTopic = channel.topic;
+          oldNSFW = channel.nsfw;
+          oldRatelimit = channel.rateLimitPerUser;
+          oldTopic = channel.topic;
           break;
       }
       // Now we can delete the channel

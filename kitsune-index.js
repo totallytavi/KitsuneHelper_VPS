@@ -78,7 +78,7 @@ process.on(`uncaughtException`, async (err, origin) => {
 })();
 
 client.on(`ready`, async (client) => {
-  console.log(`[ACT-SET] Client is ready to receive data. Setting Presence`);
+  console.log(`[ACT-SET] Client is ready to receive data. Setting Presence for ${client.user.id}`);
   const presence = await client.user.setPresence({ activities: [{ name: `${client.user.username} is starting up!`, type: `PLAYING` }], status: `online` })
   console.log(`[ACT-SET] The ClientUser's activity was set!\n> Name: ${presence.activities[0].name}\n> Type: ${presence.activities[0].type}\n> Status: ${presence.status}`)
     // .catch(error => toConsole(`[ACT-ERR] The ClientUser's activity was not set!\n> ${error}`, `index.js (Line 49)`, ``, client));
@@ -144,4 +144,4 @@ client.on(`guildMemberAdd`, async (member) => {
   */
 });
 
-client.login("Njk5NjcwODQ0MDgyNzQ5NDYx.XpXxQA.J3670CSiswir1BzraKzkczGq9mk");
+client.login(config.token);
