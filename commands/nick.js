@@ -1,6 +1,6 @@
-const { Client, CommandInteraction, CommandInteractionOptionResolver } = require(`discord.js`);
+const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton } = require(`discord.js`);
 const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { interactionEmbed, interactionToConsole } = require(`../functions.js`);
+const { interactionEmbed, interactionToConsole, promptMessage } = require(`../functions.js`);
 const cooldown = new Set();
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
   data: new SlashCommandBuilder()
   .setName(`nickname`)
   .setDescription(`Changes yours, the bot's, or another user's nickname`)
-  .addMentionableOption(option => {
+  .addUserOption(option => {
     return option
     .setName(`user`)
     .setDescription(`The user whose nickname you want to change`)
@@ -35,28 +35,47 @@ module.exports = {
     if(cooldown.has(interaction.user.id)) {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
     } else {
-      const member = options.getMentionable(`user`);
+      const member = options.getMember(`user`);
       const nickname = options.getString(`new_nickname`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
 
       try {
         if(member === interaction.guild.me) {
-          if(!interaction.guild.me.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(2, `[ERR-BPRM]`, interaction, client, true);
+          if(!interaction.guild.me.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
         } else if(member === interaction.member) {
           if(!interaction.member.permissions.has(`CHANGE_NICKNAME`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+          if(!interaction.guild.me.permissions.has(`MANAGE_NICKNAMES`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
         } else {
           if(!interaction.guild.me.permissions.has(`MANAGE_NICKNAMES`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
         }
-        if(nickname.length > 32) {
-          return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-        }
+        // If we can't manage them, reject it.
+        if(!member.manageable && member != interaction.guild.me) return interactionEmbed(3, `[ERR-BPRM] ?`, interaction, client, true);
+        // If they can't manage them, reject it.
+        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        // If the nickname is too long, reject it.
+        if(nickname.length > 32) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
 
-        await member.setNickname(nickname, `${reason} (Moderator ID: ${interaction.member.id})`);
-        interactionEmbed(1, `Updated ${member}'s (${member.id}) nickname to \`${nickname}\` for \`${reason}\``, interaction, client, false);
+        // Create an Array of buttons.
+        const buttons = [
+          new MessageButton().setLabel(`Yes`).setCustomId(`yes`).setStyle(`SUCCESS`),
+          new MessageButton().setLabel(`No`).setCustomId(`no`).setStyle(`DANGER`)
+        ];
+        // Get the response from them
+        const button = await promptMessage(interaction, 10, buttons, `Confirm you wish to change ${member}'s nickname?`);
+        // Reaction!
+        if(button.customId === `yes`) {
+          // If they pressed the Yes button, act.
+          await member.setNickname(nickname, `${reason} (Moderator ID: ${interaction.member.id})`);
+          interactionEmbed(1, `Updated ${member}'s (${member.id}) nickname to \`${nickname}\` for \`${reason}\``, interaction, client, false);
+        } else {
+          // If they pressed the No button or didn't respond, reject it.
+          interaction.editReply(`:negative_squared_cross_mark: Spell cancelled! No need to worry`)
+        }
       } catch(e) {
         return interactionToConsole(`Unable to set ${member.id}'s nickname to \`${nickname}\` (Reason: \`${reason}\`)\n> ${String(e)}`, `nick.js (Line 54)`, interaction, client);
       }
       cooldown.add(interaction.user.id);
+      await interaction.editReply(`My magic has worked and the result is below!`)
       setTimeout(() => {
         cooldown.delete(interaction.user.id);
       }, 5000);
