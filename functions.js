@@ -54,11 +54,7 @@ module.exports = {
       // Disable the buttons for the users
       await message.edit({ content: content, components: [row] });
       setTimeout(() => {
-<<<<<<< HEAD
-        message.delete();
-=======
         if(!message.deleted) message.delete();
->>>>>>> master
       }, 10000);
       // Return the button
       return res;
