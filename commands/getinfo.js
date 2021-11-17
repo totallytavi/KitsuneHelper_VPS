@@ -220,10 +220,7 @@ try {
               .addFields(
                 { name: `Name`, value: option.name, inline: true },
                 { name: `ID`, value: option.id, inline: true },
-<<<<<<< HEAD
                 { name: `Hex`, value: option.hexColor, inline: true },
-=======
->>>>>>> master
                 { name: `Permissions`, value: array.join(`\n`), inline: false }
               )
               .setColor(option.hexColor || `#FFFFFF`)
@@ -297,11 +294,7 @@ try {
             break;
           case `serverinfo`:
             const server = interaction.guild
-<<<<<<< HEAD
-            const embed = new MessageEmbed()
-=======
             embed = new MessageEmbed()
->>>>>>> master
             .setTitle(`Server Information for ${server.name}`)
             .setDescription(`Server Made On: <t:${Math.floor(server.createdTimestamp/1000)}:F> (<t:${Math.floor(server.createdTimestamp/1000)}:R>)`)
             .setThumbnail(server.iconURL())

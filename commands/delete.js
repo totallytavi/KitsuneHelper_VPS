@@ -203,11 +203,7 @@ module.exports = {
       }
       } else {
         // If they pressed the No button or didn't respond, reject it.
-<<<<<<< HEAD
         interaction.editReply(`:negative_squared_cross_mark: Spell cancelled! No need to worry`)
-=======
-        return interaction.editReply(`:negative_squared_cross_mark: Spell cancelled! No need to worry`)
->>>>>>> master
       }
 
       cooldown.add(interaction.user.id);
