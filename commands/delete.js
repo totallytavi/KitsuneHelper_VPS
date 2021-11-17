@@ -1,4 +1,4 @@
-const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageSelectMenu, MessageButton } = require(`discord.js`);
+const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton } = require(`discord.js`);
 const { SlashCommandBuilder } = require(`@discordjs/builders`);
 const { interactionToConsole, interactionEmbed, promptMessage } = require(`../functions.js`);
 const cooldown = new Set();
