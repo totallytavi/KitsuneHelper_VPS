@@ -1,6 +1,6 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed } = require(`discord.js`);
 const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { interactionEmbed } = require(`../functions.js`);
+const { interactionEmbed, interactionToConsole } = require(`../functions.js`);
 const cooldown = new Set();
 
 module.exports = {
@@ -100,8 +100,9 @@ module.exports = {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
     } else {
       const subcommand = options._subcommand;
-      let option, permissions, ser, channel, role, embed;
+      let option, permissions, ser, channel, role;
 
+try {
       switch(options._group) {
         case `user`:
           option = options.getMember(`user`);
@@ -116,7 +117,7 @@ module.exports = {
                   { name: `Highest Role`, value: `${option.roles.highest} (${option.roles.highest.id})`, inline: true },
                   { name: `User ID`, value: `${option.user.id}`, inline: true },
                   { name: `Nickname`, value: `${option.nickname || `None`}`, inline: true },
-                  { name: `Roles (${option.roles.cache.size})`, value: Array.from(option.roles.cache.entries()).sort((a,b) => a[1].rawPosition - b[1].rawPosition).map(r => `<@&${r[1].id}>`).join("\n") || `None`, inline: false }
+                  { name: `Roles (${option.roles.cache.size})`, value: Array.from(option.roles.cache.entries()).sort((a,b) => b[1].rawPosition - a[1].rawPosition).map(r => `<@&${r[1].id}>`).join("\n") || `None`, inline: false }
                 )
                 .setColor(option.displayHexColor || `#FFFFFF`)
               ], ephemeral: false });
@@ -126,10 +127,7 @@ module.exports = {
               permissions = option.permissionsIn(channel);
               ser = permissions.serialize();
               let array = new Array();
-              if(channel.type != `GUILD_TEXT` || channel.type != `GUILD_VOICE`) {
-                interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-                break;
-              }
+              if(channel.type != `GUILD_TEXT` && channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
               ser.hasOwnProperty("CONNECT") ? array.push(
                 [`Edit Channel`, ser.MANAGE_CHANNELS],
                 [`Edit Permissions`, ser.MANAGE_ROLES],
@@ -222,7 +220,10 @@ module.exports = {
               .addFields(
                 { name: `Name`, value: option.name, inline: true },
                 { name: `ID`, value: option.id, inline: true },
+<<<<<<< HEAD
                 { name: `Hex`, value: option.hexColor, inline: true },
+=======
+>>>>>>> master
                 { name: `Permissions`, value: array.join(`\n`), inline: false }
               )
               .setColor(option.hexColor || `#FFFFFF`)
@@ -234,10 +235,7 @@ module.exports = {
             permissions = role.permissionsIn(channel);
             ser = permissions.serialize();
 
-            if(channel.type != `GUILD_TEXT` || channel.type != `GUILD_VOICE`) {
-              interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-              break;
-            }
+            if(channel.type != `GUILD_TEXT` && channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
             ser.hasOwnProperty("CONNECT") ? array.push(
               [`Edit Channel`, ser.MANAGE_CHANNELS],
               [`Edit Permissions`, ser.MANAGE_ROLES],
@@ -275,33 +273,35 @@ module.exports = {
             break;
           case `channelinfo`:
             channel = options.getChannel(`channel`);
-            if(channel.type != `GUILD_TEXT` || channel.type != `GUILD_VOICE`) {
-              interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-              break;
-            }
+            if(channel.type != `GUILD_TEXT` && channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            let embed;
             embed = channel.type === `GUILD_TEXT` ? new MessageEmbed()
             .setTitle(`Channel Information for ${channel.name}`)
             .addFields(
               { name: `Name`, value: channel.name, inline: true },
               { name: `ID`, value: channel.id, inline: true },
-              { name: `Synced with Category?`, value: channel.permissionsLocked, inline: true },
+              { name: `Synced with Category?`, value: String(channel.permissionsLocked), inline: true },
               { name: `Topic`, value: channel.topic, inline: true },
-              { name: `NSFW?`, value: channel.nsfw, inline: true }
+              { name: `NSFW?`, value: String(channel.nsfw), inline: true }
             ) : new MessageEmbed()
             .setTitle(`Channel Information for ${channel.name}`)
             .addFields(
               { name: `Name`, value: channel.name, inline: true },
               { name: `ID`, value: channel.id, inline: true },
-              { name: `Synced with Category?`, value: channel.permissionsLocked, inline: true },
+              { name: `Synced with Category?`, value: String(channel.permissionsLocked), inline: true },
               { name: `Creation Date`, value: `<t:${Math.floor(channel.createdTimestamp/1000)}:F> (<t:${Math.floor(channel.createdTimestamp/1000)}:R>)`, inline: true },
               { name: `Bitrate`, value: `${channel.bitrate} kbps`, inline: true },
-              { name: `User Limit`, value: channel.userLimit, inline: true }
+              { name: `User Limit`, value: String(channel.userLimit), inline: true }
             )
             interaction.followUp({ embeds: [embed], ephemeral: false });
             break;
           case `serverinfo`:
             const server = interaction.guild
+<<<<<<< HEAD
             const embed = new MessageEmbed()
+=======
+            embed = new MessageEmbed()
+>>>>>>> master
             .setTitle(`Server Information for ${server.name}`)
             .setDescription(`Server Made On: <t:${Math.floor(server.createdTimestamp/1000)}:F> (<t:${Math.floor(server.createdTimestamp/1000)}:R>)`)
             .setThumbnail(server.iconURL())
@@ -317,6 +317,9 @@ module.exports = {
             break;
           }
       }
+} catch(err) {
+  interactionToConsole(String(err), `getinfo.js (We have no idea!)`, interaction, client);
+}
 
       cooldown.add(interaction.member.id);
       await interaction.editReply(`My magic has worked and the result is below!`)
