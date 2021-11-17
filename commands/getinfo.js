@@ -100,7 +100,7 @@ module.exports = {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
     } else {
       const subcommand = options._subcommand;
-      let option, permissions, ser, channel, role;
+      let option, permissions, ser, channel, role, embed;
 
 try {
       switch(options._group) {
@@ -270,7 +270,6 @@ try {
           case `channelinfo`:
             channel = options.getChannel(`channel`);
             if(channel.type != `GUILD_TEXT` && channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-            let embed;
             embed = channel.type === `GUILD_TEXT` ? new MessageEmbed()
             .setTitle(`Channel Information for ${channel.name}`)
             .addFields(
