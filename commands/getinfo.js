@@ -220,6 +220,7 @@ try {
               .addFields(
                 { name: `Name`, value: option.name, inline: true },
                 { name: `ID`, value: option.id, inline: true },
+                { name: `Hex`, value: option.hexColor, inline: true },
                 { name: `Permissions`, value: array.join(`\n`), inline: false }
               )
               .setColor(option.hexColor || `#FFFFFF`)
