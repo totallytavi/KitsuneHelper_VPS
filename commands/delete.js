@@ -100,13 +100,13 @@ module.exports = {
           try {
             while (option > 100) {
               interaction.channel.bulkDelete(100, true)
-              .then(deleted => amount += deleted.size);
-              option = option - 100;
+              .then(deleted => {amount += deleted.size; console.log(deleted.size);});
+              option -= 100;
             }
             while (option > 0) {
               interaction.channel.bulkDelete(option, true)
-              .then(deleted => amount += deleted.size);
-              option = option - option;
+              .then(deleted => {amount += deleted.size; console.log(deleted.size);});
+              option -= option;
             }
             interactionEmbed(1, `Purged ${(amount === option) ? `\`${amount}\`` : `\`${amount}/${option}\``} messages!`, interaction, client, false)
           } catch(e) {
@@ -203,7 +203,7 @@ module.exports = {
       }
       } else {
         // If they pressed the No button or didn't respond, reject it.
-        interaction.editReply(`:negative_squared_cross_mark: Spell cancelled! No need to worry`)
+        return interaction.editReply(`:negative_squared_cross_mark: Spell cancelled! No need to worry`)
       }
 
       cooldown.add(interaction.user.id);
