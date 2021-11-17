@@ -292,7 +292,8 @@ try {
             interaction.followUp({ embeds: [embed], ephemeral: false });
             break;
           case `serverinfo`:
-            const server = interaction.guild
+            const server = interaction.guild;
+            let embed;
             embed = new MessageEmbed()
             .setTitle(`Server Information for ${server.name}`)
             .setDescription(`Server Made On: <t:${Math.floor(server.createdTimestamp/1000)}:F> (<t:${Math.floor(server.createdTimestamp/1000)}:R>)`)
@@ -310,7 +311,7 @@ try {
           }
       }
 } catch(err) {
-  interactionToConsole(String(err), `getinfo.js (We have no idea!)`, interaction, client);
+  return interactionToConsole(String(err), `getinfo.js (We have no idea!)`, interaction, client);
 }
 
       cooldown.add(interaction.member.id);
