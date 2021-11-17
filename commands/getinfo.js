@@ -293,7 +293,6 @@ try {
             break;
           case `serverinfo`:
             const server = interaction.guild;
-            let embed;
             embed = new MessageEmbed()
             .setTitle(`Server Information for ${server.name}`)
             .setDescription(`Server Made On: <t:${Math.floor(server.createdTimestamp/1000)}:F> (<t:${Math.floor(server.createdTimestamp/1000)}:R>)`)
