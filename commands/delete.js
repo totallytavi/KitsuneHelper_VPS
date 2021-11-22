@@ -1,4 +1,4 @@
-const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton } = require(`discord.js`);
+const { Client, Collection, CommandInteraction, CommandInteractionOptionResolver, Message, MessageButton } = require(`discord.js`);
 const { SlashCommandBuilder } = require(`@discordjs/builders`);
 const { interactionToConsole, interactionEmbed, promptMessage } = require(`../functions.js`);
 const cooldown = new Set();
@@ -87,21 +87,42 @@ module.exports = {
           if(!interaction.member.permissionsIn(interaction.channel).has(`MANAGE_MESSAGES`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
           if(!interaction.guild.me.permissionsIn(interaction.channel).has(`VIEW_CHANNEL`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
           if(!interaction.guild.me.permissionsIn(interaction.channel).has(`MANAGE_MESSAGES`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+          // Set a variable to know how many messages have been deleted
           let amount = 0;
+          // Create a variable to show the original amount that should've been purged
+          let original = option;
+          // Create an empty variable for fetching messages
+          let messages;
           try {
+            // While the amount of messages is greater than 100...
             while (option > 100) {
+              // Fetch the messages
+              messages = await interaction.channel.messages.fetch({ limit: 100 });
+              // Filter and get the new amount to purge
+              option += filterMe(messages, client);
+              // Delete the messages
               let deleted = await interaction.channel.bulkDelete(100, true)
+              // Add the deleted amount to "amount"
               amount += deleted.size;
+              // Remove 100 from the amount to purge
               option -= 100;
             }
+            // While the ampunt of messages is greater than 0...
             while (option > 0) {
-              let deleted = await interaction.channel.bulkDelete(option, true)
+              // Fetch the messages
+              messages = await interaction.channel.messages.fetch({ limit: option });
+              // Delete the messages
+              let deleted = await interaction.channel.bulkDelete(parseInt(option), true);
+              // Add the deleted amount to "amount"
               amount += deleted.size;
+              // Remove the amount from the amount to purge
               option -= option;
+              // Filter the messages
+              option += await filterMe(messages, client);
             }
-            interactionEmbed(1, `Purged ${(amount === option) ? `\`${amount}\`` : `\`${amount}/${option}\``} messages!`, interaction, client, false)
+            interactionEmbed(1, `Purged ${(amount === original) ? `\`${amount}\`` : `\`${amount}/${original}\``} messages!`, interaction, client, false)
           } catch(e) {
-            return interactionToConsole(`Failed to purge messages\n> ${e}`, `delete.js (Line 92)`, interaction, client);
+            return interactionToConsole(`Failed to purge messages\n> ${e}`, `delete.js (Line 86)`, interaction, client);
           }
           break;
         case `channel`:
@@ -179,4 +200,15 @@ module.exports = {
       }, 5000);
     }
   }
+}
+
+/**
+ * Purges my messages and returns a number of how many to additionally purge
+ * @param {Collection<Message>} oldMessages Collection of messages from a channel
+ * @param {Client} client Client instance
+ * @returns {Number} A number stating how many messages to be additionally purged
+ */
+async function filterMe(oldMessages, client) {
+  let badMessage = oldMessages.filter(m => m.author.id === client.user.id);
+  return badMessage.size - 1;
 }

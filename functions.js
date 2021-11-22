@@ -172,7 +172,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 
-            await interaction.editReply({ content: `My magic has worked and the result is below!`});
+            interaction.editReply({ content: `My magic has worked and the result is below!`});
             await interaction.followUp({ embeds: [embed], ephemeral: ephemeral })
 
             break;
@@ -185,7 +185,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with a minor error")
             .setTimestamp();
 
-            await interaction.editReply({ content: `Oops! I couldn't cast my spell properly` });
+            interaction.editReply({ content: `Oops! I couldn't cast my spell properly` });
             await interaction.followUp({ embeds: [embed], ephemeral: ephemeral })
 
             break;
@@ -198,7 +198,7 @@ module.exports = {
             .setFooter("The operation failed to complete due to an error")
             .setTimestamp();
 
-            await interaction.editReply({ content: `Oh no! My magic backfired! Please let my friends in the support server know what happened or try to fix it on your own` });
+            interaction.editReply({ content: `Oh no! My magic backfired! Please let my friends in the support server know what happened or try to fix it on your own` });
             await interaction.followUp({ embeds: [embed], ephemeral: ephemeral })
 
             break;
@@ -211,7 +211,7 @@ module.exports = {
             .setFooter("The operation is pending completion")
             .setTimestamp();
 
-            await interaction.editReply({ content: `Heyo, my magic gave me a little message to tell you!` });
+            interaction.editReply({ content: `Heyo, my magic gave me a little message to tell you!` });
             await interaction.followUp({ embeds: [embed], ephemeral: ephemeral })
 
             break;

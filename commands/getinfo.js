@@ -100,7 +100,7 @@ module.exports = {
       return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
     } else {
       const subcommand = options._subcommand;
-      let option, permissions, ser, channel, role, embed;
+      let option, permissions, ser, channel, role, embed, array;
 
 try {
       switch(options._group) {
@@ -119,14 +119,15 @@ try {
                   { name: `Nickname`, value: `${option.nickname || `None`}`, inline: true },
                   { name: `Roles (${option.roles.cache.size})`, value: Array.from(option.roles.cache.entries()).sort((a,b) => b[1].rawPosition - a[1].rawPosition).map(r => `<@&${r[1].id}>`).join("\n") || `None`, inline: false }
                 )
+                .setThumbnail(option.user.displayAvatarURL({ format: `png`, dynamic: true }))
                 .setColor(option.displayHexColor || `#FFFFFF`)
               ], ephemeral: false });
               break;
             case `permissions`:
+              array = [];
               channel = options.getChannel(`channel`);
               permissions = option.permissionsIn(channel);
               ser = permissions.serialize();
-              let array = new Array();
               if(channel.type != `GUILD_TEXT` && channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
               ser.hasOwnProperty("CONNECT") ? array.push(
                 [`Edit Channel`, ser.MANAGE_CHANNELS],
@@ -148,7 +149,7 @@ try {
                 [`Add Reactions`, ser.ADD_REACTIONS],
                 [`Use Slash Commands`, ser.USE_APPLICATION_COMMANDS],
                 [`Invite People`, ser.CREATE_INSTANT_INVITE]
-              ).map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`) : array.push(
+              ) : array.push(
                 [`Edit Channel`, ser.MANAGE_CHANNELS],
                 [`Edit Permissions`, ser.MANAGE_ROLES],
                 [`View Channel`, ser.VIEW_CHANNEL],
@@ -161,12 +162,13 @@ try {
                 [`Priority Speaker`, ser.PRIORITY_SPEAKER],
                 [`Use Screenshare and Camera`, ser.STREAM],
                 [`Invite People`, ser.CREATE_INSTANT_INVITE]
-              ).map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`);
+              )
 
               interaction.followUp({ embeds: [
                 new MessageEmbed()
                 .setTitle(`Permissions for ${option.displayName} in ${channel.name}`)
-                .setDescription(array.join(`\n`))
+                .setDescription(array.map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`).join(`\n`))
+                .setThumbnail(option.user.displayAvatarURL({ format: `png`, dynamic: true }))
                 .setColor(option.displayHexColor || `#FFFFFF`)
               ], ephemeral: false });
               break;
@@ -178,7 +180,7 @@ try {
             option = options.getRole(`role`);
             permissions = option.permissions
             ser = permissions.serialize();
-            let array = new Array(
+            array = new Array(
               [`Administrator`, ser.ADMINISTRATOR],
               [`View Guild Insights`, ser.VIEW_GUILD_INSIGHTS],
               [`Manage Server`, ser.MANAGE_GUILD],
@@ -226,6 +228,7 @@ try {
             ], ephemeral: false });
             break;
           case `roles_channelpermissions`:
+            array = [];
             role = options.getRole(`role`);
             channel = options.getChannel(`channel`);
             permissions = role.permissionsIn(channel);
@@ -245,7 +248,7 @@ try {
               [`Use External Emojis`, ser.USE_EXTERNAL_EMOJIS],
               [`Add Reactions`, ser.ADD_REACTIONS],
               [`Invite People`, ser.CREATE_INSTANT_INVITE]
-            ).map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`) : array.push(
+            ) : array.push(
               [`Edit Channel`, ser.MANAGE_CHANNELS],
               [`Edit Permissions`, ser.MANAGE_ROLES],
               [`View Channel`, ser.VIEW_CHANNEL],
@@ -258,13 +261,12 @@ try {
               [`Priority Speaker`, ser.PRIORITY_SPEAKER],
               [`Use Screenshare and Camera`, ser.STREAM],
               [`Invite People`, ser.CREATE_INSTANT_INVITE]
-            ).map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`);
+            );
 
             interaction.followUp({ embeds: [
               new MessageEmbed()
-              .setTitle(`Permissions for ${option.displayName} in ${channel.name}`)
-              .setDescription(array.join(`\n`))
-              .setColor(option.displayHexColor || `#FFFFFF`)
+              .setTitle(`Permissions for ${role.name} in ${channel.name}`)
+              .setDescription(array.map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`).join(`\n`))
             ], ephemeral: false });
             break;
           case `channelinfo`:
@@ -276,7 +278,7 @@ try {
               { name: `Name`, value: channel.name, inline: true },
               { name: `ID`, value: channel.id, inline: true },
               { name: `Synced with Category?`, value: String(channel.permissionsLocked), inline: true },
-              { name: `Topic`, value: channel.topic, inline: true },
+              { name: `Topic`, value: channel.topic ? channel.topic : `No channel topic set!`, inline: true },
               { name: `NSFW?`, value: String(channel.nsfw), inline: true }
             ) : new MessageEmbed()
             .setTitle(`Channel Information for ${channel.name}`)
@@ -295,7 +297,7 @@ try {
             embed = new MessageEmbed()
             .setTitle(`Server Information for ${server.name}`)
             .setDescription(`Server Made On: <t:${Math.floor(server.createdTimestamp/1000)}:F> (<t:${Math.floor(server.createdTimestamp/1000)}:R>)`)
-            .setThumbnail(server.iconURL())
+            .setThumbnail(server.iconURL({ format: `png`, dynamic: true }) || `https://cdn.discordapp.com/embed/avatars/0.png` )
             .addFields(
               { name: `ID`, value: server.id, inline: true },
               { name: `Owner ID`, value: server.ownerId, inline: true },
@@ -309,7 +311,7 @@ try {
           }
       }
 } catch(err) {
-  return interactionToConsole(String(err), `getinfo.js (We have no idea!)`, interaction, client);
+  return interactionToConsole(String(err) + "\n" + String(err.stack), `getinfo.js (We have no idea!)`, interaction, client);
 }
 
       cooldown.add(interaction.member.id);

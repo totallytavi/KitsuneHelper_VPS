@@ -107,7 +107,6 @@ client.on(`interactionCreate`, async (interaction) => {
         } else {
           command.run(client, interaction, interaction.options)
           let option = new Array();
-          console.log(interaction.options.data[0].type)
           if(interaction.options.data[0].type === "SUB_COMMAND_GROUP") {
             for(op of interaction.options.data[0].options[0].options) {
               option.push(`[${op.type}] ${op.name}: ${op.value}`)
