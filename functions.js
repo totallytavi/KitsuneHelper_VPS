@@ -4,11 +4,11 @@ const wait = require(`util`).promisify(setTimeout);
 
 const errors = {
   "[ERR-CLD]": "You are on cooldown!",
-  "[ERR-UPRM]": "You do not have the proper permissions to execute this command",
-  "[ERR-BPRM]": "I do not have the proper permissions to execute this command",
-  "[ERR-ARGS]": "You have not supplied the correct parameters. Please check again",
-  "[ERR-UNK]": "I can't tell why an issue spawned. Please report this to the support server! (/support)",
-  "[WARN-NODM]": "Sorry, but all slash commands only work in a server, not DMs",
+  "[ERR-UPRM]": "You do not have the proper permissions to execute this command.",
+  "[ERR-BPRM]": "I do not have the proper permissions to execute this command.",
+  "[ERR-ARGS]": "You have not supplied the correct parameters. Please check again.",
+  "[ERR-UNK]": "I can't tell why an issue spawned. Please report this to the support server! (https://kitsunehelper.codertavi.repl.co).",
+  "[WARN-NODM]": "Sorry, but all slash commands only work in a server, not DMs.",
   "[INFO-DEV]": "This command is in development. This should not be expected to work"
 }
 
@@ -142,17 +142,19 @@ module.exports = {
        * Replies with an embed to the interaction. Alternative for responseEmbed()
        * @param {Number} type 1- Sucessful, 2- Warning, 3- Error, 4- Information
        * @param {String} content The information to state
+       * @param {String} expected The expected argument (Just so the user knows what we're expecting)
        * @param {Interaction} interaction The Interaction object for responding
        * @param {Client} client Client object for logging
        * @param {Boolean} ephemeral Whether or not to ephemeral the message
-       * @example interactionEmbed(1, `Removed ${removed} roles`, interaction, client, false)
-       * @example interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true)
+       * @example interactionEmbed(1, `Removed ${removed} roles`, ``, interaction, client, false)
+       * @example interactionEmbed(3, `[ERR-UPRM]`, `Missing: \`Manage Messages\``, interaction, client, true)
        * @returns {null}
        */
-      interactionEmbed: async function(type, content, interaction, client, ephemeral) {
+      interactionEmbed: async function(type, content, expected, interaction, client, ephemeral) {
         if(typeof type != 'number') return Promise.reject("type is not a number, " + `${type} ${content}`);
         if(type < 1 || type > 4) return Promise.reject("type is not a valid integer, " + `${type} ${content}`);
         if(typeof content != 'string') return Promise.reject("content is not a string, " + `${type} ${content}`);
+        if(typeof expected != 'string') return Promise.reject("expected is not a string, " + `${type} ${content}`);
         if(!interaction) return Promise.reject("interaction is a required argument, " + `${type} ${content}`);
         if(typeof interaction != 'object') return Promise.reject("interaction is not an object, " + `${type} ${content}`);
         if(!client) return Promise.reject("client is a required argument, " + `${type} ${content}`);
@@ -172,7 +174,7 @@ module.exports = {
             .setFooter("The operation was completed successfully with no errors")
             .setTimestamp();
 
-            interaction.editReply({ content: `My magic has worked and the result is below!`});
+            interaction.editReply({ content: `My magic has worked and the result has been shown!`});
             await interaction.followUp({ embeds: [embed], ephemeral: ephemeral })
 
             break;
@@ -181,7 +183,7 @@ module.exports = {
             .setTitle("Warning")
             .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
             .setColor("ORANGE")
-            .setDescription(errors[content] ?? content)
+            .setDescription(errors[content] + `\n> ${expected}` ?? content)
             .setFooter("The operation was completed successfully with a minor error")
             .setTimestamp();
 
@@ -194,7 +196,7 @@ module.exports = {
             .setTitle("Error")
             .setAuthor(interaction.user.username, interaction.user.avatarURL({ dynamic: true, size: 4096 }))
             .setColor("RED")
-            .setDescription(errors[content] ?? `I don't understand the error "${content}". Please report this to the support server!`)
+            .setDescription(errors[content] + `\n> ${expected}` ?? `I don't understand the error "${content}" but was expecting ${expected}. Please report this to the support server!`)
             .setFooter("The operation failed to complete due to an error")
             .setTimestamp();
 

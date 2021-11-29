@@ -97,7 +97,7 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client);
+      return interactionEmbed(2, `[ERR-CLD]`, `You must have no active cooldown`, interaction, client);
     } else {
       const subcommand = options._subcommand;
       let option, permissions, ser, channel, role, embed, array;
@@ -128,7 +128,7 @@ try {
               channel = options.getChannel(`channel`);
               permissions = option.permissionsIn(channel);
               ser = permissions.serialize();
-              if(channel.type != `GUILD_TEXT` && channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+              if(!channel.isText() && !channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel/VoiceBasedChannel, got other`, interaction, client, true);
               ser.hasOwnProperty("CONNECT") ? array.push(
                 [`Edit Channel`, ser.MANAGE_CHANNELS],
                 [`Edit Permissions`, ser.MANAGE_ROLES],
@@ -234,7 +234,7 @@ try {
             permissions = role.permissionsIn(channel);
             ser = permissions.serialize();
 
-            if(channel.type != `GUILD_TEXT` && channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(!channel.isText() && !channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel/VoiceBasedChannel, got other`, interaction, client, true);
             ser.hasOwnProperty("CONNECT") ? array.push(
               [`Edit Channel`, ser.MANAGE_CHANNELS],
               [`Edit Permissions`, ser.MANAGE_ROLES],
@@ -271,7 +271,7 @@ try {
             break;
           case `channelinfo`:
             channel = options.getChannel(`channel`);
-            if(channel.type != `GUILD_TEXT` && channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+            if(!channel.isText() && !channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel/VoiceBasedChannel, got other`, interaction, client, true);
             embed = channel.type === `GUILD_TEXT` ? new MessageEmbed()
             .setTitle(`Channel Information for ${channel.name}`)
             .addFields(

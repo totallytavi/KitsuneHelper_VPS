@@ -45,19 +45,19 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
+      return interactionEmbed(2, `[ERR-CLD]`, `You must be have no active cooldown`, interaction, client, true)
     } else {
       const channel = options.getChannel(`channel`) ?? interaction.channel
-      const age = options.getInteger(`age`);
-      const max_uses = options.getInteger(`max_uses`);
-      const temporary_membership = options.getBoolean(`temporary_membership`);
+      const age = options.getInteger(`age`) ?? 0;
+      const max_uses = options.getInteger(`max_uses`) ?? 0;
+      const temporary_membership = options.getBoolean(`temporary_membership`) ?? false;
 
       try {
-        if(!interaction.member.permissionsIn(channel).has(`CREATE_INSTANT_INVITE`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-        if(!interaction.guild.me.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionEmbed(3, `[ERR-BPRM]`, `createinvite.js (Line 59)`, interaction, client, true);
+        if(!interaction.member.permissionsIn(channel).has(`CREATE_INSTANT_INVITE`)) return interactionEmbed(3, `[ERR-UPRM]`, `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
+        if(!interaction.guild.me.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionEmbed(3, `[ERR-BPRM]`, `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
 
         channel.createInvite({ age: age, max_uses: max_uses, temporary: temporary_membership })
-        .then(invite => interactionEmbed(1, `Here is the invite:\n${invite}`, interaction, client, false));
+        .then(invite => interactionEmbed(1, `Here is the invite:\n${invite}`, ``, interaction, client, false));
       } catch(e) {
         interactionToConsole(`Failed to create an invite for a server\n> ${String(e)}`, `createinvite.js (Line 56)`, interaction, client);
       }

@@ -57,14 +57,15 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
+      return interactionEmbed(2, `[ERR-CLD]`, `You must be have no active cooldown`, interaction, client, true);
     } else {
       let tag1 = options.getString(`tag1`);
-      if(tag1.match(/[^1-6]\+/)) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
+      if(tag1.match(/[^1-6]\+/)) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: tag1 :-: Expected: Tag :-: Got: Multiple tags`, interaction, client, true);
       let tag2;
-      if(options.getString(`tag2`) && options.getString(`tag2`).match(/[^1-6]\+/)) {
+      if(options.getString(`tag2`)) {
         tag1.concat("+", options.getString(`tag2`));
         tag2 = options.getString(`tag2`);
+        if(tag2.match(/[^1-6]\+/)) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: tag2 :-: Expected: Tag :-: Got: Multiple tags`, interaction, client, true);
       }
       let limit = options.getNumber(`limit`) ?? 10;
       let rating = options.getString(`rating`) ?? `any`;
@@ -81,7 +82,7 @@ module.exports = {
       }
 
       if(interaction.channel.nsfw === false) {
-        interactionEmbed(4, `This channel is not set to NSFW. Therefore, the query will only search for SAFE posts. This may result in less or no images found`, interaction, client, false);
+        interactionEmbed(4, `This channel is not set to NSFW. Therefore, the query will only search for SAFE posts. This may result in less or no images found`, ``, interaction, client, false);
       }
 
       let url = "";

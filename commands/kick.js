@@ -27,17 +27,17 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
+      return interactionEmbed(2, `[ERR-CLD]`, `You must have no active cooldown`, interaction, client, true)
     } else {
       const member = options.getMember(`user`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
 
       try {
-        if(!interaction.member.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-        if(!interaction.guild.me.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        if(!interaction.member.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, `Missing: \`Kick Members\``, interaction, client, true);
+        if(!interaction.guild.me.permissions.has(`KICK_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, `Missing: \`Kick Members\``, interaction, client, true);
+        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: user :-: You cannot execute this on yourself!`, interaction, client, true);
+        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, `I cannot kick members higher or equal to me`, interaction, client, true);
+        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, `You cannot kick those higher or equal to you`, interaction, client, true);
 
         // Create an Array of buttons.
         const buttons = [
@@ -49,7 +49,7 @@ module.exports = {
         // Reaction!
         if(button.customId === `yes`) {
           await member.kick(`${reason} (Moderator ID: ${interaction.member.id})`);
-          interactionEmbed(1, `${member} (\`${member.id}\`) was kicked for: \`${reason}\``, interaction, client, false);
+          interactionEmbed(1, `${member} (\`${member.id}\`) was kicked for: \`${reason}\``, ``, interaction, client, false);
         } else {
           // If they pressed the No button or didn't respond, reject it.
           interaction.editReply(`:negative_squared_cross_mark: Spell cancelled! No need to worry`)

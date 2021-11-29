@@ -43,18 +43,18 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
+      return interactionEmbed(2, `[ERR-CLD]`, `You must be have no active cooldown`, interaction, client, true)
     } else {
       const member = options.getMember(`user`);
       const reason = options.getString(`reason`) ?? `No reason provided`;
       const days = options.getNumber(`days`) ?? 0;
 
       try {
-        if(!interaction.member.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-        if(!interaction.guild.me.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        if(!interaction.member.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-UPRM]`, `Missing \`Ban Members\``, interaction, client, true);
+        if(!interaction.guild.me.permissions.has(`BAN_MEMBERS`)) return interactionEmbed(3, `[ERR-BPRM]`, `Missing \`Ban Members\``, interaction, client, true);
+        if(member === interaction.member) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: user :-: You cannot execute this on yourself!`, interaction, client, true);
+        if(!member.manageable) return interactionEmbed(3, `[ERR-BPRM]`, `I cannot ban users higher or equal to me`, interaction, client, true);
+        if(member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, `[ERR-UPRM]`, `You cannot ban users higher or equal to you`, interaction, client, true);
 
         // Create an Array of buttons.
         const buttons = [
@@ -66,7 +66,7 @@ module.exports = {
         // Reaction!
         if(button.customId === `yes`) {
           await member.ban({ reason: `${reason} (Moderator ID: ${interaction.member.id})`, days: days });
-          interactionEmbed(1, `${member} (\`${member.id}\`) was banned for: \`${reason}\`. \`${days} day(s)\` worth of messages were purged`, interaction, client, false);
+          interactionEmbed(1, `${member} (\`${member.id}\`) was banned for: \`${reason}\`. \`${days} day(s)\` worth of messages were purged`, ``, interaction, client, false);
         } else {
           // If they pressed the No button or didn't respond, reject it.
           interaction.editReply(`:negative_squared_cross_mark: Spell cancelled! No need to worry`)

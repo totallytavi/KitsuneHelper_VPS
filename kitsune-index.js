@@ -93,7 +93,7 @@ client.on(`ready`, async (client) => {
 
 client.on(`interactionCreate`, async (interaction) => {
   await interaction.deferReply();
-  if(!interaction.inGuild()) return interactionEmbed(4, `[WARN-NODM]`, interaction, client, true);
+  if(!interaction.inGuild()) return interactionEmbed(4, `[WARN-NODM]`, ``, interaction, client, true);
   if(interaction.isCommand()) {
     await interaction.editReply({ content: `:wrench: Working on it!` })
     let command = client.commands.get(interaction.commandName)
@@ -103,7 +103,7 @@ client.on(`interactionCreate`, async (interaction) => {
         const json = JSON.parse(body);
         if(json[interaction.user.id]) {
           // Defer if they're banned since they don't have access to commands
-          interactionEmbed(4, `You are ${json[interaction.user.id].appealable === false ? `permanently banned` : `banned (appealable)`} for: ${json[interaction.user.id].reason}`, interaction, client, false)
+          interactionEmbed(4, `You are ${json[interaction.user.id].appealable === false ? `permanently banned` : `banned (appealable)`} for: ${json[interaction.user.id].reason}`, ``, interaction, client, false)
         } else {
           command.run(client, interaction, interaction.options)
           let option = new Array();

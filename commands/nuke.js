@@ -27,17 +27,17 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if (cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
+      return interactionEmbed(2, `[ERR-CLD]`, `You must have no active cooldown`, interaction, client, true);
     } else {
       const channel = options.getChannel("channel");
       if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNEL`)) {
-        return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
+        return interactionEmbed(3, `[ERR-UPRM]`, `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
       }
       if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNEL`)) {
-        return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+        return interactionEmbed(3, `[ERR-BPRM]`, `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
       }
       if(channel.parent && !interaction.guild.me.permissionsIn(channel.parent).has(`MANAGE_CHANNEL`)) {
-        return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
+        return interactionEmbed(3, `[ERR-BPRM]`, `Missing: \`Manage Channel\` > ${channel.parent}`, interaction, client, true);
       }
 
       // Now just a long list of grabbing values

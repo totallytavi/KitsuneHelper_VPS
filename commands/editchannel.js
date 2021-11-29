@@ -8,172 +8,169 @@ module.exports = {
   data: new SlashCommandBuilder()
   .setName(`editchannel`)
   .setDescription(`Edits a channel's data`)
-  .addSubcommandGroup(group => {
-    return group
-    .setName(`text`)
-    .setDescription(`Text channel options`)
-    .addSubcommand(command => {
-      return command
-      .setName(`name`)
-      .setDescription(`Sets a channel's name`)
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`Channel to be updated`)
-        .setRequired(true)
-      })
-      .addStringOption(option => {
-        return option
-        .setName(`name`)
-        .setDescription(`New name`)
-        .setRequired(true)
-      })
+  .addSubcommand(command => {
+    return command
+    .setName(`name`)
+    .setDescription(`Sets a channel's name`)
+    .addChannelOption(option => {
+      return option
+      .setName(`channel`)
+      .setDescription(`Channel to be updated`)
+      .setRequired(true)
     })
-    .addSubcommand(command => {
-      return command
+    .addStringOption(option => {
+      return option
+      .setName(`name`)
+      .setDescription(`New name`)
+      .setRequired(true)
+    })
+    .addStringOption(option => {
+      return option
+      .setName(`reason`)
+      .setDescription(`Reason for editing`)
+      .setRequired(false)
+    })
+  })
+  .addSubcommand(command => {
+    return command
+    .setName(`topic`)
+    .setDescription(`Sets a channel's topic`)
+    .addChannelOption(option => {
+      return option
+      .setName(`channel`)
+      .setDescription(`Channel to be updated (Must be a text based channel)`)
+      .setRequired(true)
+    })
+    .addStringOption(option => {
+      return option
       .setName(`topic`)
-      .setDescription(`Sets a channel's topic`)
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`Channel to be updated`)
-        .setRequired(true)
-      })
-      .addStringOption(option => {
-        return option
-        .setName(`topic`)
-        .setDescription(`New topic`)
-        .setRequired(true)
-      })
+      .setDescription(`New topic`)
+      .setRequired(true)
     })
-    .addSubcommand(command => {
-      return command
+    .addStringOption(option => {
+      return option
+      .setName(`reason`)
+      .setDescription(`Reason for editing`)
+      .setRequired(false)
+    })
+  })
+  .addSubcommand(command => {
+    return command
+    .setName(`nsfw`)
+    .setDescription(`Changes a channel's NSFW flag`)
+    .addChannelOption(option => {
+      return option
+      .setName(`channel`)
+      .setDescription(`Channel to be updated (Must be a text based channel)`)
+      .setRequired(true)
+    })
+    .addBooleanOption(option => {
+      return option
       .setName(`nsfw`)
-      .setDescription(`Changes a channel's NSFW flag`)
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`Channel to be updated`)
-        .setRequired(true)
-      })
-      .addBooleanOption(option => {
-        return option
-        .setName(`nsfw`)
-        .setDescription(`New NSFW flag`)
-        .setRequired(true)
-      })
+      .setDescription(`New NSFW flag`)
+      .setRequired(true)
     })
-    .addSubcommand(command => {
-      return command
-      .setName(`slowmode`)
-      .setDescription(`Changes a channel's slowmode`)
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`Channel to be updated`)
-        .setRequired(true)
-      })
-      .addNumberOption(option => {
-        return option
-        .setName(`seconds`)
-        .setDescription(`Slowmode in seconds`)
-        .setRequired(true)
-      })
+    .addStringOption(option => {
+      return option
+      .setName(`reason`)
+      .setDescription(`Reason for the change`)
+      .setRequired(false)
     })
   })
-  .addSubcommandGroup(group => {
-    return group
-    .setName(`voice`)
-    .setDescription(`Voice channel options`)
-    .addSubcommand(command => {
-      return command
-      .setName(`name`)
-      .setDescription(`Sets a channel's name`)
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`Channel to be updated`)
-        .setRequired(true)
-      })
-      .addStringOption(option => {
-        return option
-        .setName(`name`)
-        .setDescription(`New name`)
-        .setRequired(true)
-      })
+  .addSubcommand(command => {
+    return command
+    .setName(`slowmode`)
+    .setDescription(`Changes a channel's slowmode`)
+    .addChannelOption(option => {
+      return option
+      .setName(`channel`)
+      .setDescription(`Channel to be updated (Must be a text based channel)`)
+      .setRequired(true)
     })
-    .addSubcommand(command => {
-      return command
-      .setName(`user_limit`)
-      .setDescription(`Sets the user limit`)
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`Channel to be updated`)
-        .setRequired(true)
-      })
-      .addNumberOption(option => {
-        return option
-        .setName(`limit`)
-        .setDescription(`New user limit`)
-        .setRequired(true)
-        .addChoices([
-          [`no_limit`, 0],
-          [`1`, 1],
-          [`2`, 2],
-          [`5`, 5],
-          [`10`, 10],
-          [`25`, 25],
-          [`45`, 45],
-          [`50`, 50],
-          [`75`, 75],
-          [`90`, 90],
-          [`99`, 99]
-        ])
-      })
+    .addNumberOption(option => {
+      return option
+      .setName(`seconds`)
+      .setDescription(`Slowmode in seconds`)
+      .setRequired(true)
     })
-    .addSubcommand(command => {
-      return command
+    .addStringOption(option => {
+      return option
+      .setName(`reason`)
+      .setDescription(`Reason for slowmode`)
+      .setRequired(false)
+    })
+  })
+  .addSubcommand(command => {
+    return command
+    .setName(`user_limit`)
+    .setDescription(`Sets the user limit`)
+    .addChannelOption(option => {
+      return option
+      .setName(`channel`)
+      .setDescription(`Channel to be updated (Must be a voice based channel)`)
+      .setRequired(true)
+    })
+    .addNumberOption(option => {
+      return option
+      .setName(`limit`)
+      .setDescription(`New user limit (Must be 0-100)`)
+      .setRequired(true)
+    })
+    .addStringOption(option => {
+      return option
+      .setName(`reason`)
+      .setDescription(`Reason for the change`)
+      .setRequired(false)
+    })
+  })
+  .addSubcommand(command => {
+    return command
+    .setName(`bitrate`)
+    .setDescription(`Changes a channel's voice quality`)
+    .addChannelOption(option => {
+      return option
+      .setName(`channel`)
+      .setDescription(`Channel to be updated`)
+      .setRequired(true)
+    })
+    .addStringOption(option => {
+      return option
       .setName(`bitrate`)
-      .setDescription(`Changes a channel's voice quality`)
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`Channel to be updated`)
-        .setRequired(true)
-      })
-      .addStringOption(option => {
-        return option
-        .setName(`bitrate`)
-        .setDescription(`New channel bitrate (64kbps is default and recommended)`)
-        .setRequired(true)
-        .addChoices([
-          [`8kbps`, "8"],
-          [`16kbps`, "16"],
-          [`32kbps`, "32"],
-          [`64kbps`, "64"],
-          [`96kbps`, "96"],
-          [`128kbps`, "128"],
-          [`256kbps`, "256"],
-          [`384kbps`, "384"]
-        ])
-      })
+      .setDescription(`New channel bitrate (64kbps is default and recommended)`)
+      .setRequired(true)
+      .addChoices([
+        [`8kbps`, "8"],
+        [`16kbps`, "16"],
+        [`32kbps`, "32"],
+        [`64kbps`, "64"],
+        [`96kbps`, "96"],
+        [`128kbps`, "128"],
+        [`256kbps`, "256"],
+        [`384kbps`, "384"]
+      ])
+    })
+    .addStringOption(option => {
+      return option
+      .setName(`reason`)
+      .setDescription(`Reason for changing the bitrate`)
+      .setRequired(false)
     })
   })
-  .addSubcommandGroup(group => {
-    return group
-    .setName(`permissions`)
-    .setDescription(`Channel permissions`)
-    .addSubcommand(command => {
-      return command
-      .setName(`permlock`)
-      .setDescription(`Set's a channel's permissions to the category's permissions`)
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`Channel to be updated`)
-        .setRequired(true)
-      })
+  .addSubcommand(command => {
+    return command
+    .setName(`permlock`)
+    .setDescription(`Set's a channel's permissions to the category's permissions (Must be a text or voice based channel)`)
+    .addChannelOption(option => {
+      return option
+      .setName(`channel`)
+      .setDescription(`Channel to be updated`)
+      .setRequired(true)
+    })
+    .addStringOption(option => {
+      return option
+      .setName(`reason`)
+      .setDescription(`Reason for the change`)
+      .setRequired(false)
     })
   }),
   /**
@@ -183,106 +180,46 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true)
+      return interactionEmbed(2, `[ERR-CLD]`, `You must have no active cooldown`, interaction, client, true)
     } else {
       const channel = options.getChannel(`channel`);
-      const subcommand = options._subcommand
-      if(options._group === `text`) {
-        const option = options.getString(`name`) ?? options.getString(`topic`) ?? options.getBoolean(`nsfw`) ?? options.getNumber(`slowmode`);
-        if(subcommand === `name`) {
-          try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            await channel.setName(option);
-            interactionEmbed(1, `${channel}'s name was set to \`${channel.name}\` for \`${reason}\``, interaction, client, false);
-          } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s name due to an error\n> ${String(e)}`, `editchannel.js (Line 194)`, interaction, client);
-          };
-        } else if(subcommand === `topic`) {
-          try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            await channel.setTopic(option);
-            interactionEmbed(1, `${channel}'s topic was set to \`${channel.topic}\` for \`${reason}\``, interaction, client, false);
-          } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s topic due to an error\n> ${String(e)}`, `editchannel.js (Line 205)`, interaction, client)
-          };
-        } else if(subcommand === `slowmode`) {
-          try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            await channel.setRateLimitPerUser(option);
-            interactionEmbed(1, `${channel}'s ratelimit was set to \`${channel.RateLimitPerUser} second(s)\` for \`${reason}\``, interaction, client, false);
-          } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s ratelimit due to an error\n> ${String(e)}`, `editchannel.js (Line 216)`, interaction, client);
-          };
-        } else if(subcommand === `nsfw`) {
-          try {
-            if(channel.type != `GUILD_TEXT`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            await channel.setNSFW(option);
-            interactionEmbed(1, `${channel}'s nsfw flag was set to \`${channel.nsfw}\` for \`${reason}\``, interaction, client, false);
-          } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s nsfw flag due to an error\n> ${String(e)}`, `editchannel.js (Line 227)`, interaction, client);
-          };
+      const reason = `${options.getString(`reason`)} (Moderator ID: ${interaction.member.id})` ?? `No reason provided`;
+      const option = options.getString(`name`) ?? options.getString(`topic`) ?? options.getBoolean(`nsfw`) ?? options.getNumber(`seconds`) ?? options.getString(`bitrate`) ?? options.getNumber(`limit`);
+      
+      // If we cannot view the channel, stop
+      if(!interaction.guild.me.permissionsIn(channel).has(`VIEW_CHANNEL`)) return interactionEmbed(3, `[ERR-BPRM]`, `Missing: \`View Channel\` > ${channel}`, interaction, client, true);
+      if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, `Missing \`Manage Channel\` > ${channel}`, interaction, client, true);
+      if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
+      try {
+        if(options[0].name === `name`) {
+          channel.setName(option, reason)
+          .then(newChannel => interactionEmbed(1, `Set ${channel}'s name was set to \`${newChannel.name}\` for \`${reason}\``, ``, interaction, client, false));
+        } else if(options[0].name === `topic`) {
+          if(!channel.isText()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel`, interaction, client, true);
+          channel.setTopic(option, reason)
+          .then(newChannel => interactionEmbed(1, `Set ${channel}'s topic was set to \`${newChannel.topic}\` for \`${reason}\``, ``, interaction, client, false));
+        } else if(options[0].name === `nsfw`) {
+          if(!channel.isText()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel`, interaction, client, true);
+          channel.setNSFW(option, reason)
+          .then(newChannel => interactionEmbed(1, `Set ${channel}'s NSFW flag to \`${newChannel.nsfw}\` for \`${reason}\``, ``, interaction, client, false));
+        } else if(options[0].name === `seconds`) {
+          if(!channel.isText()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel`, interaction, client, true);
+          channel.setRateLimitPerUser(option, reason)
+          .then(newChannel => interactionEmbed(1, `Set ${channel}'s slowmode to \`${newChannel.rateLimitPerUser}\` for \`${reason}\``, ``, interaction, client, false));
+        } else if(options[0].name === `bitrate`) {
+          if(!channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel`, interaction, client, true);
+          channel.setBitrate(option, reason)
+          .then(newChannel => interactionEmbed(1, `Set ${channel}'s bitrate to \`${newChannel.bitrate}\` for \`${reason}\``, ``, interaction, client, false));
+        } else if(options[0].name === `limit`) {
+          if(!channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel`, interaction, client, true);
+          channel.setUserLimit(option, reason)
+          .then(newChannel => interactionEmbed(1, `Set ${channel}'s user limit to \`${newChannel.userLimit}\` for \`${reason}\``, ``, interaction, client, false));
+        } else if(options[0].name === `permlock`) {
+          channel.lockPermissions()
+          .then(newChannel => interactionEmbed(1, `Set ${newChannel}'s permissions to the category's permissions`, ``, interaction, client, false));
         }
-      } else if(options._group === `voice`) {
-        if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client);
-        const option = options.getString(`name`) ?? options.getString(`user_limit`) ?? options.getBoolean(`bitrate`);
-        if(subcommand === `name`) {
-          try {
-            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            await channel.setName(option);
-            interactionEmbed(1, `${channel}'s name was set to \`${channel.name}\` for \`${reason}\``, interaction, client, false);
-          } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s name due to an error\n> ${String(e)}`, `editchannel.js (Line 242)`, interaction, client); 
-          };
-        } else if(subcommand === `user_limit`) {
-          try {
-            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            await channel.setUserLimit(option);
-            interactionEmbed(1, `${channel}'s user limit was set to \`${channel.userLimit}\` for \`${reason}\``, interaction, client, false);
-          } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s user limit due to an error\n> ${String(e)}`, `editchannel.js (Line 253)`, interaction, client);
-          };
-        } else if(subcommand === `bitrate`) {
-          try {
-            if(channel.type != `GUILD_VOICE`) return interactionEmbed(3, `[ERR-ARGS]`, interaction, client, true);
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            await channel.setBitrate(option);
-            interactionEmbed(1, `${channel}'s bitrate was set to \`${channel.bitrate}\` kbps for \`${reason}\``, interaction, client, false);
-          } catch(e) {
-            interactionToConsole(`Unable to edit ${channel}'s bitrate due to an error\n> ${String(e)}`, `editchannel.js (Line 264)`, interaction, client);
-          };
-        }
-      } else if(options._group === `permissions`) {
-        if(subcommand === `permlock`) {
-          try {
-            if(!channel.manageable) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, interaction, client, true);
-            if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, interaction, client, true);
-            await channel.lockPermissions();
-            interactionEmbed(1, `${channel}'s permissions were set to the category's permission for \`${reason}\``, interaction, client, false);
-          } catch(e) {
-            interactionToConsole(`Unable to permission lock ${channel} due to an error\n> ${String(e)}`, `editchannel.js (Line 277)`, interaction, client);
-          };
-        }
+      } catch(e) {
+        return interactionToConsole(String(e), `editchannel.js (Line 193)`, interaction, client);
       }
 
       cooldown.add(interaction.user.id);

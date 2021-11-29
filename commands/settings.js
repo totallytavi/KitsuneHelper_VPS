@@ -25,66 +25,6 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     await interaction.editReply(`My magic has worked and the result is below!`)
-    return interactionEmbed(4, `[INFO-DEV]`, interaction, client, true)
-    /*
-    if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, interaction, client, true);
-    } else {
-      if(!interaction.member.permissions.has(`MANAGE_SERVER`)) return interactionEmbed(2, `[ERR-UPRM]`, interaction, client, true);
-      const setting = options.getString(`option`);
-      const menu = new MessageActionRow();
-      const embed = new MessageEmbed();
-
-      interaction.ephemeral = false;
-      switch(setting) {
-        case `banWithKSoft`:
-          menu
-          .addComponents(
-            new MessageSelectMenu()
-            .setCustomId(`banWithKSoft`)
-            .setPlaceholder(`Select an option`)
-            .addOptions([
-              { label: `True`, description: `Ban users on join if they are on the KSoft.Si banlist`, value: `true` },
-              { label: `False`, description: `Do not ban users on join if they are on the KSoft.Si banlist`, value: `false` }
-            ])
-          );
-          embed
-          .setTitle(`Settings`)
-          .setDescription(`Changing "banWithKSoft" setting`)
-          .setFooter(`This will expire in 10 seconds`)
-          interaction.editReply({ embeds: [embed], components: [menu] });
-      }
-
-      const filter = i => {
-        i.deferUpdate();
-        return i.user.id === interaction.user.id;
-      };
-      const message = await interaction.fetchReply();
-      let config = {};
-      message.awaitMessageComponent({ filter, componentType: `SELECT_MENU`, time: 10000 })
-      .then(async (i) => {
-        let value = i.values[0];
-        switch(i.customId) {
-          case "banWithKSoft":
-            config [i.guild.id] = {
-              banWithKSoft: value
-            };
-            fs.writeFileSync("guild_settings.json", JSON.stringify(config, null, 4));
-            i.deleteReply();
-            interaction.editReply({ content: `Updated!`, embeds: [embed.setDescription(`Set "${i.customId}" to \`${value}\``)], components: [] })
-            break
-        }
-      })
-      .catch((err) => {
-        interaction.editReply({ content: `Cancelled`, embeds: [embed.setDescription(`No changes were made to "${message.components[0].components[0].customId}"\n> Issue:- ${err}`)], components: [] });
-      });
-      
-
-      cooldown.add(interaction.user.id);
-      setTimeout(() => {
-        cooldown.delete(interaction.user.id);
-      }, 10000);
-    }
-  */
+    return interactionEmbed(4, `[INFO-DEV]`, `This command will work when SQL is implemented`, interaction, client, true);
   }
 }
