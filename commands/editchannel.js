@@ -191,30 +191,30 @@ module.exports = {
       if(!interaction.member.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-UPRM]`, `Missing \`Manage Channel\` > ${channel}`, interaction, client, true);
       if(!interaction.guild.me.permissionsIn(channel).has(`MANAGE_CHANNELS`)) return interactionEmbed(3, `[ERR-BPRM]`, `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
       try {
-        if(options.data[0].name === `name`) {
+        if(options._hoistedOptions[1].name === `name`) {
           channel.setName(option, reason)
           .then(newChannel => interactionEmbed(1, `Set ${channel}'s name was set to \`${newChannel.name}\` for \`${reason}\``, ``, interaction, client, false));
-        } else if(options.data[0].name === `topic`) {
+        } else if(options._hoistedOptions[1].name === `topic`) {
           if(!channel.isText()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel`, interaction, client, true);
           channel.setTopic(option, reason)
           .then(newChannel => interactionEmbed(1, `Set ${channel}'s topic was set to \`${newChannel.topic}\` for \`${reason}\``, ``, interaction, client, false));
-        } else if(options.data[0].name === `nsfw`) {
+        } else if(options._hoistedOptions[1].name === `nsfw`) {
           if(!channel.isText()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel`, interaction, client, true);
           channel.setNSFW(option, reason)
           .then(newChannel => interactionEmbed(1, `Set ${channel}'s NSFW flag to \`${newChannel.nsfw}\` for \`${reason}\``, ``, interaction, client, false));
-        } else if(options.data[0].name === `seconds`) {
+        } else if(options._hoistedOptions[1].name === `seconds`) {
           if(!channel.isText()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel`, interaction, client, true);
           channel.setRateLimitPerUser(option, reason)
           .then(newChannel => interactionEmbed(1, `Set ${channel}'s slowmode to \`${newChannel.rateLimitPerUser}\` for \`${reason}\``, ``, interaction, client, false));
-        } else if(options.data[0].name === `bitrate`) {
+        } else if(options._hoistedOptions[1].name === `bitrate`) {
           if(!channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel`, interaction, client, true);
           channel.setBitrate(option, reason)
           .then(newChannel => interactionEmbed(1, `Set ${channel}'s bitrate to \`${newChannel.bitrate}\` for \`${reason}\``, ``, interaction, client, false));
-        } else if(options.data[0].name === `limit`) {
+        } else if(options._hoistedOptions[1].name === `limit`) {
           if(!channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel`, interaction, client, true);
           channel.setUserLimit(option, reason)
           .then(newChannel => interactionEmbed(1, `Set ${channel}'s user limit to \`${newChannel.userLimit}\` for \`${reason}\``, ``, interaction, client, false));
-        } else if(options.data[0].name === `permlock`) {
+        } else if(options._hoistedOptions[1].name === `permlock`) {
           channel.lockPermissions()
           .then(newChannel => interactionEmbed(1, `Set ${newChannel}'s permissions to the category's permissions`, ``, interaction, client, false));
         }
