@@ -5,7 +5,6 @@ const AsciiTable = require(`ascii-table`);
 const { REST } = require(`@discordjs/rest`);
 const rest = new REST({ version: 9 }).setToken(config.token);
 const { Routes } = require(`discord-api-types/v9`);
-const fetch = require(`fetch`).fetchUrl;
 const wait = require(`util`).promisify(setTimeout);
 const { interactionToConsole, interactionEmbed, toConsole } = require(`./functions.js`);
 const { KSoftClient } = require(`@ksoft/api`);

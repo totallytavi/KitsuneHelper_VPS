@@ -1,5 +1,4 @@
 const { Client, MessageEmbed, Interaction, GuildMember, MessageButton, MessageActionRow } = require(`discord.js`);
-const fetch = require(`fetch`).fetchUrl;
 const wait = require(`util`).promisify(setTimeout);
 
 const errors = {
