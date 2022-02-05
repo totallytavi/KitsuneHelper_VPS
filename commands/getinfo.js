@@ -1,324 +1,228 @@
-const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed } = require(`discord.js`);
-const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { interactionEmbed, interactionToConsole } = require(`../functions.js`);
-const cooldown = new Set();
+const { SlashCommandBuilder } = require("@discordjs/builders");
+// eslint-disable-next-line no-unused-vars
+const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed } = require("discord.js");
 
+// Splitting into multiple files. Just too much to include here.
 module.exports = {
-  name: `getinfo`,
+  name: "getinfo",
   data: new SlashCommandBuilder()
-  .setName(`getinfo`)
-  .setDescription(`Shows information about a server, user, role, or channel`)
-  .addSubcommandGroup(group => {
-    return group
-    .setName(`user`)
-    .setDescription(`Get information regarding user`)
-    .addSubcommand(command => {
-      return command
-      .setName(`userinfo`)
-      .setDescription(`Information about a user`)
-      .addUserOption(option => {
-        return option
-        .setName(`user`)
-        .setDescription(`The user to get information from`)
-        .setRequired(true)
-      })
+    .setName("getinfo")
+    .setDescription("Retrieves information regarding a role, channel, or permissions")
+    .addSubcommand(subcommand => {
+      return subcommand
+        .setName("channel")
+        .setDescription("Gets information about a channel")
+        .addChannelOption(option => {
+          return option
+            .setName("channel")
+            .setDescription("The channel to get information about")
+            .setRequired(true);
+        });
     })
-    .addSubcommand(command => {
-      return command
-      .setName(`permissions`)
-      .setDescription(`Shows you a user's permissions in a certain channel`)
-      .addUserOption(option => {
-        return option
-        .setName(`user`)
-        .setDescription(`The user to get information from`)
-        .setRequired(true)
-      })
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`The channel to get the permissions from`)
-        .setRequired(true)
-      })
+    .addSubcommand(subcommand => {
+      return subcommand
+        .setName("role")
+        .setDescription("Gets information about a role")
+        .addRoleOption(option => {
+          return option
+            .setName("role")
+            .setDescription("The role to get information about")
+            .setRequired(true);
+        });
     })
-  })
-  .addSubcommandGroup(group => {
-    return group
-    .setName(`server`)
-    .setDescription(`Gets permissions for roles, channels, or the server`)
-    .addSubcommand(command => {
-      return command
-      .setName(`roleinfo`)
-      .setDescription(`Shows a role's information`)
-      .addRoleOption(option => {
-        return option
-        .setName(`role`)
-        .setDescription(`The role to get information from`)
-        .setRequired(true)
-      })
-    })
-    .addSubcommand(command => {
-      return command
-      .setName(`roles_channelpermissions`)
-      .setDescription(`Shows a role's permissions in a channel`)
-      .addRoleOption(option => {
-        return option
-        .setName(`role`)
-        .setDescription(`The role to check permissions for`)
-        .setRequired(true)
-      })
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`The channel to get permissions from`)
-        .setRequired(true)
-      })
-    })
-    .addSubcommand(command => {
-      return command
-      .setName(`channelinfo`)
-      .setDescription(`Shows a channel's information`)
-      .addChannelOption(option => {
-        return option
-        .setName(`channel`)
-        .setDescription(`The channel to get information from`)
-        .setRequired(true)
-      })
-    })
-    .addSubcommand(command => {
-      return command
-      .setName(`serverinfo`)
-      .setDescription(`Shows information about the server`)
-    })
-  }),
+    .addSubcommand(subcommand => {
+      return subcommand
+        .setName("permissions")
+        .setDescription("Gets information about a magician's permissions")
+        .addUserOption(option => {
+          return option
+            .setName("magician")
+            .setDescription("The magician to get permissions from")
+            .setRequired(true);
+        })
+        .addChannelOption(option => {
+          return option
+            .setName("channel")
+            .setDescription("The channel to get permissions from (This will show magician's permissions in the channel)")
+            .setRequired(false);
+        });
+    }),
   /**
    * @param {Client} client Client object
    * @param {CommandInteraction} interaction Interaction Object
    * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
    */
-  run: async (client, interaction, options) => {
-    if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, `You must have no active cooldown`, interaction, client);
-    } else {
-      const subcommand = options._subcommand;
-      let option, permissions, ser, channel, role, embed, array;
+  run: async (_client, interaction, options) => {
+    const subcommand = options.getSubcommand();
+    const option = options.getChannel("channel") || options.getRole("role") || options.getMember("magician");
+    const option2 = options.getChannel("channel");
 
-try {
-      switch(options._group) {
-        case `user`:
-          option = options.getMember(`user`);
-          switch(subcommand) {
-            case `userinfo`:
-              interaction.followUp({ embeds: [
-                new MessageEmbed()
-                .setTitle(`User Information for ${option.displayName}`)
-                .addFields(
-                  { name: `Account Creation`, value: `<t:${Math.floor(option.user.createdTimestamp/1000)}:F>\n(<t:${Math.floor(option.user.createdTimestamp/1000)}:R>)`, inline: true },
-                  { name: `Joined Server`, value: `<t:${Math.floor(option.joinedTimestamp/1000)}:F>\n(<t:${Math.floor(option.joinedTimestamp/1000)}:R>)`, inline: true },
-                  { name: `Highest Role`, value: `${option.roles.highest} (${option.roles.highest.id})`, inline: true },
-                  { name: `User ID`, value: `${option.user.id}`, inline: true },
-                  { name: `Nickname`, value: `${option.nickname || `None`}`, inline: true },
-                  { name: `Roles (${option.roles.cache.size})`, value: Array.from(option.roles.cache.entries()).sort((a,b) => b[1].rawPosition - a[1].rawPosition).map(r => `<@&${r[1].id}>`).join("\n") || `None`, inline: false }
-                )
-                .setThumbnail(option.user.displayAvatarURL({ format: `png`, dynamic: true }))
-                .setColor(option.displayHexColor || `#FFFFFF`)
-              ], ephemeral: false });
-              break;
-            case `permissions`:
-              array = [];
-              channel = options.getChannel(`channel`);
-              permissions = option.permissionsIn(channel);
-              ser = permissions.serialize();
-              if(!channel.isText() && !channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel/VoiceBasedChannel, got other`, interaction, client, true);
-              ser.hasOwnProperty("CONNECT") ? array.push(
-                [`Edit Channel`, ser.MANAGE_CHANNELS],
-                [`Edit Permissions`, ser.MANAGE_ROLES],
-                [`Manage Messages`, ser.MANAGE_MESSAGES],
-                [`Manage Threads`, ser.MANAGE_THREADS],
-                [`View Channel`, ser.VIEW_CHANNEL],
-                [`Send Messages`, ser.SEND_MESSAGES],
-                [`Send Text-to-Speech Messages`, ser.SEND_TTS_MESSAGES],
-                [`Send Messages in Threads`, ser.SEND_MESSAGES_IN_THREADS],
-                [`Create Public Threads`, ser.CREATE_PUBLIC_THREADS],
-                [`Create Private Threads`, ser.CREATE_PRIVATE_THREADS],
-                [`Embed Links`, ser.EMBED_LINKS],
-                [`Attach Files`, ser.ATTACH_FILES],
-                [`Read Message History`, ser.READ_MESSAGE_HISTORY],
-                [`Mention Everyone and All Roles`, ser.MENTION_EVERYONE],
-                [`Use External Emojis`, ser.USE_EXTERNAL_EMOJIS],
-                [`Use External Stickers`, ser.USE_EXTERNAL_STICKERS],
-                [`Add Reactions`, ser.ADD_REACTIONS],
-                [`Use Slash Commands`, ser.USE_APPLICATION_COMMANDS],
-                [`Invite People`, ser.CREATE_INSTANT_INVITE]
-              ) : array.push(
-                [`Edit Channel`, ser.MANAGE_CHANNELS],
-                [`Edit Permissions`, ser.MANAGE_ROLES],
-                [`View Channel`, ser.VIEW_CHANNEL],
-                [`Connect`, ser.CONNECT],
-                [`Speak`, ser.SPEAK],
-                [`Mute Members`, ser.MUTE_MEMBERS],
-                [`Deafen Members`, ser.DEAFEN_MEMBERS],
-                [`Move Members Into This Channel`, ser.MOVE_MEMBERS],
-                [`Use Voice Activity`, ser.USE_VAD],
-                [`Priority Speaker`, ser.PRIORITY_SPEAKER],
-                [`Use Screenshare and Camera`, ser.STREAM],
-                [`Invite People`, ser.CREATE_INSTANT_INVITE]
-              )
+    if(subcommand === "channel") {
+      return interaction.followUp({ embeds: [new MessageEmbed({
+        title: "Channel Information",
+        description: `${option.topic}`,
+        fields: [
+          { name: "Created At", value: option.createdAt, inline: true },
+          { name: "Name", value: option.name, inline: true },
+          { name: "ID", value: option.id, inline: true },
+          { name: "Position", value: option.position, inline: true },
+          { name: "Type", value: option.type, inline: true },
+          { name: "NSFW", value: option.nsfw, inline: true },
+        ]
+      })] });
+    } else if(subcommand === "role") {
+      // Custom permissions mapper
+      let permissions = option.permissions.serlialize();
+      permissions = [
+        ["**Administrator**", permissions["ADMINISTRATOR"]],
+        ["Manage Server", permissions["MANAGE_GUILD"]],
+        ["Manage Channels", permissions["MANAGE_CHANNELS"]],
+        ["Manage Roles", permissions["MANAGE_ROLES"]],
+        ["Manage Webhooks", permissions["MANAGE_WEBHOOKS"]],
+        ["Manage Emojis and Stickers", permissions["MANAGE_EMOJIS_AND_STICKERS"]],
+        ["View Audit Log", permissions["VIEW_AUDIT_LOG"]],
+        ["View Guild Insights", permissions["VIEW_GUILD_INSIGHTS"]],
+        ["Timeout Members", permissions["MODERATE_MEMBERS"]],
+        ["Kick Members", permissions["KICK_MEMBERS"]],
+        ["Ban Members", permissions["BAN_MEMBERS"]],
+        ["Change Nickname", permissions["CHANGE_NICKNAME"]],
+        ["Manage Nicknames", permissions["MANAGE_NICKNAMES"]],
+        ["View Channel", permissions["VIEW_CHANNEL"]],
+        ["Create Invites", permissions["CREATE_INSTANT_INVITE"]],
+        ["Send Messages", permissions["SEND_MESSAGES"]],
+        ["Send TTS Messages", permissions["SEND_TTS_MESSAGES"]],
+        ["Mention Everyone", permissions["MENTION_EVERYONE"]],
+        ["Embed Links", permissions["EMBED_LINKS"]],
+        ["Attach Files", permissions["ATTACH_FILES"]],
+        ["Add Reactions", permissions["ADD_REACTIONS"]],
+        ["Use External Emojis", permissions["USE_EXTERNAL_EMOJIS"]],
+        ["Use External Stickers", permissions["USE_EXTERNAL_STICKERS"]],
+        ["Use Application Commands", permissions["USE_APPLICATION_COMMANDS"]],
+        ["Create Public Threads", permissions["CREATE_PUBLIC_THREADS"]],
+        ["Create Private Threads", permissions["CREATE_PRIVATE_THREADS"]],
+        ["Send Messages In Threads", permissions["SEND_MESSAGES_IN_THREADS"]],
+        ["Use Public Threads", permissions["USE_PUBLIC_THREADS"]],
+        ["Use Private Threads", permissions["USE_PRIVATE_THREADS"]],
+        ["Manage Messages", permissions["MANAGE_MESSAGES"]],
+        ["Read Message History", permissions["READ_MESSAGE_HISTORY"]],
+        ["Connect", permissions["CONNECT"]],
+        ["Speak", permissions["SPEAK"]],
+        ["Stream", permissions["STREAM"]],
+        ["Priority Speaker", permissions["PRIORITY_SPEAKER"]],
+        ["Mute Members", permissions["MUTE_MEMBERS"]],
+        ["Deafen Members", permissions["DEAFEN_MEMBERS"]],
+        ["Use VAD", permissions["USE_VAD"]],
+        ["Start Embedded Activities", permissions["START_EMBEDDED_ACTIVITIES"]],
+      ].map(x => `${x[0]}: ${x[1] ? "`✅`" : "`❎`"}`);
 
-              interaction.followUp({ embeds: [
-                new MessageEmbed()
-                .setTitle(`Permissions for ${option.displayName} in ${channel.name}`)
-                .setDescription(array.map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`).join(`\n`))
-                .setThumbnail(option.user.displayAvatarURL({ format: `png`, dynamic: true }))
-                .setColor(option.displayHexColor || `#FFFFFF`)
-              ], ephemeral: false });
-              break;
-          }
-          break;
-        case `server`:
-          switch(subcommand) {
-          case `roleinfo`:
-            option = options.getRole(`role`);
-            permissions = option.permissions
-            ser = permissions.serialize();
-            array = new Array(
-              [`Administrator`, ser.ADMINISTRATOR],
-              [`View Guild Insights`, ser.VIEW_GUILD_INSIGHTS],
-              [`Manage Server`, ser.MANAGE_GUILD],
-              [`Manage Roles`, ser.MANAGE_ROLES],
-              [`Manage Channels`, ser.MANAGE_CHANNELS],
-              [`Manage Emojis and Stickers`, ser.MANAGE_EMOJIS_AND_STICKERS],
-              [`Manage Webhooks`, ser.MANAGE_WEBHOOKS],
-              [`Manage Messages`, ser.MANAGE_MESSAGES],
-              [`Manage Threads`, ser.MANAGE_THREADS],
-              [`Kick Members`, ser.KICK_MEMBERS],
-              [`Ban Member`, ser.BAN_MEMBERS],
-              [`View Audit Log`, ser.VIEW_AUDIT_LOG],
-              [`View Channel`, ser.VIEW_CHANNEL],
-              [`Send Messages`, ser.SEND_MESSAGES],
-              [`Send Messages in Threads`, ser.SEND_MESSAGES_IN_THREADS],
-              [`Send Text-to-Speech Messages`, ser.SEND_TTS_MESSAGES],
-              [`Create Public Threads`, ser.CREATE_PUBLIC_THREADS],
-              [`Create Private Threads`, ser.CREATE_PRIVATE_THREADS],
-              [`Embed Links`, ser.EMBED_LINKS],
-              [`Attach Files`, ser.ATTACH_FILES],
-              [`Read Message History`, ser.READ_MESSAGE_HISTORY],
-              [`Mention Everyone and All Roles`, ser.MENTION_EVERYONE],
-              [`Use External Emojis`, ser.USE_EXTERNAL_EMOJIS],
-              [`Use External Stickers`, ser.USE_EXTERNAL_STICKERS],
-              [`Add Reactions`, ser.ADD_REACTIONS],
-              [`Connect`, ser.CONNECT],
-              [`Speak`, ser.SPEAK],
-              [`Use Voice Activity`, ser.USE_VAD],
-              [`Mute Members`, ser.MUTE_MEMBERS],
-              [`Deafen Members`, ser.DEAFEN_MEMBERS],
-              [`Move Members Into This Channel`, ser.MOVE_MEMBERS],
-              [`Priority Speaker`, ser.PRIORITY_SPEAKER],
-              [`Use Screenshare and Camera`, ser.STREAM],
-              [`Request to Speak`, ser.REQUEST_TO_SPEAK]
-            ).map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`);
-            interaction.followUp({ embeds: [
-              new MessageEmbed()
-              .setTitle(`Permissions for ${option.name}`)
-              .addFields(
-                { name: `Name`, value: option.name, inline: true },
-                { name: `ID`, value: option.id, inline: true },
-                { name: `Permissions`, value: array.join(`\n`), inline: false }
-              )
-              .setColor(option.hexColor || `#FFFFFF`)
-            ], ephemeral: false });
-            break;
-          case `roles_channelpermissions`:
-            array = [];
-            role = options.getRole(`role`);
-            channel = options.getChannel(`channel`);
-            permissions = role.permissionsIn(channel);
-            ser = permissions.serialize();
+      return interaction.followUp({ embeds: [new MessageEmbed({
+        title: "Role Information",
+        color: Math.floor(Math.random() * 16777215),
+        fields: [
+          { name: "Name", value: option.name, inline: true },
+          { name: "ID", value: option.id, inline: true },
+          { name: "Color", value: option.hexColor, inline: true },
+          { name: "Position", value: option.position, inline: true },
+          { name: "Hoisted", value: option.hoist, inline: true },
+          { name: "Permissions", value: permissions, inline: false }
+        ]
+      })] });
+    } else if(subcommand === "permissions") {
+      if(!option2) {
+        // Custom permissions mapper
+        let permissions = option.permissions.serlialize();
+        permissions = [
+          ["**Administrator**", permissions["ADMINISTRATOR"]],
+          ["Manage Server", permissions["MANAGE_GUILD"]],
+          ["Manage Channels", permissions["MANAGE_CHANNELS"]],
+          ["Manage Roles", permissions["MANAGE_ROLES"]],
+          ["Manage Webhooks", permissions["MANAGE_WEBHOOKS"]],
+          ["Manage Emojis and Stickers", permissions["MANAGE_EMOJIS_AND_STICKERS"]],
+          ["View Audit Log", permissions["VIEW_AUDIT_LOG"]],
+          ["View Guild Insights", permissions["VIEW_GUILD_INSIGHTS"]],
+          ["Timeout Members", permissions["MODERATE_MEMBERS"]],
+          ["Kick Members", permissions["KICK_MEMBERS"]],
+          ["Ban Members", permissions["BAN_MEMBERS"]],
+          ["Change Nickname", permissions["CHANGE_NICKNAME"]],
+          ["Manage Nicknames", permissions["MANAGE_NICKNAMES"]],
+          ["View Channel", permissions["VIEW_CHANNEL"]],
+          ["Create Invites", permissions["CREATE_INSTANT_INVITE"]],
+          ["Send Messages", permissions["SEND_MESSAGES"]],
+          ["Send TTS Messages", permissions["SEND_TTS_MESSAGES"]],
+          ["Mention Everyone", permissions["MENTION_EVERYONE"]],
+          ["Embed Links", permissions["EMBED_LINKS"]],
+          ["Attach Files", permissions["ATTACH_FILES"]],
+          ["Add Reactions", permissions["ADD_REACTIONS"]],
+          ["Use External Emojis", permissions["USE_EXTERNAL_EMOJIS"]],
+          ["Use External Stickers", permissions["USE_EXTERNAL_STICKERS"]],
+          ["Use Application Commands", permissions["USE_APPLICATION_COMMANDS"]],
+          ["Create Public Threads", permissions["CREATE_PUBLIC_THREADS"]],
+          ["Create Private Threads", permissions["CREATE_PRIVATE_THREADS"]],
+          ["Send Messages In Threads", permissions["SEND_MESSAGES_IN_THREADS"]],
+          ["Use Public Threads", permissions["USE_PUBLIC_THREADS"]],
+          ["Use Private Threads", permissions["USE_PRIVATE_THREADS"]],
+          ["Manage Messages", permissions["MANAGE_MESSAGES"]],
+          ["Read Message History", permissions["READ_MESSAGE_HISTORY"]],
+          ["Connect", permissions["CONNECT"]],
+          ["Speak", permissions["SPEAK"]],
+          ["Stream", permissions["STREAM"]],
+          ["Priority Speaker", permissions["PRIORITY_SPEAKER"]],
+          ["Mute Members", permissions["MUTE_MEMBERS"]],
+          ["Deafen Members", permissions["DEAFEN_MEMBERS"]],
+          ["Use VAD", permissions["USE_VAD"]],
+          ["Start Embedded Activities", permissions["START_EMBEDDED_ACTIVITIES"]],
+        ].map(x => `${x[0]}: ${x[1] ? "`✅`" : "`❎`"}`);
 
-            if(!channel.isText() && !channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel/VoiceBasedChannel, got other`, interaction, client, true);
-            ser.hasOwnProperty("CONNECT") ? array.push(
-              [`Edit Channel`, ser.MANAGE_CHANNELS],
-              [`Edit Permissions`, ser.MANAGE_ROLES],
-              [`Manage Messages`, ser.MANAGE_MESSAGES],
-              [`View Channel`, ser.VIEW_CHANNEL],
-              [`Send Messages`, ser.SEND_MESSAGES],
-              [`Embed Links`, ser.EMBED_LINKS],
-              [`Attach Files`, ser.ATTACH_FILES],
-              [`Read Message History`, ser.READ_MESSAGE_HISTORY],
-              [`Mention Everyone and All Roles`, ser.MENTION_EVERYONE],
-              [`Use External Emojis`, ser.USE_EXTERNAL_EMOJIS],
-              [`Add Reactions`, ser.ADD_REACTIONS],
-              [`Invite People`, ser.CREATE_INSTANT_INVITE]
-            ) : array.push(
-              [`Edit Channel`, ser.MANAGE_CHANNELS],
-              [`Edit Permissions`, ser.MANAGE_ROLES],
-              [`View Channel`, ser.VIEW_CHANNEL],
-              [`Connect`, ser.CONNECT],
-              [`Speak`, ser.SPEAK],
-              [`Mute Members`, ser.MUTE_MEMBERS],
-              [`Deafen Members`, ser.DEAFEN_MEMBERS],
-              [`Move Members Into This Channel`, ser.MOVE_MEMBERS],
-              [`Use Voice Activity`, ser.USE_VAD],
-              [`Priority Speaker`, ser.PRIORITY_SPEAKER],
-              [`Use Screenshare and Camera`, ser.STREAM],
-              [`Invite People`, ser.CREATE_INSTANT_INVITE]
-            );
+        return interaction.followUp({ embeds: [new MessageEmbed({
+          title: "magician Permissions",
+          color: Math.floor(Math.random() * 16777215),
+          fields: [
+            { name: "Name", value: option.name, inline: true },
+            { name: "ID", value: option.id, inline: true },
+            { name: "Permissions", value: permissions, inline: false }
+          ]
+        })] });
+      } else {
+        // Custom permissions mapper
+        let permissions = option.permissionsIn(option2).serlialize();
+        permissions = [
+          ["Manage Channels", permissions["MANAGE_CHANNELS"]],
+          ["Manage Webhooks", permissions["MANAGE_WEBHOOKS"]],
+          ["View Channel", permissions["VIEW_CHANNEL"]],
+          ["Create Invites", permissions["CREATE_INSTANT_INVITE"]],
+          ["Send Messages", permissions["SEND_MESSAGES"]],
+          ["Send TTS Messages", permissions["SEND_TTS_MESSAGES"]],
+          ["Mention Everyone", permissions["MENTION_EVERYONE"]],
+          ["Embed Links", permissions["EMBED_LINKS"]],
+          ["Attach Files", permissions["ATTACH_FILES"]],
+          ["Add Reactions", permissions["ADD_REACTIONS"]],
+          ["Use External Emojis", permissions["USE_EXTERNAL_EMOJIS"]],
+          ["Use External Stickers", permissions["USE_EXTERNAL_STICKERS"]],
+          ["Use Application Commands", permissions["USE_APPLICATION_COMMANDS"]],
+          ["Create Public Threads", permissions["CREATE_PUBLIC_THREADS"]],
+          ["Create Private Threads", permissions["CREATE_PRIVATE_THREADS"]],
+          ["Send Messages In Threads", permissions["SEND_MESSAGES_IN_THREADS"]],
+          ["Use Public Threads", permissions["USE_PUBLIC_THREADS"]],
+          ["Use Private Threads", permissions["USE_PRIVATE_THREADS"]],
+          ["Manage Messages", permissions["MANAGE_MESSAGES"]],
+          ["Read Message History", permissions["READ_MESSAGE_HISTORY"]],
+          ["Connect", permissions["CONNECT"]],
+          ["Speak", permissions["SPEAK"]],
+          ["Stream", permissions["STREAM"]],
+          ["Priority Speaker", permissions["PRIORITY_SPEAKER"]],
+          ["Mute Members", permissions["MUTE_MEMBERS"]],
+          ["Deafen Members", permissions["DEAFEN_MEMBERS"]],
+          ["Use VAD", permissions["USE_VAD"]],
+        ].map(x => `${x[0]}: ${x[1] ? "`✅`" : "`❎`"}`);
 
-            interaction.followUp({ embeds: [
-              new MessageEmbed()
-              .setTitle(`Permissions for ${role.name} in ${channel.name}`)
-              .setDescription(array.map(x => `${x[0]}: ${x[1] ? `\`✅\`` : `\`❎\``}`).join(`\n`))
-            ], ephemeral: false });
-            break;
-          case `channelinfo`:
-            channel = options.getChannel(`channel`);
-            if(!channel.isText() && !channel.isVoice()) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: channel :-: Expected TextBasedChannel/VoiceBasedChannel, got other`, interaction, client, true);
-            embed = channel.type === `GUILD_TEXT` ? new MessageEmbed()
-            .setTitle(`Channel Information for ${channel.name}`)
-            .addFields(
-              { name: `Name`, value: channel.name, inline: true },
-              { name: `ID`, value: channel.id, inline: true },
-              { name: `Synced with Category?`, value: String(channel.permissionsLocked), inline: true },
-              { name: `Topic`, value: channel.topic ? channel.topic : `No channel topic set!`, inline: true },
-              { name: `NSFW?`, value: String(channel.nsfw), inline: true }
-            ) : new MessageEmbed()
-            .setTitle(`Channel Information for ${channel.name}`)
-            .addFields(
-              { name: `Name`, value: channel.name, inline: true },
-              { name: `ID`, value: channel.id, inline: true },
-              { name: `Synced with Category?`, value: String(channel.permissionsLocked), inline: true },
-              { name: `Creation Date`, value: `<t:${Math.floor(channel.createdTimestamp/1000)}:F> (<t:${Math.floor(channel.createdTimestamp/1000)}:R>)`, inline: true },
-              { name: `Bitrate`, value: `${channel.bitrate} kbps`, inline: true },
-              { name: `User Limit`, value: String(channel.userLimit), inline: true }
-            )
-            interaction.followUp({ embeds: [embed], ephemeral: false });
-            break;
-          case `serverinfo`:
-            const server = interaction.guild;
-            embed = new MessageEmbed()
-            .setTitle(`Server Information for ${server.name}`)
-            .setDescription(`Server Made On: <t:${Math.floor(server.createdTimestamp/1000)}:F> (<t:${Math.floor(server.createdTimestamp/1000)}:R>)`)
-            .setThumbnail(server.iconURL({ format: `png`, dynamic: true }) || `https://cdn.discordapp.com/embed/avatars/0.png` )
-            .addFields(
-              { name: `ID`, value: server.id, inline: true },
-              { name: `Owner ID`, value: server.ownerId, inline: true },
-              { name: `Roles`, value: String(server.roles.cache.size), inline: true },
-              { name: `Members`, value: String(server.memberCount), inline: true },
-              { name: `Channels`, value: String(server.channels.cache.size), inline: true },
-              { name: `Bans`, value: String(server.bans.cache.size), inline: true }
-            );
-            interaction.followUp({ embeds: [embed], ephemeral: false });
-            break;
-          }
+        return interaction.followUp({ embeds: [new MessageEmbed({
+          title: `magician Permissions in ${option2.name}`,
+          color: Math.floor(Math.random() * 16777215),
+          fields: [
+            { name: "Permissions", value: permissions, inline: false }
+          ]
+        })] });
       }
-} catch(err) {
-  return interactionToConsole(String(err) + "\n" + String(err.stack), `getinfo.js (We have no idea!)`, interaction, client);
-}
-
-      cooldown.add(interaction.member.id);
-      await interaction.editReply(`My magic has worked and the result is below!`)
-      setTimeout(() => {
-        cooldown.delete(interaction.member.id);
-      }, 5000)
     }
   }
-}
+};

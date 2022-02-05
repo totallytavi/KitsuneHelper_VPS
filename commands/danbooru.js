@@ -1,131 +1,102 @@
-const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed } = require(`discord.js`);
-const { SlashCommandBuilder } = require(`@discordjs/builders`);
-const { interactionToConsole, interactionEmbed } = require(`../functions.js`);
-const fetch = require(`fetch`).fetchUrl;
-const cooldown = new Set();
+const { SlashCommandBuilder } = require("@discordjs/builders");
+// eslint-disable-next-line no-unused-vars
+const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed } = require("discord.js");
+const { interactionEmbed } = require("../functions.js");
+const config = require("../config.json");
+const fetch = require("node-fetch");
 
 module.exports = {
-  name: `danbooru`,
+  name: "danbooru",
   data: new SlashCommandBuilder()
-  .setName(`danbooru`)
-  .setDescription(`Queries an image from Danbooru`)
-  .addStringOption(option => {
-    return option
-    .setName(`tag1`)
-    .setDescription(`What to search for (Put underscores instead of spaces)`)
-    .setRequired(true)
-  })
-  .addStringOption(option => {
-    return option
-    .setName(`tag2`)
-    .setDescription(`What to search for (Put underscores instead of spaces)`)
-    .setRequired(false)
-  })
-  .addNumberOption(option => {
-    return option
-    .setName(`limit`)
-    .setDescription(`How many images you want to search (Default: 10)`)
-    .setRequired(false)
-    .addChoices([
-      [`1`, 1],
-      [`2`, 2],
-      [`3`, 3],
-      [`4`, 4],
-      [`5`, 5],
-      [`6`, 6],
-      [`7`, 7],
-      [`8`, 8],
-      [`9`, 9],
-      [`10`, 10]
-    ])
-  })
-  .addStringOption(option => {
-    return option
-    .setName(`rating`)
-    .setDescription(`The rating of the posts (Default: Any)`)
-    .setRequired(false)
-    .addChoices([
-      [`safe`,`safe`],
-      [`questionable`,`questionable`],
-      [`explicit`,`explicit`]
-    ])
-  }),
+    .setName("danbooru")
+    .setDescription("Queries an image from Danbooru with the options provided")
+    .addStringOption(option => {
+      return option
+        .setName("tag")
+        .setDescription("What to search for")
+        .setRequired(true);
+    })
+    .addNumberOption(option => {
+      return option
+        .setName("limit")
+        .setDescription("How many images you want to search (Default: 10)")
+        .setRequired(false)
+        .addChoices([
+          ["1", 1],
+          ["2", 2],
+          ["3", 3],
+          ["4", 4],
+          ["5", 5],
+          ["6", 6],
+          ["7", 7],
+          ["8", 8],
+          ["9", 9],
+          ["10", 10]
+        ]);
+    })
+    .addBooleanOption(option => {
+      return option
+        .setName("safe_search")
+        .setDescription("Restricts images shown to being safe (Default: false)")
+        .setRequired(false);
+    }),
   /**
    * @param {Client} client Client object
    * @param {CommandInteraction} interaction Interaction Object
    * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
    */
   run: async (client, interaction, options) => {
-    if(cooldown.has(interaction.member.id)) {
-      return interactionEmbed(2, `[ERR-CLD]`, `You must be have no active cooldown`, interaction, client, true);
-    } else {
-      let tag1 = options.getString(`tag1`);
-      if(tag1.match(/[^1-6]\+/)) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: tag1 :-: Expected: Tag :-: Got: Multiple tags`, interaction, client, true);
-      let tag2;
-      if(options.getString(`tag2`)) {
-        tag1.concat("+", options.getString(`tag2`));
-        tag2 = options.getString(`tag2`);
-        if(tag2.match(/[^1-6]\+/)) return interactionEmbed(3, `[ERR-ARGS]`, `Arg: tag2 :-: Expected: Tag :-: Got: Multiple tags`, interaction, client, true);
-      }
-      let limit = options.getNumber(`limit`) ?? 10;
-      let rating = options.getString(`rating`) ?? `any`;
-      switch(rating) {
-        case `safe`:
-          rating = `s`
-          break
-        case `questionable`:
-          rating = `q`
-          break
-        case `explicit`:
-          rating = `e`
-          break
-      }
+    let tags = options.getString("tag").replace(/\(/g, "%28").replace(/\)/g, "%29");
+    if(tags.match(/[^1-6]\+/)) return interactionEmbed(2, "[ERR-ARGS]", "Arg: tag :-: Expected 1 tag, got multiple tags", interaction, client, true);
 
-      if(interaction.channel.nsfw === false) {
-        interactionEmbed(4, `This channel is not set to NSFW. Therefore, the query will only search for SAFE posts. This may result in less or no images found`, ``, interaction, client, false);
-      }
+    const safe = options.getBoolean("safe_search") ? true : false;
+    const limit = options.getNumber("limit") ?? 10;
+    if(options.getBoolean("safe_search")) tags += "+rating:s+random:" + limit;
+    tags += "+random:" + limit;
+    const params = new URLSearchParams();
+    params.append("login", config.danbooru["username"]);
+    params.append("api_key", config.danbooru["api_key"]);
 
-      let url = "";
-      if(interaction.channel.nsfw != true) {
-        url = `https://danbooru.donmai.us/posts.json?tags=${tag1}&limit=${limit}&random=true&rating=s&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi`;
-      } else {
-        url = `https://danbooru.donmai.us/posts.json?tags=${tag1}&limit=${limit}&random=true&rating=${rating}&api_key=o7YZcCmpiHPZXY6Nm8TDxhjZ&login=Coder_Tavi`;
-      }
-      console.log(url)
-
-      fetch(url, function(_e, _m, body) {
-        const json = JSON.parse(body);
-        for (post of json) {
-          if(post.tag_string_artist.split(" ").includes("banned")) continue; // Banned artists
-          if(post.tag_string.split(" ").includes("loli")) continue; // Lolis
+    fetch(`https://danbooru.donmai.us/posts.json?tags=${tags}&${params.toString()}`)
+      .then(res => res.json())
+      .then(json => {
+        if(json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> success? ${json.success}\nmessage: ${json.message}`, interaction, client, false);
+        for(const post of json) {
+          // Filters
+          if(post.is_deleted || post.tag_string.includes("loli")) continue;
+          if((!interaction.channel.nsfw && post.rating != "s") || (safe && post.rating != "s")) continue;
           const image = post.large_file_url || post.file_url || post.preview_file_url;
-          if(!/\.jpg|\.png|\.gif/.test(image)) continue; // Bad urls
-          if(post.rating != "s" && interaction.channel.nsfw != true) {
-            client.channels.cache.get(`899115176635269190`).send({ content: `Danbooru has failed to filter an image during a \`rating=s\` request!`, embeds: [new MessageEmbed().setTitle(`ID: ${post.id}`).setDescription(`Request URL: ${url}`).setFooter(`Rating: ${post.rating}`)] });
-            continue;
-          }
-          if(rating != `any` && post.rating != rating) {
-            client.channels.cache.get(`899115176635269190`).send({ content: `Danbooru has failed to filter an image during a \`rating=${rating}_var\` request!`, embeds: [new MessageEmbed().setTitle(`ID: ${post.id}`).setDescription(`Request URL: ${url}`).setFooter(`Rating: ${post.rating}`)] });
-            continue;
-          }
-          // The above is because Danbooru fails to filter by rating when I specify it in this code
+          if(!/\.jpg|\.png|\.gif/.test(image)) continue;
 
-          const embed = new MessageEmbed()
-          .setAuthor("Artist(s): " + post.tag_string_artist)
-          .setDescription(`ID: ${post.id} :-: Score: ${post.score}`)
-          .setImage(image)
-          .setFooter("Tags: " + post.tag_string.split(" ").join(", ") + " | Posted on")
-          .setTimestamp(post.created_at)
+          // Custom title
+          let artists, characters;
+          // eslint-disable-next-line no-useless-escape
+          post.tag_string_artist.replace(/_/g, "\_"); post.tag_string_character.replace(/_/g, "\_"); // Makes this embed friendly
+          if(post.tag_string_artist.split(" ").length > 1) {
+            artists = `${post.tag_string_artist.split(" ")[0]} and ${post.tag_string_artist.split(" ").length - 1} others`;
+          } else {
+            artists = !post.tag_string_artist ? "Unknown" : post.tag_string_artist;
+          }
+          if(post.tag_string_character.split(" ").length > 1) {
+            characters = `${post.tag_string_character.split(" ")[0]} and ${post.tag_string_character.split(" ").length - 1} others`;
+          } else {
+            characters = !post.tag_string_character ? "Original" : post.tag_string_character;
+          }
 
-          interaction.channel.send({ embeds: [embed], ephemeral: false });
+          // Embed
+          const embed = new MessageEmbed({
+            title: `${characters} by ${artists}`,
+            url: `https://danbooru.donmai.us/posts/${post.id}`,
+            image: {
+              url: post.large_file_url || post.file_url || post.preview_file_url
+            },
+            footer: {
+              text: `ID: ${post.id} | Score: ${post.score} | Rating: ${post.rating}`
+            }
+          });
+
+          interaction.followUp({ embeds: [embed] });
         }
       });
-
-      cooldown.add(interaction.user.id);
-      await interaction.editReply(`My magic has worked and the result is below!`)
-      setTimeout(() => {
-        cooldown.delete(interaction.user.id);
-      }, 5000);
-    }
   }
-}
+};
