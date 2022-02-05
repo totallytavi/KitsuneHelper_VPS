@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
 const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { interactionEmbed, promptMessage } = require("../functions.js");
+const { interactionEmbed, awaitButtons } = require("../functions.js");
 const cooldown = new Set();
 
 module.exports = {
@@ -61,7 +61,7 @@ module.exports = {
         new MessageButton().setLabel("No").setCustomId("no").setStyle("DANGER")
       ];
         // Get the response from them
-      const button = await promptMessage(interaction, 10, buttons, `Confirm you wish to change ${member}'s nickname?`);
+      const button = await awaitButtons(interaction, 10, buttons, `Confirm you wish to change ${member}'s nickname?`, true);
       // Reaction!
       if(button.customId === "yes") {
         // If they pressed the Yes button, act.
