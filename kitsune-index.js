@@ -91,7 +91,7 @@ client.event.on("query", async (results, trace) => {
     console.log("[APP-REFR] Started refreshing application (/) commands.");
 
     await rest.put(
-      Routes.applicationGuildCommands(config.bot["applicationId"], config.bot["devGuildId"]),
+      Routes.applicationCommands(config.bot["applicationId"]),
       { body: slashCommands },
     );
     
