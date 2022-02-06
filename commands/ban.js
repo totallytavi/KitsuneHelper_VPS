@@ -52,7 +52,7 @@ module.exports = {
     const member = options.getMember("user");
     const reason = options.getString("reason") ?? "No reason provided";
     const days = options.getNumber("days") ?? 0;
-    let duration = Date.now() + ms(options.getString("duration"));
+    let duration = Date.now() + ms(options.getString("duration") ?? "NaN");
     if(duration === "NaN") {
       duration = Date.now();
       interactionEmbed(4, "Invalid time provided", "Heads up! This ban will NOT expire because you didn't supply a valid value. If you're curious about examples of proper values, please see the description of the `duration` option for this command", interaction, client, true);

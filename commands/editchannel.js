@@ -12,7 +12,7 @@ module.exports = {
     .addSubcommand(command => {
       return command
         .setName("name")
-        .setDescription("Sets a channel's name")
+        .setDescription("Modifies a channel's name")
         .addChannelOption(option => {
           return option
             .setName("channel")
@@ -35,11 +35,11 @@ module.exports = {
     .addSubcommand(command => {
       return command
         .setName("topic")
-        .setDescription("Sets a channel's topic")
+        .setDescription("Modifies a channel's topic")
         .addChannelOption(option => {
           return option
             .setName("channel")
-            .setDescription("Channel to be updated (Must be a text based channel)")
+            .setDescription("Channel to be updated (Text based channel)")
             .setRequired(true);
         })
         .addStringOption(option => {
@@ -58,11 +58,11 @@ module.exports = {
     .addSubcommand(command => {
       return command
         .setName("nsfw")
-        .setDescription("Changes a channel's NSFW flag")
+        .setDescription("Modifies a channel's NSFW flag")
         .addChannelOption(option => {
           return option
             .setName("channel")
-            .setDescription("Channel to be updated (Must be a text based channel)")
+            .setDescription("Channel to be updated (Text based channel)")
             .setRequired(true);
         })
         .addBooleanOption(option => {
@@ -81,11 +81,11 @@ module.exports = {
     .addSubcommand(command => {
       return command
         .setName("slowmode")
-        .setDescription("Changes a channel's slowmode")
+        .setDescription("Modifies a channel's slowmode")
         .addChannelOption(option => {
           return option
             .setName("channel")
-            .setDescription("Channel to be updated (Must be a text based channel)")
+            .setDescription("Channel to be updated (Text based channel)")
             .setRequired(true);
         })
         .addNumberOption(option => {
@@ -104,17 +104,17 @@ module.exports = {
     .addSubcommand(command => {
       return command
         .setName("user_limit")
-        .setDescription("Sets the user limit")
+        .setDescription("Modifies the user limit")
         .addChannelOption(option => {
           return option
             .setName("channel")
-            .setDescription("Channel to be updated (Must be a voice based channel)")
+            .setDescription("Channel to be updated (Voice based channel)")
             .setRequired(true);
         })
         .addNumberOption(option => {
           return option
             .setName("limit")
-            .setDescription("New user limit (Must be 0-100)")
+            .setDescription("New user limit (0-100)")
             .setRequired(true);
         })
         .addStringOption(option => {
@@ -127,7 +127,7 @@ module.exports = {
     .addSubcommand(command => {
       return command
         .setName("bitrate")
-        .setDescription("Changes a channel's voice quality")
+        .setDescription("Modifies a channel's voice quality")
         .addChannelOption(option => {
           return option
             .setName("channel")
@@ -137,7 +137,7 @@ module.exports = {
         .addStringOption(option => {
           return option
             .setName("bitrate")
-            .setDescription("New channel bitrate (64kbps is default and recommended)")
+            .setDescription("New channel bitrate (Default: 64kbps)")
             .setRequired(true)
             .addChoices([
               ["8kbps", "8"],
@@ -160,7 +160,7 @@ module.exports = {
     .addSubcommand(command => {
       return command
         .setName("permlock")
-        .setDescription("Set's a channel's permissions to the category's permissions (Must be a text or voice based channel)")
+        .setDescription("Sets a channel's permissions to the category's permissions (Text/voice based channel)")
         .addChannelOption(option => {
           return option
             .setName("channel")

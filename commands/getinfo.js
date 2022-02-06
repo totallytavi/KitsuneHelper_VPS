@@ -54,7 +54,7 @@ module.exports = {
    */
   run: async (_client, interaction, options) => {
     const subcommand = options.getSubcommand();
-    const option = options.getChannel("channel") || options.getRole("role") || options.getMember("magician");
+    const option = options.getMember("magician") || options.getRole("role") || options.getChannel("channel");
     const option2 = options.getChannel("channel");
 
     if(subcommand === "channel") {
@@ -68,11 +68,12 @@ module.exports = {
           { name: "Position", value: option.position, inline: true },
           { name: "Type", value: option.type, inline: true },
           { name: "NSFW", value: option.nsfw, inline: true },
-        ]
+        ],
+        timestamp: new Date()
       })] });
     } else if(subcommand === "role") {
       // Custom permissions mapper
-      let permissions = option.permissions.serlialize();
+      let permissions = option.permissions.serialize();
       permissions = [
         ["**Administrator**", permissions["ADMINISTRATOR"]],
         ["Manage Server", permissions["MANAGE_GUILD"]],
@@ -125,12 +126,13 @@ module.exports = {
           { name: "Position", value: option.position, inline: true },
           { name: "Hoisted", value: option.hoist, inline: true },
           { name: "Permissions", value: permissions, inline: false }
-        ]
+        ],
+        timestamp: new Date()
       })] });
     } else if(subcommand === "permissions") {
       if(!option2) {
         // Custom permissions mapper
-        let permissions = option.permissions.serlialize();
+        let permissions = option.permissions.serialize();
         permissions = [
           ["**Administrator**", permissions["ADMINISTRATOR"]],
           ["Manage Server", permissions["MANAGE_GUILD"]],
@@ -174,17 +176,18 @@ module.exports = {
         ].map(x => `${x[0]}: ${x[1] ? "`✅`" : "`❎`"}`);
 
         return interaction.followUp({ embeds: [new MessageEmbed({
-          title: "magician Permissions",
+          title: "Magician Permissions",
           color: Math.floor(Math.random() * 16777215),
           fields: [
-            { name: "Name", value: option.name, inline: true },
-            { name: "ID", value: option.id, inline: true },
-            { name: "Permissions", value: permissions, inline: false }
-          ]
+            { name: "Username", value: option.user.tag, inline: true },
+            { name: "ID", value: option.user.id, inline: true },
+            { name: "Permissions", value: permissions.join("\n"), inline: false }
+          ],
+          timestamp: new Date()
         })] });
       } else {
         // Custom permissions mapper
-        let permissions = option.permissionsIn(option2).serlialize();
+        let permissions = option.permissionsIn(option2).serialize();
         permissions = [
           ["Manage Channels", permissions["MANAGE_CHANNELS"]],
           ["Manage Webhooks", permissions["MANAGE_WEBHOOKS"]],
@@ -216,11 +219,14 @@ module.exports = {
         ].map(x => `${x[0]}: ${x[1] ? "`✅`" : "`❎`"}`);
 
         return interaction.followUp({ embeds: [new MessageEmbed({
-          title: `magician Permissions in ${option2.name}`,
+          title: `Magician Permissions in ${option2.name}`,
           color: Math.floor(Math.random() * 16777215),
           fields: [
-            { name: "Permissions", value: permissions, inline: false }
-          ]
+            { name: "Username", value: option.user.tag, inline: true },
+            { name: "ID", value: option.user.id, inline: true },
+            { name: "Permissions", value: permissions.join("\n"), inline: false }
+          ],
+          timestamp: new Date()
         })] });
       }
     }

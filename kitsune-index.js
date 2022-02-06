@@ -37,7 +37,6 @@ process.on("uncaughtException", async (err, origin) => {
   return toConsole("A [uncaughtException] has been emitted\n> Error: " + err + "\n> Origin: " + origin, "process.on(\"uncaughtException\")", client);
 });
 
-
 client.event.on("query", async (results, trace) => {
   const channel = client.channels.cache.get(config.bot["errorChannel"]);
   const table = new AsciiTable("Query");
@@ -64,11 +63,11 @@ client.event.on("query", async (results, trace) => {
   const table = new AsciiTable("Commands");
   table.addRow("testing-file.js", "Loaded");
   const commands = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
-  console.log("[FILE-LOAD] Loading files, expecting " + commands.length + " files");
+  console.info("[FILE-LOAD] Loading files, expecting " + commands.length + " files");
 
   for(let file of commands) {
     try {
-      console.log("[FILE-LOAD] Loading file " + file);
+      console.info("[FILE-LOAD] Loading file " + file);
       let command = require("./commands/" + file);
 
       if(command.name) {
@@ -78,17 +77,17 @@ client.event.on("query", async (results, trace) => {
         table.addRow(command.name, "Loaded");
       }
     } catch(e) {
-      console.log("[FILE-LOAD] Unloaded: " + file);
+      console.info("[FILE-LOAD] Unloaded: " + file);
       table.addRow(file, "Unloaded");
     }
   }
 
-  console.log("[FILE-LOAD] All files loaded into ASCII and ready to be sent");
+  console.info("[FILE-LOAD] All files loaded into ASCII and ready to be sent");
   await wait(500); // Artificial wait to prevent instant sending
   const now = Date.now();
 
   try {
-    console.log("[APP-REFR] Started refreshing application (/) commands.");
+    console.info("[APP-REFR] Started refreshing application (/) commands.");
 
     await rest.put(
       Routes.applicationCommands(config.bot["applicationId"]),
@@ -96,18 +95,18 @@ client.event.on("query", async (results, trace) => {
     );
     
     const then = Date.now();
-    console.log("[APP-REFR] Successfully reloaded application (/) commands after " + (then - now) + "ms.");
-    console.log(table.toString());
+    console.info("[APP-REFR] Successfully reloaded application (/) commands after " + (then - now) + "ms.");
+    console.info("[FILE-LOAD]\n" + table.toString());
   } catch(error) {
     toConsole("An error has occurred while attempting to refresh application commands.\n\n> " + error, __filename.split("/")[__filename.split("/").length - 1] + " 71:19", client);
-    console.info(table.toString());
+    console.info("[FILE-LOAD]\n" + table.toString());
   }
-  console.log("[FILE-LOAD] All files loaded successfully");
+  console.info("[FILE-LOAD] All files loaded successfully");
 })();
 
 // Client startup
 client.on("ready", async (client) => {
-  console.log("[READY] Client is ready");
+  console.info("[READY] Client is ready");
   console.info("[READY] Setting presence for " + client.user.tag + " (" + client.user.id + ")");
   const presence = await client.user.setPresence({ activities: [{ name: client.user.username + " is starting up", type: "PLAYING" }], status: "online" });
   console.info("[READY] Set presence for " + client.user.tag + " (" + client.user.id + ") \n> Name: " + presence.activities[0].name + "\n> Type: " + presence.activities[0].type + "\n> Status: " + presence.status);
@@ -136,6 +135,11 @@ client.on("interactionCreate", async (interaction) => {
     if(command) {
       command.run(client, interaction, interaction.options);
     }
+    await wait(10000);
+    await interaction.fetchReply()
+      .then(m => {
+        if(m.content === "" && m.embeds.length === 0) interactionEmbed(3, "[ERR-UNK]", "The command timed out and failed to reply in 10 seconds", interaction, client, false);
+      });
   }
 });
 
