@@ -2,7 +2,6 @@
 const { Client, CommandInteraction, CommandInteractionOptionResolver } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { interactionEmbed } = require("../functions.js");
-const cooldown = new Set();
 
 module.exports = {
   name: "editchannel",
@@ -180,49 +179,40 @@ module.exports = {
    * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
    */
   run: async (client, interaction, options) => {
-    if(cooldown.has(interaction.user.id)) {
-      return interactionEmbed(2, "[ERR-CLD]", "You must have no active cooldown", interaction, client, true);
-    } else {
-      const channel = options.getChannel("channel");
-      const reason = `${options.getString("reason")} (Moderator ID: ${interaction.member.id})` ?? "No reason provided";
-      const option = options.getString("name") ?? options.getString("topic") ?? options.getBoolean("nsfw") ?? options.getNumber("seconds") ?? options.getString("bitrate") ?? options.getNumber("limit");
+    const channel = options.getChannel("channel");
+    const reason = `${options.getString("reason")} (Moderator ID: ${interaction.member.id})` ?? "No reason provided";
+    const option = options.getString("name") ?? options.getString("topic") ?? options.getBoolean("nsfw") ?? options.getNumber("seconds") ?? options.getString("bitrate") ?? options.getNumber("limit");
       
-      // If we cannot view the channel, stop
-      if(!interaction.guild.me.permissionsIn(channel).has("VIEW_CHANNEL")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`View Channel\` > ${channel}`, interaction, client, true);
-      if(!interaction.member.permissionsIn(channel).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-UPRM]", `Missing \`Manage Channel\` > ${channel}`, interaction, client, true);
-      if(!interaction.guild.me.permissionsIn(channel).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
-      if(options._hoistedOptions[1].name === "name") {
-        channel.setName(option, reason)
-          .then(newChannel => interactionEmbed(1, `Set ${channel}'s name was set to \`${newChannel.name}\` for \`${reason}\``, "", interaction, client, false));
-      } else if(options._hoistedOptions[1].name === "topic") {
-        if(!channel.isText()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel", interaction, client, true);
-        channel.setTopic(option, reason)
-          .then(newChannel => interactionEmbed(1, `Set ${channel}'s topic was set to \`${newChannel.topic}\` for \`${reason}\``, "", interaction, client, false));
-      } else if(options._hoistedOptions[1].name === "nsfw") {
-        if(!channel.isText()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel", interaction, client, true);
-        channel.setNSFW(option, reason)
-          .then(newChannel => interactionEmbed(1, `Set ${channel}'s NSFW flag to \`${newChannel.nsfw}\` for \`${reason}\``, "", interaction, client, false));
-      } else if(options._hoistedOptions[1].name === "seconds") {
-        if(!channel.isText()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel", interaction, client, true);
-        channel.setRateLimitPerUser(option, reason)
-          .then(newChannel => interactionEmbed(1, `Set ${channel}'s slowmode to \`${newChannel.rateLimitPerUser}\` for \`${reason}\``, "", interaction, client, false));
-      } else if(options._hoistedOptions[1].name === "bitrate") {
-        if(!channel.isVoice()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel", interaction, client, true);
-        channel.setBitrate(option, reason)
-          .then(newChannel => interactionEmbed(1, `Set ${channel}'s bitrate to \`${newChannel.bitrate}\` for \`${reason}\``, "", interaction, client, false));
-      } else if(options._hoistedOptions[1].name === "limit") {
-        if(!channel.isVoice()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel", interaction, client, true);
-        channel.setUserLimit(option, reason)
-          .then(newChannel => interactionEmbed(1, `Set ${channel}'s user limit to \`${newChannel.userLimit}\` for \`${reason}\``, "", interaction, client, false));
-      } else if(options._hoistedOptions[1].name === "permlock") {
-        channel.lockPermissions()
-          .then(newChannel => interactionEmbed(1, `Set ${newChannel}'s permissions to the category's permissions`, "", interaction, client, false));
-      }
-
-      cooldown.add(interaction.user.id);
-      setTimeout(() => {
-        cooldown.delete(interaction.user.id);
-      }, 5000);
+    // If we cannot view the channel, stop
+    if(!interaction.guild.me.permissionsIn(channel).has("VIEW_CHANNEL")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`View Channel\` > ${channel}`, interaction, client, true);
+    if(!interaction.member.permissionsIn(channel).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-UPRM]", `Missing \`Manage Channel\` > ${channel}`, interaction, client, true);
+    if(!interaction.guild.me.permissionsIn(channel).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
+    if(options._hoistedOptions[1].name === "name") {
+      channel.setName(option, reason)
+        .then(newChannel => interactionEmbed(1, `Set ${channel}'s name was set to \`${newChannel.name}\` for \`${reason}\``, "", interaction, client, false));
+    } else if(options._hoistedOptions[1].name === "topic") {
+      if(!channel.isText()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel", interaction, client, true);
+      channel.setTopic(option, reason)
+        .then(newChannel => interactionEmbed(1, `Set ${channel}'s topic was set to \`${newChannel.topic}\` for \`${reason}\``, "", interaction, client, false));
+    } else if(options._hoistedOptions[1].name === "nsfw") {
+      if(!channel.isText()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel", interaction, client, true);
+      channel.setNSFW(option, reason)
+        .then(newChannel => interactionEmbed(1, `Set ${channel}'s NSFW flag to \`${newChannel.nsfw}\` for \`${reason}\``, "", interaction, client, false));
+    } else if(options._hoistedOptions[1].name === "seconds") {
+      if(!channel.isText()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel", interaction, client, true);
+      channel.setRateLimitPerUser(option, reason)
+        .then(newChannel => interactionEmbed(1, `Set ${channel}'s slowmode to \`${newChannel.rateLimitPerUser}\` for \`${reason}\``, "", interaction, client, false));
+    } else if(options._hoistedOptions[1].name === "bitrate") {
+      if(!channel.isVoice()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel", interaction, client, true);
+      channel.setBitrate(option, reason)
+        .then(newChannel => interactionEmbed(1, `Set ${channel}'s bitrate to \`${newChannel.bitrate}\` for \`${reason}\``, "", interaction, client, false));
+    } else if(options._hoistedOptions[1].name === "limit") {
+      if(!channel.isVoice()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel", interaction, client, true);
+      channel.setUserLimit(option, reason)
+        .then(newChannel => interactionEmbed(1, `Set ${channel}'s user limit to \`${newChannel.userLimit}\` for \`${reason}\``, "", interaction, client, false));
+    } else if(options._hoistedOptions[1].name === "permlock") {
+      channel.lockPermissions()
+        .then(newChannel => interactionEmbed(1, `Set ${newChannel}'s permissions to the category's permissions`, "", interaction, client, false));
     }
   }
 };
