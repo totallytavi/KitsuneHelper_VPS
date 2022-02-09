@@ -57,10 +57,10 @@ module.exports = {
     params.append("login", config.danbooru["username"]);
     params.append("api_key", config.danbooru["api_key"]);
 
-    fetch(`https://danbooru.donmai.us/posts.json?tags=${tags}&${params.toString()}`)
+    fetch(`https://danbooru.donmai.us/posts.json?tags=${tags}&${params.toString()}`, { timeout: 5000 })
       .then(res => res.json())
       .then(json => {
-        if(json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> success? ${json.success}\nmessage: ${json.message}`, interaction, client, false);
+        if(json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Success? ${json.success}\nMessage: ${json.message}\nResponse:\n ${json.length === 0 ? "len = 0 (You searched for a tag that doesn't exist)" : json}`, interaction, client, false);
         for(const post of json) {
           // Filters
           if(post.is_deleted || post.tag_string.includes("loli")) continue;
@@ -70,17 +70,16 @@ module.exports = {
 
           // Custom title
           let artists, characters;
-          // eslint-disable-next-line no-useless-escape
-          post.tag_string_artist.replace(/_/g, "\_"); post.tag_string_character.replace(/_/g, "\_"); // Makes this embed friendly
-          if(post.tag_string_artist.split(" ").length > 1) {
-            artists = `${post.tag_string_artist.split(" ")[0]} and ${post.tag_string_artist.split(" ").length - 1} others`;
+          artists = post.tag_string_artist.replace(/_/g, "\\_"); characters = post.tag_string_character.replace(/_/g, "\\_"); // Makes this embed friendly
+          if(artists.split(" ").length > 1) {
+            artists = `${artists.split(" ")[0]} and ${artists.split(" ").length - 1} others`;
           } else {
-            artists = !post.tag_string_artist ? "Unknown" : post.tag_string_artist;
+            artists = !artists ? "Unknown" : artists;
           }
-          if(post.tag_string_character.split(" ").length > 1) {
-            characters = `${post.tag_string_character.split(" ")[0]} and ${post.tag_string_character.split(" ").length - 1} others`;
+          if(characters.split(" ").length > 1) {
+            characters = `${characters.split(" ")[0]} and ${characters.split(" ").length - 1} others`;
           } else {
-            characters = !post.tag_string_character ? "Original" : post.tag_string_character;
+            characters = !characters ? "Original" : characters;
           }
 
           // Embed
@@ -97,6 +96,9 @@ module.exports = {
 
           interaction.followUp({ embeds: [embed] });
         }
+      })
+      .catch(e => {
+        interactionEmbed(3, "[ERR-EXPT]", `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Error: FetchError: ${e.code} ${e.message.replace(config.danbooru["username"], "usernameHidden").replace(config.danbooru["api_key"], "api_keyHidden")}`, interaction, client, false);
       });
   }
 };
