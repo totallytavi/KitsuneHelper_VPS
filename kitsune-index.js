@@ -10,6 +10,9 @@ const mysql = require("mysql2/promise");
 const rest = new REST({ version: 9 }).setToken(config.bot["token"]);
 const wait = require("util").promisify(setTimeout);
 
+// State that the process is not ready yet
+let ready = false;
+
 // Client initialization
 const client = new Client({
   intents: ["GUILDS","GUILD_BANS","GUILD_INVITES","GUILD_MEMBERS","GUILD_MESSAGES","GUILD_PRESENCES"]
@@ -31,9 +34,11 @@ process.on("warning", async (name, message, stack) => {
   return toConsole("A [warning] has been emitted\n> Name: " + name + "\n> Message: " + message + "\n> Stack: " + stack, "process.on(\"warning\")", client);
 });
 process.on("unhandledRejection", async (promise) => {
+  if(!ready) return process.exit(2319);
   return toConsole("A [unhandledRejection] has been emitted\n> Promise: " + promise, "process.on(\"unhandledRejection\")", client);
 });
 process.on("uncaughtException", async (err, origin) => {
+  if(!ready) return process.exit(2319);
   return toConsole("A [uncaughtException] has been emitted\n> Error: " + err + "\n> Origin: " + origin, "process.on(\"uncaughtException\")", client);
 });
 
@@ -110,19 +115,23 @@ client.on("ready", async (client) => {
   console.info("[READY] Setting presence for " + client.user.tag + " (" + client.user.id + ")");
   const presence = await client.user.setPresence({ activities: [{ name: client.user.username + " is starting up", type: "PLAYING" }], status: "online" });
   console.info("[READY] Set presence for " + client.user.tag + " (" + client.user.id + ") \n> Name: " + presence.activities[0].name + "\n> Type: " + presence.activities[0].type + "\n> Status: " + presence.status);
+  ready = true;
   
   setInterval(async () => {
-    client.connection.end(); // Stop the connection from taking more requests
-    let memberSize = 0;
-    client.guilds.cache.each(guild => memberSize += guild.memberCount);
+    // If the mysql connection is dropped, end it and reconnect
+    try {
+      await client.connection.execute("SELECT * FROM Humans WHERE charId = '1'");
+    } catch(e) {
+      await client.connection.end();
+      client.connection = await mysql.createConnection({
+        host: config["mysql"].host,
+        user: config["mysql"].user,
+        password: config["mysql"].password,
+        database: config["mysql"].database
+      });
+    }
     client.user.setPresence({ activities: [{ name: client.users.cache.size + " magicians across " + client.guilds.cache.size + " forests!", type: "LISTENING" }] });
-    client.connection = await mysql.createConnection({
-      host: config.mysql["host"],
-      user: config.mysql["user"],
-      password: config.mysql["password"],
-      database: config.mysql["database"]
-    });
-  }, 30000);
+  }, 60000);
 });
 
 // Client event handling
