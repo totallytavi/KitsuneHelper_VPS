@@ -6,13 +6,14 @@ This branch is the stable one, and all features that are up and running perfectl
 
 
 ## Installation ##
-### Prerequisite ##
+### Prerequisites ##
 - Node.js v16
 - Code Editor
+- Git
 - Discord bot
 - Internet connection (Recommended: 1 mbps+)
 
-## Installing Node.js ##
+### Installing Node.js ###
 1. Go to the [Node.js website](https://nodejs.org) and select the LTS (Long term support) version as long as it is version 16 or higher. You can select the current version but I have verified that all of the code present works with Node.js v16.11.1.
 2. Install the package. Please TICK the checkbox asking if you want to install NPM. You will need this later.
 3. You will receive a prompt for Chocolatey. This is required and you should install it.
@@ -20,14 +21,14 @@ This branch is the stable one, and all features that are up and running perfectl
 - `node -v`
 - `Output: 16.11.1` (This will vary)
 
-## Installing git ##
+### Installing git ###
 1. Go to the [Git CLI website](https://git-scm.com/downloads) and download the version that suits your OS best.
 2. Open the downloaded package and install it.
 3. To verify you have installed git, run the following command in your command editor of choice
 - `git --version`
 - `Output: git version 2.32.0 (Apple Git-132)` (This will vary)
 
-## Installing the Repository ##
+### Installing the Repository ###
 1. Clone the repository onto your machine using the GitHub CLI.
 - The command is: `git clone https://github.com/Coder-Tavi/KitsuneHelper_VPS.git`
 2. Toy around with the code and enjoy!
