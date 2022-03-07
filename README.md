@@ -1,5 +1,5 @@
 # KitsuneHelper_VPS #
-Welcome to the official GitHub repository for Kitsune Helper! As you'll notice, there are several branches but two are primarily active. These are the testing branch and the main branch. Before you start getting scared, don't worry, I will explain! (If you're curious why it's called `VPS`, that's because this code used to be private and used to sync code between my computer and a VPS. I have left it in to preserve the URL and the history).
+Welcome to the official GitHub repository for Kitsune Helper! If you're curious why it's called `VPS`, that's because this code used to be private and used to sync code between my computer and a VPS. I have left it in to preserve the URL and the history.
 
 ## Master ##
 This branch is the stable one, and all features that are up and running perfectly with little to no flaws will be published. I say little to none because as any coder knows, even if you code something to be resilient to pretty much every error, there will be errors. Still, the errors that can occur are very rare so there's no need to worry about the bot going offline due to an issue. If you're starting out and want to copy this bot's code, this is the branch that I recommend you follow and keep your code checked against.
