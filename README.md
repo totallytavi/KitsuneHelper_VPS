@@ -23,7 +23,6 @@ Please note that you WILL need a config.json file. However, I've created a small
     "applicationId": "123456789012345678",
     "devGuildId": "123456789012345678",
     "errorChannel": "123456789012345678",
-    "ksoft": "ksoft_token_here",
     "token": "token_here"
   },
   "danbooru": {
