@@ -41,7 +41,7 @@ module.exports = {
       const result = await client.connection.execute("INSERT INTO Kicks(kickId, guildId, userId, modId, reason) VALUES(?, ?, ?, ?, ?)", [Buffer.from(String(Date.now())).toString("base64"), interaction.guild.id, member.user.id, interaction.user.id, reason])
         .catch(e => interactionEmbed(3, "[SQL-ERR]", "[" + e.code + "] " + e.message, interaction, client, false));
       if(!result) return;
-      client.event.emit("query", `${result[0], __filename.split("/")[__filename.split("/").length - 1]} 41:53`);
+      client.event.emit("query", result[0], `${__filename.split("/")[__filename.split("/").length - 1]} 41:53`);
       return interactionEmbed(1, `${member} was kicked for \`${reason}\`.`, "", interaction, client, false);
     } else {
       interaction.editReply({ content: ":x: Banishment cancelled, the magician remains in your forest!" });

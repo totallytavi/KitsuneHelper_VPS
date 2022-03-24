@@ -13,7 +13,7 @@ module.exports = {
         .setName("option")
         .setDescription("The setting to change")
         .addChoices([
-          ["ban_using_ksoft", "banWithKSoft"]
+          ["auditLog", "enableAuditLogging"]
         ])
         .setRequired(true);
     }),

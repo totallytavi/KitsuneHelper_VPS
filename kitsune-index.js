@@ -116,22 +116,19 @@ client.on("ready", async (client) => {
   const presence = await client.user.setPresence({ activities: [{ name: client.user.username + " is starting up", type: "PLAYING" }], status: "online" });
   console.info("[READY] Set presence for " + client.user.tag + " (" + client.user.id + ") \n> Name: " + presence.activities[0].name + "\n> Type: " + presence.activities[0].type + "\n> Status: " + presence.status);
   ready = true;
-  
+
   setInterval(async () => {
-    // If the mysql connection is dropped, end it and reconnect
-    try {
-      await client.connection.execute("SELECT * FROM Humans WHERE charId = '1'");
-    } catch(e) {
-      await client.connection.end();
-      client.connection = await mysql.createConnection({
-        host: config["mysql"].host,
-        user: config["mysql"].user,
-        password: config["mysql"].password,
-        database: config["mysql"].database
-      });
+    const bans = await client.connection.execute("SELECT * FROM Bans WHERE duration <= ?", [Date.now()])
+      .catch(e => console.info("[MYSQL] An error has occurred while attempting to check bans\n> " + e));
+    client.event.emit("query", bans[0], `${__filename.split("/")[__filename.split("/").length - 1]} 121:49`);
+    for(let ban of bans[0]) {
+      await client.connection.execute("DELETE FROM Bans WHERE banid = ?", [ban.banId]);
+      ban = await client.guilds.cache.get(ban.guildId).bans.fetch(ban.userId);
+      if(ban.name) return;
+      await client.guilds.cache.get(ban.guildId).bans.remove(ban.userId, "Ban expired");
     }
     client.user.setPresence({ activities: [{ name: client.users.cache.size + " magicians across " + client.guilds.cache.size + " forests!", type: "LISTENING" }] });
-  }, 60000);
+  }, 30000);
 });
 
 // Client event handling

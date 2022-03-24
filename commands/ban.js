@@ -67,10 +67,10 @@ module.exports = {
     const confirmation = await awaitButtons(interaction, 15, [new MessageButton({ customId: "yes", label: "Yes, I do want to ban this magician", style: "DANGER" }), new MessageButton({ customId: "no", label: "No, I do not want to ban this user", style: "SUCCESS" })], "Are you sure you want to ban this magician?", true);
     if(confirmation.customId === "yes") {
       await member.ban({ days: days, reason: `${reason} (Moderator ID: ${interaction.user.id})` });
-      const result = await client.connection.execute("INSERT INTO Bans(banId, guildId, userId, modId, reason) VALUES(?, ?, ?, ?, ?, ?)", [Buffer.from(String(Date.now())).toString("base64"), interaction.guild.id, member.user.id, interaction.user.id, duration, reason])
+      const result = await client.connection.execute("INSERT INTO Bans(banId, guildId, userId, modId, duration, reason) VALUES(?, ?, ?, ?, ?, ?)", [Buffer.from(String(Date.now())).toString("base64"), interaction.guild.id, member.user.id, interaction.user.id, duration + Date.now(), reason])
         .catch(e => interactionEmbed(3, "[SQL-ERR]", "[" + e.code + "] " + e.message, interaction, client, false));
       if(!result) return;
-      client.event.emit("query", `${result[0], __filename.split("/")[__filename.split("/").length - 1]} 70:53`);
+      client.event.emit("query", result[0], `${__filename.split("/")[__filename.split("/").length - 1]} 70:53`);
       return interactionEmbed(1, `${member} was banned for \`${reason}\`. \`${days}\` days of messages sent by that user will be wiped away with magic`, "", interaction, client, false);
     } else {
       interaction.editReply({ content: ":x: Banishment cancelled, the magician remains in your forest!" });
