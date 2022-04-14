@@ -52,7 +52,7 @@ module.exports = {
     const option = options.getChannel("channel") || options.getRole("role");
     const reason = options.getString("reason") ?? "No reason provided";
 
-    const confirmation = await awaitButtons(interaction, 15, [new MessageButton({ customId: "yes", label: "Yes, I want to continue", style: "DANGER" }), new MessageButton({ customId: "no", label: "No, I don't want to continue", style: "DEFAULT" })], "Are you sure you want to continue with deletion? This is irreversible!", true );
+    const confirmation = await awaitButtons(interaction, 15, [new MessageButton({ customId: "yes", label: "Yes, I want to continue", style: "DANGER" }), new MessageButton({ customId: "no", label: "No, I don't want to continue", style: "PRIMARY" })], "Are you sure you want to continue with deletion? This is irreversible!", true );
     if(confirmation.customId === "yes") {
       if(subcommand === "channel") {
         if(!interaction.member.permissionsIn(option).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-UPRM]", `Missing: \`Manage Channels\` > ${option}`, interaction, client, true); 
