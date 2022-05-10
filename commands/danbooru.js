@@ -47,11 +47,11 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     let tags = options.getString("tag").replace(/\(/g, "%28").replace(/\)/g, "%29");
-    if(tags.match(/[^1-6]\+/)) return interactionEmbed(2, "[ERR-ARGS]", "Arg: tag :-: Expected 1 tag, got multiple tags", interaction, client, true);
+    if(tags.match(/[^1-6]\+/)) return interactionEmbed(2, "[ERR-ARGS]", "You cannot enter more than 1 tag!", interaction, client, true);
 
     const safe = options.getBoolean("safe_search") ? true : false;
     const limit = options.getNumber("limit") ?? 10;
-    if(options.getBoolean("safe_search")) tags += "+rating:s+random:" + limit;
+    if(options.getBoolean("safe_search")) tags += "+rating:s";
     tags += "+random:" + limit;
     const params = new URLSearchParams();
     params.append("login", config.danbooru["username"]);

@@ -120,12 +120,13 @@ client.on("ready", async (client) => {
   setInterval(async () => {
     const bans = await client.connection.execute("SELECT * FROM Bans WHERE duration <= ?", [Date.now()])
       .catch(e => console.info("[MYSQL] An error has occurred while attempting to check bans\n> " + e));
-    client.event.emit("query", bans[0], `${__filename.split("/")[__filename.split("/").length - 1]} 121:49`);
     for(let ban of bans[0]) {
       await client.connection.execute("DELETE FROM Bans WHERE banid = ?", [ban.banId]);
-      ban = await client.guilds.cache.get(ban.guildId).bans.fetch(ban.userId);
-      if(ban.name) return;
-      await client.guilds.cache.get(ban.guildId).bans.remove(ban.userId, "Ban expired");
+      ban = await client.guilds.cache.get(ban.guildId).then(g => {
+        g.bans.fetch(ban.userId)
+          .then(b => b.remove())
+          .catch(() => { return null; });
+      });
     }
     client.user.setPresence({ activities: [{ name: client.users.cache.size + " magicians across " + client.guilds.cache.size + " forests!", type: "LISTENING" }] });
   }, 30000);
