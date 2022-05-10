@@ -138,16 +138,16 @@ module.exports = {
             .setName("bitrate")
             .setDescription("New channel bitrate (Default: 64kbps)")
             .setRequired(true)
-            .addChoices([
-              ["8kbps", "8"],
-              ["16kbps", "16"],
-              ["32kbps", "32"],
-              ["64kbps", "64"],
-              ["96kbps", "96"],
-              ["128kbps", "128"],
-              ["256kbps", "256"],
-              ["384kbps", "384"]
-            ]);
+            .addChoices(
+              { name: "8kbps", value: "8" },
+              { name: "16kbps", value: "16" },
+              { name: "32kbps", value: "32" },
+              { name: "64kbps", value: "64" },
+              { name: "96kbps", value: "96" },
+              { name: "128kbps", value: "128" },
+              { name: "256kbps", value: "256" },
+              { name: "384kbps", value: "384" },
+            );
         })
         .addStringOption(option => {
           return option

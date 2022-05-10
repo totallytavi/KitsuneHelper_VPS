@@ -83,6 +83,7 @@ client.event.on("query", async (results, trace) => {
       }
     } catch(e) {
       console.info("[FILE-LOAD] Unloaded: " + file);
+      console.info(`[FILE-LOAD] ${e.message}`);
       table.addRow(file, "Unloaded");
     }
   }

@@ -19,12 +19,12 @@ module.exports = {
         .setName("age")
         .setDescription("How many days should the invite last (Default: Unlimited)")
         .setRequired(false)
-        .addChoices([
-          ["1hour", 3600],
-          ["1day", 86400],
-          ["1week", 604800],
-          ["forever", 0]
-        ]);
+        .addChoices(
+          { name: "1hour", value: 3600 },
+          { name: "1day", value: 86400 },
+          { name: "1week", value: 604800 },
+          { name: "forever", value: 0 },
+        );
     })
     .addIntegerOption((option) => {
       return option

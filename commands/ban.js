@@ -26,16 +26,16 @@ module.exports = {
         .setName("days")
         .setDescription("How many days before the banishment to purge messages")
         .setRequired(false)
-        .addChoices([
-          ["none", 0],
-          ["1day", 1],
-          ["2days", 2],
-          ["3days", 3],
-          ["4days", 4],
-          ["5days", 5],
-          ["6days", 6],
-          ["7days", 7]
-        ]);
+        .addChoices(
+          { name: "none", value: 0 },
+          { name: "1day", value: 1 },
+          { name: "2days", value: 2 },
+          { name: "3days", value: 3 },
+          { name: "4days", value: 4 },
+          { name: "5days", value: 5 },
+          { name: "6days", value: 6 },
+          { name: "7days", value: 7 },
+        );
     })
     .addStringOption(option => {
       return option

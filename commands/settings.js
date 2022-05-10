@@ -12,9 +12,9 @@ module.exports = {
       return option
         .setName("option")
         .setDescription("The setting to change")
-        .addChoices([
-          ["auditLog", "enableAuditLogging"]
-        ])
+        .addChoices(
+          { name: "auditLog", value: "enableAuditLogging" }
+        )
         .setRequired(true);
     }),
   /**
