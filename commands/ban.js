@@ -49,7 +49,7 @@ module.exports = {
    * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
    */
   run: async (client, interaction, options) => {
-    const member = options.getMember("user");
+    const member = options.get("user");
     const reason = options.getString("reason") ?? "No reason provided";
     const days = options.getNumber("days") ?? 0;
     let duration = Date.now() + ms(options.getString("duration") ?? "NaN");
@@ -60,14 +60,16 @@ module.exports = {
 
     if(!interaction.member.permissions.has("BAN_MEMBERS")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Ban Members`", interaction, client, true);
     if(!interaction.guild.me.permissions.has("BAN_MEMBERS")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Ban Members`", interaction, client, true);
-    if(interaction.user.id === member.user.id) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected other magician, got same user", interaction, client, true);
-    if(interaction.member.roles.highest.rawPosition <= member.roles.highest.rawPosition) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected magician lower than executor, got magician at or above executor", interaction, client, true);
-    if(interaction.guild.me.roles.highest.rawPosition <= member.roles.highest.rawPosition) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected magician lower than bot, got magician at or above bot", interaction, client, true);
+    if(interaction.user.id === member.value) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected other magician, got same user", interaction, client, true);
+    if(member.member) {
+      if(interaction.member.roles.highest.rawPosition <= member.member.roles.highest.rawPosition) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected magician lower than executor, got magician at or above executor", interaction, client, true);
+      if(interaction.guild.me.roles.highest.rawPosition <= member.member.roles.highest.rawPosition) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected magician lower than bot, got magician at or above bot", interaction, client, true);
+    }
 
     const confirmation = await awaitButtons(interaction, 15, [new MessageButton({ customId: "yes", label: "Yes, I do want to ban this magician", style: "DANGER" }), new MessageButton({ customId: "no", label: "No, I do not want to ban this user", style: "SUCCESS" })], "Are you sure you want to ban this magician?", true);
     if(confirmation.customId === "yes") {
-      await member.ban({ days: days, reason: `${reason} (Moderator ID: ${interaction.user.id})` });
-      const result = await client.connection.execute("INSERT INTO Bans(banId, guildId, userId, modId, duration, reason) VALUES(?, ?, ?, ?, ?, ?)", [Buffer.from(String(Date.now())).toString("base64"), interaction.guild.id, member.user.id, interaction.user.id, duration + Date.now(), reason])
+      await interaction.guild.bans.create(member.value, { days: days, reason: `${reason} (Moderator ID: ${interaction.user.id})` });
+      const result = await client.connection.execute("INSERT INTO Bans(banId, guildId, userId, modId, duration, reason) VALUES(?, ?, ?, ?, ?, ?)", [Buffer.from(String(Date.now())).toString("base64"), interaction.guild.id, member.value, interaction.user.id, duration + Date.now(), reason])
         .catch(e => interactionEmbed(3, "[SQL-ERR]", "[" + e.code + "] " + e.message, interaction, client, false));
       if(!result) return;
       client.event.emit("query", result[0], `${__filename.split("/")[__filename.split("/").length - 1]} 70:53`);
