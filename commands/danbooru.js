@@ -60,11 +60,11 @@ module.exports = {
     fetch(`https://danbooru.donmai.us/posts.json?tags=${tags}&${params.toString()}`, { timeout: 5000 })
       .then(res => res.json())
       .then(json => {
-        if(json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Success? ${json.success}\nMessage: ${json.message}\nResponse:\n ${json.length === 0 ? "len = 0 (You searched for a tag that doesn't exist)" : json}`, interaction, client, false);
+        if(json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", json.length === 0 ? `\`${tags}\` doesn't exist on Danbooru` : `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Success? ${json.success}\nMessage: ${json.message}\nResponse:\n${json}`, interaction, client, false);
         for(const post of json) {
           // Filters
           if(post.is_deleted || post.tag_string.includes("loli")) continue;
-          if((!interaction.channel.nsfw && post.rating != "s") || (safe && post.rating != "s")) continue;
+          if((!interaction.channel.nsfw && post.rating != "g") || (safe && post.rating != "g")) continue;
           const image = post.large_file_url || post.file_url || post.preview_file_url;
           if(!/\.jpg|\.png|\.gif/.test(image)) continue;
 
