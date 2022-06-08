@@ -51,7 +51,7 @@ module.exports = {
 
     const safe = options.getBoolean("safe_search") ? true : false;
     const limit = options.getNumber("limit") ?? 10;
-    if(options.getBoolean("safe_search")) tags += "+rating:s";
+    if(options.getBoolean("safe_search")) tags += "+rating:g";
     tags += "+random:" + limit;
     const params = new URLSearchParams();
     params.append("login", config.danbooru["username"]);
