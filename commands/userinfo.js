@@ -15,12 +15,6 @@ module.exports = {
         .setName("user")
         .setDescription("The user to get information about")
         .setRequired(true);
-    })
-    .addBooleanOption(option => {
-      return option
-        .setName("mod_history")
-        .setDescription("Whether or not to include the mod history of the user")
-        .setRequired(false);
     }),
   /**
    * @param {Client} client
@@ -35,7 +29,7 @@ module.exports = {
     const embed = new MessageEmbed({
       color: Math.floor(Math.random() * 16777215)
     });
-    const roles = member.roles.cache.sort((a, b) => b.position - a.position).filter(r => r != member.guild.roles.everyone);
+    const roles = Array.from(member.roles.cache.sort((a, b) => b.position - a.position).filter(r => r != member.guild.roles.everyone)).map(([, v]) => v.toString());
     embed.setTitle(`Information on ${member.user.tag}`);
     embed.setFooter({ text: `ID: ${member.user.id}` });
     embed.setThumbnail(member.user.displayAvatarURL({ format: "png", size: 2048, dynamic: true }));
@@ -43,7 +37,7 @@ module.exports = {
       { name: "Register Date", value: String(moment(member.user.createdAt)._i), inline: true },
       { name: "Join Date", value: String(moment(member.joinedAt)._i), inline: true },
       { name: "Nickname", value: `${member.nickname || "None"}`, inline: true },
-      { name: "Roles", value: `${roles.length < 1024 ? roles : "Too many roles!"}`, inline: false },
+      { name: "Roles", value: `${JSON.stringify(roles).length < 1024 ? roles.join(", ") : "Too many roles!"}`, inline: false },
     ]);
 
     interaction.editReply({ embeds: [embed] });
