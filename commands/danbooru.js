@@ -47,16 +47,16 @@ module.exports = {
    */
   run: async (client, interaction, options) => {
     let tags = options.getString("tag").replace(/\(/g, "%28").replace(/\)/g, "%29");
+    let skipped, passed = 0;
     if(tags.match(/[^1-6]\+/)) return interactionEmbed(2, "[ERR-ARGS]", "You cannot enter more than 1 tag!", interaction, client, true);
 
     const safe = !interaction.channel.nsfw || options.getBoolean("safe_search") ? true : false;
     const limit = options.getNumber("limit") ?? 10;
-    if(options.getBoolean("safe_search")) tags += "+rating:g";
+    if(safe) tags += "+rating:g";
     tags += "+random:" + limit;
     const params = new URLSearchParams();
     params.append("login", config.danbooru["username"]);
     params.append("api_key", config.danbooru["api_key"]);
-    console.info(params.toString());
 
     fetch(`https://danbooru.donmai.us/posts.json?tags=${tags}&${params.toString()}`, { timeout: 5000 })
       .then(res => res.json())
@@ -64,10 +64,19 @@ module.exports = {
         if(json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", json.length === 0 ? `\`${tags.split("+")[0]}\` doesn't exist on Danbooru` : `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Success? ${json.success}\nMessage: ${json.message}\nResponse:\n${json}`, interaction, client, false);
         for(const post of json) {
           // Filters
-          if(post.is_deleted || post.tag_string.split(" ").includes("loli")) continue;
-          if(safe && post.rating != "g") continue;
+          if(post.is_deleted || post.tag_string.split(" ").includes("loli")) {
+            skipped++;
+            continue;
+          }
+          if(safe && post.rating != "g") {
+            skipped++;
+            continue;
+          }
           const image = post.large_file_url || post.file_url || post.preview_file_url;
-          if(!/\.jpg|\.png|\.gif/.test(image)) continue;
+          if(!/\.jpg|\.png|\.gif/.test(image)) {
+            skipped++;
+            continue;
+          }
 
           // Custom title
           let artists, characters;
@@ -96,10 +105,15 @@ module.exports = {
           });
 
           interaction.followUp({ embeds: [embed] });
+          passed++;
+          if(skipped + passed === json.length) interaction.editReply({ content: `Skipped ${skipped} images` });
         }
       })
       .catch(e => {
-        interactionEmbed(3, "[ERR-EXPT]", `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Error: FetchError: ${e.code} ${e.message.replace(config.danbooru["username"], "usernameHidden").replace(config.danbooru["api_key"], "api_keyHidden")}`, interaction, client, false);
+        if(e.message.startsWith("network timeout"))
+          interactionEmbed(3, "[ERR-EXPT]", "The request to Danbooru timed out. Please try again later.", interaction, client, false);
+        else
+          interactionEmbed(3, "[ERR-EXPT]", `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Error: FetchError: ${e.code} ${e.message.replace(config.danbooru["username"], "usernameHidden").replace(config.danbooru["api_key"], "api_keyHidden")}`, interaction, client, false);
       });
   }
 };
