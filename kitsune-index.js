@@ -34,12 +34,15 @@ process.on("warning", async (name, message, stack) => {
   return toConsole("A [warning] has been emitted\n> Name: " + name + "\n> Message: " + message + "\n> Stack: " + stack, "process.on(\"warning\")", client);
 });
 process.on("unhandledRejection", async (promise) => {
-  if(!ready) return process.exit(2319);
+  if(!ready) return process.exit(18);
   return toConsole("A [unhandledRejection] has been emitted\n> Promise: " + promise, "process.on(\"unhandledRejection\")", client);
 });
 process.on("uncaughtException", async (err, origin) => {
-  if(!ready) return process.exit(2319);
+  if(!ready) return process.exit(17);
   return toConsole("A [uncaughtException] has been emitted\n> Error: " + err + "\n> Origin: " + origin, "process.on(\"uncaughtException\")", client);
+});
+process.on("exit", async (code) => {
+  return console.error("[EXIT] Process exited with code: " + code);
 });
 
 client.event.on("query", async (results, trace) => {
