@@ -1,22 +1,21 @@
-name: Code Validation
+name: ESLint Validation
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
 
   workflow_dispatch:
 
 jobs:
-  build:
+  eslint:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: npm install
-        
-      - name: Run ESLint
-        run: npx eslint ./
+      - uses: mrdivyansh/eslint-action@v1.0.7
+        if: ${{ github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository }} 
+        with:
+          repo-token: ${{secrets.GITHUB_TOKEN}}
+          eslint-rc: .eslintrc.js
+          execute-on-files: ./
