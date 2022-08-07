@@ -11,7 +11,6 @@ This branch is the stable one, and all features that are up and running perfectl
 - Code Editor
 - Git
 - Discord bot
-- Internet connection (Recommended: 1 mbps+)
 
 ### Installing Node.js ###
 1. Go to the [Node.js website](https://nodejs.org) and select the LTS (Long term support) version as long as it is version 16 or higher. You can select the current version but I have verified that all of the code present works with Node.js v16.11.1.
@@ -26,7 +25,7 @@ This branch is the stable one, and all features that are up and running perfectl
 2. Open the downloaded package and install it.
 3. To verify you have installed git, run the following command in your command editor of choice
 - `git --version`
-- `Output: git version 2.32.0 (Apple Git-132)` (This will vary)
+- `Output: git version 2.32.0 (Apple Git-132)`
 
 ### Installing the Repository ###
 1. Clone the repository onto your machine using the GitHub CLI.
