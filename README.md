@@ -11,7 +11,7 @@ This branch is the stable one, and all features that are up and running perfectl
 - Code Editor
 - Git
 - Discord bot
-- Internet connection (Recommended: 1 mbps+)
+- Internet connection
 
 ### Installing Node.js ###
 1. Go to the [Node.js website](https://nodejs.org) and select the LTS (Long term support) version as long as it is version 16 or higher. You can select the current version but I have verified that all of the code present works with Node.js v16.11.1.
