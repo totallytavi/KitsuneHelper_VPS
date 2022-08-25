@@ -14,7 +14,7 @@
     "@discordjs/rest": "^1.0.0",
     "ascii-table": "^0.0.9",
     "common-tags": "^1.8.2",
-    "discord-api-types": "^0.37.1",
+    "discord-api-types": "^0.37.5",
     "discord.js": "^13.8.1",
     "events": "^3.3.0",
     "moment": "^2.29.4",
