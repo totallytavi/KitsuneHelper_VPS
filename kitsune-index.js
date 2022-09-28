@@ -4,11 +4,11 @@ const { Routes } = require("discord-api-types/v9");
 const { interactionEmbed, toConsole } = require("./functions.js");
 const AsciiTable = require("ascii-table");
 const config = require("./config.json");
-const EventEmitter = require("events");
+const EventEmitter = require("node:events");
 const fs = require("fs");
 const mysql = require("mysql2/promise");
 const rest = new REST({ version: 9 }).setToken(config.bot["token"]);
-const wait = require("util").promisify(setTimeout);
+const wait = require("node:util").promisify(setTimeout);
 
 // State that the process is not ready yet
 let ready = false;
