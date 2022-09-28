@@ -57,7 +57,7 @@ client.event.on("query", async (results, trace) => {
     .addRow("Server Status", results.serverStatus ?? "?")
     .addRow("Warning Status", results.warningStatus ?? "?")
     .addRow("Information", results.info === "" ? "No information" : results.info);
-  const data = `${JSON.stringify(Array.isArray(results) ? results[0] : "Results is not an array", null, 2)}\n===\n${table.toString()}`;
+  const data = `${JSON.stringify(Array.isArray(results) && results.length > 1 ? results[0] : "Results is not an array", null, 2)}\n===\n${table.toString()}`;
 
   if(channel === null) {
     fs.writeFileSync(`./queries/${Date.now()}_query-log.txt`, data);
