@@ -34,11 +34,17 @@ process.on("warning", async (name, message, stack) => {
   return toConsole("A [warning] has been emitted\n> Name: " + name + "\n> Message: " + message + "\n> Stack: " + stack, "process.on(\"warning\")", client);
 });
 process.on("unhandledRejection", async (promise) => {
-  if(!ready) return process.exit(18);
+  if(!ready) {
+    console.error(promise);
+    return process.exit(18);
+  }
   return toConsole("A [unhandledRejection] has been emitted\n> Promise: " + promise, "process.on(\"unhandledRejection\")", client);
 });
 process.on("uncaughtException", async (err, origin) => {
-  if(!ready) return process.exit(17);
+  if(!ready) {
+    console.error(err);
+    return process.exit(17);
+  }
   return toConsole("A [uncaughtException] has been emitted\n> Error: " + err + "\n> Origin: " + origin, "process.on(\"uncaughtException\")", client);
 });
 process.on("exit", async (code) => {
