@@ -58,7 +58,7 @@ module.exports = {
     params.append("login", config.danbooru["username"]);
     params.append("api_key", config.danbooru["api_key"]);
 
-    fetch(`https://danbooru.donmai.us/posts.json?tags=${tags}&${params.toString()}`, { timeout: 5000 })
+    fetch(`https://danbooru.donmai.us/posts.json?tags=${tags}&${params.toString()}`, { headers: { "User-Agent": "KitsuneHelper/0 (+github.com/Coder-Tavi/KitsuneHelper_VPS)" }, timeout: 5000 })
       .then(res => res.json())
       .then(json => {
         if(json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", json.length === 0 ? `\`${tags.split("+")[0]}\` doesn't exist on Danbooru` : `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Success? ${json.success}\nMessage: ${json.message}\nResponse:\n${json}`, interaction, client, false);
