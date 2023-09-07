@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 // eslint-disable-next-line no-unused-vars
-const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton } = require("discord.js");
+const { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton, ChannelType } = require("discord.js");
 const { interactionEmbed, awaitButtons } = require("../functions.js");
 
 module.exports = {
@@ -52,13 +52,23 @@ module.exports = {
     const option = options.getChannel("channel") || options.getRole("role");
     const reason = options.getString("reason") ?? "No reason provided";
 
-    const confirmation = await awaitButtons(interaction, 15, [new MessageButton({ customId: "yes", label: "Yes, I want to continue", style: "DANGER" }), new MessageButton({ customId: "no", label: "No, I don't want to continue", style: "PRIMARY" })], "Are you sure you want to continue with deletion? This is irreversible!", true );
+    const buttons = [new MessageButton({ customId: "yes", label: "Yes, I want to continue", style: "DANGER" }), new MessageButton({ customId: "no", label: "No, I don't want to continue", style: "PRIMARY" })]
+    const confirmation = await awaitButtons(interaction, 15, buttons, "Are you sure you want to continue with deletion? This is irreversible!", true );
     if(confirmation.customId === "yes") {
       if(subcommand === "channel") {
         if(!interaction.member.permissionsIn(option).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-UPRM]", `Missing: \`Manage Channels\` > ${option}`, interaction, client, true); 
         if(!interaction.guild.me.permissionsIn(option).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-BRPM]", `Missing: \`Manage Channels\` > ${option}`, interaction, client, true);
 
         await option.delete(`${reason} (Moderator ID: ${interaction.user.id})`);
+        if(option.type === ChannelType.GUILD_CATEGORY) {
+          const catCheck = await awaitButtons(interaction, 15, buttons, "Do you want to delete the children channels in the category? **This is permanent!**", true );
+          if(catCheck.customId === "yes") {
+            for(const c of option.children.values()) {
+              await c.delete(`${reason} (Moderator ID: ${interaction.user.id})`);
+            }
+            return interactionEmbed(1, `Successfully removed channel: ${option.name} (${option.id}) and all its children!`, "", interaction, client, true);
+          }
+        }
         return interactionEmbed(1, `Successfully removed channel: ${option.name} (${option.id})`, "", interaction, client, true);
       } else if(subcommand === "role") {
         if(!interaction.member.permissions.has("MANAGE_ROLES")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Manage Roles`", interaction, client, true);
