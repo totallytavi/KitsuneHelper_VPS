@@ -9,7 +9,7 @@ import { writeFileSync, readdirSync } from "fs";
 import { createConnection } from "mysql2/promise";
 const { bot, mysql } = config
 const rest = new REST({ version: 9 }).setToken(bot["token"]);
-const wait = require("node:util").promisify(setTimeout);
+const wait = (await import("node:util")).promisify(setTimeout);
 
 // State that the process is not ready yet
 let ready = false;
@@ -84,7 +84,7 @@ client.event.on("query", async (results, trace) => {
   for(let file of commands) {
     try {
       console.info("[FILE-LOAD] Loading file " + file);
-      let command = require("./commands/" + file);
+      let command = await import("./commands/" + file);
 
       if(command.name) {
         console.info("[FILE-LOAD] Loaded: " + file);
