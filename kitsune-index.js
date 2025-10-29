@@ -1,13 +1,13 @@
-const { Client, Collection } = require("discord.js");
-const { REST } = require("@discordjs/rest");
-const { Routes } = require("discord-api-types/v9");
-const { interactionEmbed, toConsole } = require("./functions.js");
-const AsciiTable = require("ascii-table");
-const config = require("./config.json");
-const EventEmitter = require("node:events");
-const fs = require("fs");
-const mysql = require("mysql2/promise");
-const rest = new REST({ version: 9 }).setToken(config.bot["token"]);
+import { Client, Collection } from "discord.js";
+import { REST } from "@discordjs/rest";
+import { Routes } from "discord-api-types/v9";
+import { interactionEmbed, toConsole } from "./functions.js";
+import AsciiTable from "ascii-table";
+import { bot, mysql as _mysql } from "./config.json";
+import EventEmitter from "node:events";
+import { writeFileSync, readdirSync } from "fs";
+import { createConnection } from "mysql2/promise";
+const rest = new REST({ version: 9 }).setToken(bot["token"]);
 const wait = require("node:util").promisify(setTimeout);
 
 // State that the process is not ready yet
@@ -21,12 +21,12 @@ const slashCommands = [];
 client.commands = new Collection();
 client.event = new EventEmitter();
 (async () => {
-  client.connection = await mysql.createConnection({
-    host: config.mysql["host"],
-    user: config.mysql["user"],
-    password: config.mysql["password"],
-    database: config.mysql["database"],
-    port: config.mysql["port"]
+  client.connection = await createConnection({
+    host: _mysql["host"],
+    user: _mysql["user"],
+    password: _mysql["password"],
+    database: _mysql["database"],
+    port: _mysql["port"]
   });
 })();
 
@@ -53,7 +53,7 @@ process.on("exit", async (code) => {
 });
 
 client.event.on("query", async (results, trace) => {
-  const channel = client.channels.cache.get(config.bot["errorChannel"]);
+  const channel = client.channels.cache.get(bot["errorChannel"]);
   const table = new AsciiTable("Query");
   table
     .setHeading("Property", "Value")
@@ -67,7 +67,7 @@ client.event.on("query", async (results, trace) => {
   const data = `${JSON.stringify(Array.isArray(results) && results.length > 1 ? results[0] : "Results is not an array", null, 2)}\n===\n${table.toString()}`;
 
   if(channel === null) {
-    fs.writeFileSync(`./queries/${Date.now()}_query-log.txt`, data);
+    writeFileSync(`./queries/${Date.now()}_query-log.txt`, data);
   } else {
     toConsole(data, `${__filename.split("/")[__filename.split("/").length - 1]} 80:16`, client);
   }
@@ -77,7 +77,7 @@ client.event.on("query", async (results, trace) => {
 (async () => {
   const table = new AsciiTable("Commands");
   table.addRow("testing-file.js", "Loaded");
-  const commands = fs.readdirSync("./commands").filter(file => file.endsWith(".js"));
+  const commands = readdirSync("./commands").filter(file => file.endsWith(".js"));
   console.info("[FILE-LOAD] Loading files, expecting " + commands.length + " files");
 
   for(let file of commands) {
@@ -106,7 +106,7 @@ client.event.on("query", async (results, trace) => {
     console.info("[APP-REFR] Started refreshing application (/) commands.");
 
     await rest.put(
-      Routes.applicationCommands(config.bot["applicationId"]),
+      Routes.applicationCommands(bot["applicationId"]),
       { body: slashCommands },
     );
     
@@ -161,4 +161,4 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-client.login(config.bot["token"]);
+client.login(bot["token"]);
