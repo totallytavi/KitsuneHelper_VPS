@@ -3,7 +3,7 @@ import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import { interactionEmbed, toConsole } from "./functions.js";
 import AsciiTable from "ascii-table";
-import { bot, mysql as _mysql } from "./config.json";
+import { bot, mysql as _mysql } from "./config.json" assert {"type": "json"};
 import EventEmitter from "node:events";
 import { writeFileSync, readdirSync } from "fs";
 import { createConnection } from "mysql2/promise";

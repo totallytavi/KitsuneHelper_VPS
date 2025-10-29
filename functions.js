@@ -1,6 +1,6 @@
 import { ComponentType } from "discord-api-types/v10";
 import { Client, CommandInteraction, Interaction, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu, MessageSelectOptionData, SelectMenuInteraction } from "discord.js";
-import { bot } from "./config.json";
+import { bot } from "./config.json" assert {"type": "json"};
 
 const errors = {
   "[SQL-ERR]": "An error has occurred while trying to execute a MySQL query",
