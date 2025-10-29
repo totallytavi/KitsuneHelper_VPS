@@ -7,9 +7,9 @@ import { default as config } from "./config.json" with {"type": "json"};
 import EventEmitter from "node:events";
 import { writeFileSync, readdirSync } from "fs";
 import { createConnection } from "mysql2/promise";
+const { bot, mysql } = config
 const rest = new REST({ version: 9 }).setToken(bot["token"]);
 const wait = require("node:util").promisify(setTimeout);
-const { bot, mysql } = config
 
 // State that the process is not ready yet
 let ready = false;
