@@ -1,27 +1,27 @@
 {
   "name": "kitsune-helper",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "kitsune-index.js",
   "scripts": {
     "start": "node index.js"
   },
   "keywords": [],
-  "author": "Coder Tavi#0001",
+  "author": "totallytavi",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/builders": "1.8.2",
-    "@discordjs/rest": "2.3.0",
+    "@discordjs/builders": "1.13.0",
+    "@discordjs/rest": "2.6.0",
     "ascii-table": "0.0.9",
     "common-tags": "1.8.2",
-    "discord-api-types": "0.37.93",
+    "discord-api-types": "0.38.31",
     "discord.js": "13.17.1",
     "moment": "2.30.1",
     "ms": "2.1.3",
-    "mysql2": "3.11.0",
-    "node-fetch": "2.7.0"
+    "mysql2": "3.15.3",
+    "node-fetch": "3.3.2"
   },
   "devDependencies": {
-    "eslint": "9.8.0"
+    "eslint": "9.38.0"
   }
 }
