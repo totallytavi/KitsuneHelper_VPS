@@ -1,4 +1,4 @@
-import { Client, Collection } from "discord.js";
+import { Client, Collection, Intents } from "discord.js";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import { interactionEmbed, toConsole } from "./functions.js";
@@ -16,7 +16,12 @@ let ready = false;
 
 // Client initialization
 const client = new Client({
-  intents: ["GUILDS","GuildBans","GuildInvites","GuildMembers"]
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_BANS,
+    Intents.FLAGS.GUILD_INVITES,
+    Intents.FLAGS.GUILD_MEMBERS
+  ]
 });
 const slashCommands = [];
 client.commands = new Collection();
