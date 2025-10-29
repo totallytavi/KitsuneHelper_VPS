@@ -1,6 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 import { interactionEmbed } from "../functions.js";
 
 export const name = "settings";

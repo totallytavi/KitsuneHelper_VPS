@@ -1,6 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
 import { interactionEmbed } from "../functions.js";
 
 export const name = "editchannel";
@@ -183,9 +181,9 @@ export async function run(client, interaction, options) {
   const option = options.getString("name") ?? options.getString("topic") ?? options.getBoolean("nsfw") ?? options.getNumber("seconds") ?? options.getString("bitrate") ?? options.getNumber("limit");
 
   // If we cannot view the channel, stop
-  if (!interaction.guild.me.permissionsIn(channel).has("VIEW_CHANNEL")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`View Channel\` > ${channel}`, interaction, client, true);
-  if (!interaction.member.permissionsIn(channel).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-UPRM]", `Missing \`Manage Channel\` > ${channel}`, interaction, client, true);
-  if (!interaction.guild.me.permissionsIn(channel).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
+  if (!interaction.guild.me.permissionsIn(channel).has("ViewChannel")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`View Channel\` > ${channel}`, interaction, client, true);
+  if (!interaction.member.permissionsIn(channel).has("ManageChannels")) return interactionEmbed(3, "[ERR-UPRM]", `Missing \`Manage Channel\` > ${channel}`, interaction, client, true);
+  if (!interaction.guild.me.permissionsIn(channel).has("ManageChannels")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
   if (options._hoistedOptions[1].name === "name") {
     channel.setName(option, reason)
       .then(newChannel => interactionEmbed(1, `Set ${channel}'s name was set to \`${newChannel.name}\` for \`${reason}\``, "", interaction, client, false));

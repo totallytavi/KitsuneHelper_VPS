@@ -1,7 +1,5 @@
-// eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed, MessageButton } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { interactionEmbed, awaitButtons } from "../functions.js";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton, MessageEmbed, SlashCommandBuilder } from "discord.js";
+import { awaitButtons, interactionEmbed } from "../functions.js";
 
 export const name = "nuke";
 export const data = new SlashCommandBuilder()
@@ -26,13 +24,13 @@ export const data = new SlashCommandBuilder()
  */
 export async function run(client, interaction, options) {
   const channel = options.getChannel("channel");
-  if (!interaction.member.permissionsIn(channel).has("MANAGE_CHANNEL")) {
+  if (!interaction.member.permissionsIn(channel).has("ManageChannel")) {
     return interactionEmbed(3, "[ERR-UPRM]", `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
   }
-  if (!interaction.guild.me.permissionsIn(channel).has("MANAGE_CHANNEL")) {
+  if (!interaction.guild.me.permissionsIn(channel).has("ManageChannel")) {
     return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
   }
-  if (channel.parent && !interaction.guild.me.permissionsIn(channel.parent).has("MANAGE_CHANNEL")) {
+  if (channel.parent && !interaction.guild.me.permissionsIn(channel.parent).has("ManageChannel")) {
     return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Manage Channel\` > ${channel.parent}`, interaction, client, true);
   }
 
@@ -44,13 +42,13 @@ export async function run(client, interaction, options) {
   const oldPermissions = channel.permissionOverwrites.cache;
   let oldNSFW, oldRatelimit, oldTopic, oldBitrate, oldUserlimit, oldType;
   switch (channel.type) {
-    case "GUILD_TEXT":
+    case "GuildText":
       oldNSFW = channel.nsfw;
       oldRatelimit = channel.rateLimitPerUser;
       oldTopic = channel.topic;
       oldType = channel.oldType;
       break;
-    case "GUILD_VOICE":
+    case "GuildVoice":
       oldBitrate = channel.bitrate;
       oldUserlimit = channel.userLimit;
       oldType = channel.oldType;
@@ -81,7 +79,7 @@ export async function run(client, interaction, options) {
 
   // Now we can create the channel
   switch (oldType) {
-    case "GUILD_TEXT":
+    case "GuildText":
       interaction.guild.channels.create(oldName, {
         type: oldType,
         nsfw: oldNSFW,
@@ -101,7 +99,7 @@ export async function run(client, interaction, options) {
           ]
         }));
       break;
-    case "GUILD_VOICE":
+    case "GuildVoice":
       interaction.guild.channels.create(oldName, {
         type: oldType,
         parent: oldParent,

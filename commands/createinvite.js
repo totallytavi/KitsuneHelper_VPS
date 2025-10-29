@@ -50,8 +50,8 @@ export async function run(client, interaction, options) {
 
   const confirmation = await awaitButtons(interaction, client, [new MessageButton({ customId: "yes", label: "Yes, I want to create an invite", style: "SUCCESS" }), new MessageButton({ customId: "no", label: "No, I do not want to create an invite", style: "DANGER" })], "Are you sure you want to create an invite?", true);
   if (confirmation.customId === "yes") {
-    if (!interaction.member.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionEmbed(3, "[ERR-UPRM]", `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
-    if (!interaction.guild.me.permissionsIn(channel).has("CREATE_INSTANT_INVITE")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
+    if (!interaction.member.permissionsIn(channel).has("CreateInstantInvite")) return interactionEmbed(3, "[ERR-UPRM]", `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
+    if (!interaction.guild.me.permissionsIn(channel).has("CreateInstantInvite")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
 
     const invite = await channel.createInvite({ maxAge: age, maxUses: max_uses, temporary: temporary_membership, reason: `Created on behalf of user ID: ${interaction.user.id}` });
     return interactionEmbed(1, `Here is the invite:\nhttps://discord.gg/${invite.code}`, "", interaction, client, false);

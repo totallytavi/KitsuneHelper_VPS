@@ -1,8 +1,6 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-// eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton } from "discord.js";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton, SlashCommandBuilder } from "discord.js";
 import ms from "ms";
-import { interactionEmbed, awaitButtons } from "../functions.js";
+import { awaitButtons, interactionEmbed } from "../functions.js";
 
 export const name = "ban";
 export const data = new SlashCommandBuilder()
@@ -57,8 +55,8 @@ export async function run(client, interaction, options) {
     interactionEmbed(4, "Invalid time provided", "Heads up! This ban will NOT expire because you didn't supply a valid value. If you're curious about examples of proper values, please see the description of the `duration` option for this command", interaction, client, true);
   }
 
-  if (!interaction.member.permissions.has("BAN_MEMBERS")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Ban Members`", interaction, client, true);
-  if (!interaction.guild.me.permissions.has("BAN_MEMBERS")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Ban Members`", interaction, client, true);
+  if (!interaction.member.permissions.has("BanMembers")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Ban Members`", interaction, client, true);
+  if (!interaction.guild.me.permissions.has("BanMembers")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Ban Members`", interaction, client, true);
   if (interaction.user.id === member.value) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected other magician, got same user", interaction, client, true);
   if (member.member) {
     if (interaction.member.roles.highest.rawPosition <= member.member.roles.highest.rawPosition) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected magician lower than executor, got magician at or above executor", interaction, client, true);

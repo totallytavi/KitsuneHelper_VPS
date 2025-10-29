@@ -1,9 +1,7 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-// eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed } from "discord.js";
-import { interactionEmbed } from "../functions.js";
-import { danbooru } from "../config.json";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed, SlashCommandBuilder } from "discord.js";
 import fetch from "node-fetch";
+import { danbooru } from "../config.json";
+import { interactionEmbed } from "../functions.js";
 
 export const name = "danbooru";
 export const data = new SlashCommandBuilder()

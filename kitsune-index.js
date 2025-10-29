@@ -15,7 +15,7 @@ let ready = false;
 
 // Client initialization
 const client = new Client({
-  intents: ["GUILDS","GUILD_BANS","GUILD_INVITES","GUILD_MEMBERS"]
+  intents: ["GUILDS","GuildBans","GuildInvites","GuildMembers"]
 });
 const slashCommands = [];
 client.commands = new Collection();

@@ -1,4 +1,5 @@
-import { Client, CommandInteraction, MessageEmbed, Interaction, Message, MessageActionRow, MessageButton, StringSelectMenu, MessageSelectOptionData, SelectMenuInteraction } from "discord.js";
+import { ComponentType } from "discord-api-types/v10";
+import { Client, CommandInteraction, Interaction, MessageActionRow, MessageButton, MessageEmbed, MessageSelectMenu, MessageSelectOptionData, SelectMenuInteraction } from "discord.js";
 import { bot } from "./config.json";
 
 const errors = {
@@ -16,8 +17,8 @@ const errors = {
 };
 /**
  * @description Sends a message to the console
- * @param {String} message [REQUIRED] The message to send to the console
- * @param {String} source [REQUIRED] Source of the message
+ * @param {string} message [REQUIRED] The message to send to the console
+ * @param {string} source [REQUIRED] Source of the message
  * @param {Client} client [REQUIRED] A logged-in Client to send the message
  * @returns {null} null
  * @example toConsole(`Hello, World!`, `functions.js 12:15`, client);
@@ -49,12 +50,12 @@ export async function toConsole(message, source, client) {
 }
 /**
  * @description Replies with a MessageEmbed to the Interaction
- * @param {Number} type 1- Sucessful, 2- Warning, 3- Error, 4- Information
- * @param {String} content The information to state
- * @param {String} expected The expected argument (If applicable)
+ * @param {number} type 1- Sucessful, 2- Warning, 3- Error, 4- Information
+ * @param {string} content The information to state
+ * @param {string} expected The expected argument (If applicable)
  * @param {Interaction} interaction The Interaction object for responding
  * @param {Client} client Client object for logging
- * @param {Boolean} ephemeral Whether or not to ephemeral the message
+ * @param {boolean} ephemeral Whether or not to ephemeral the message
  * @example interactionEmbed(1, `Removed ${removed} roles`, ``, interaction, client, false)
  * @example interactionEmbed(3, "[ERR-UPRM]"", "Missing: `Manage Messages`", interaction, client, true)
  * @returns {null} 
@@ -125,10 +126,10 @@ export async function interactionEmbed(type, content, expected, interaction, cli
 /**
  * Sends buttons to a user and awaits the response
  * @param {CommandInteraction} interaction Interaction object
- * @param {Number} time Seconds for which the buttons are valid
+ * @param {number} time Seconds for which the buttons are valid
  * @param {Array<MessageButton>} buttons The buttons to place on the message
  * @param {String|null} content The content to display, can be blank
- * @param {Boolean} remove Delete the message after the time expires
+ * @param {boolean} remove Delete the message after the time expires
  * @example awaitButtons(interaction, 15, [button1, button2], `Select a button`, true);
  * @returns {MessageButton|null} The button the user clicked or null if no button was clicked
  */
@@ -168,11 +169,11 @@ export async function awaitButtons(interaction, time, buttons, content, remove) 
 /**
  * Send a MessageSelectMenu to a user and awaits the response
  * @param {Interaction} interaction Interaction object
- * @param {Number} time Seconds for which the menu is valid
- * @param {Number[]} values [min, max] The amount of values that can be selected
+ * @param {number} time Seconds for which the menu is valid
+ * @param {number[]} values [min, max] The amount of values that can be selected
  * @param {MessageSelectOptionData|MessageSelectOptionData[]} options The options for the menu
  * @param {String|null} content The content to display, can be blank
- * @param {Boolean} remove Delete the message after the time expires
+ * @param {boolean} remove Delete the message after the time expires
  * @example awaitMenu(interaction, 15, [menu], `Select an option`, true);
  * @returns {SelectMenuInteraction|null} The menu the user interacted with or null if nothing was selected
  */
@@ -190,7 +191,7 @@ export async function awaitMenu(interaction, time, values, options, content, rem
 
   // Step 2: Creation
   const row = new MessageActionRow();
-  const menu = new StringSelectMenu({
+  const menu = new MessageSelectMenu({
     minValues: values[0],
     maxValues: values[1],
     customId: "await-menu"
@@ -201,7 +202,7 @@ export async function awaitMenu(interaction, time, values, options, content, rem
   // Step 3: Execution
   const message = await interaction.followUp({ content: content, components: [row] });
   const res = await message
-    .awaitMessageComponent({ filter, componentType: "StringSelectMenu", time: time, errors: ["time"] })
+    .awaitMessageComponent({ filter, componentType: ComponentType.StringSelect, time: time, errors: ["time"] })
     .catch(() => { return null; });
 
   // Step 4: Processing

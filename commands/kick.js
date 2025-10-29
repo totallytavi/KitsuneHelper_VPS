@@ -1,7 +1,5 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-// eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton } from "discord.js";
-import { interactionEmbed, awaitButtons } from "../functions.js";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton, SlashCommandBuilder } from "discord.js";
+import { awaitButtons, interactionEmbed } from "../functions.js";
 
 export const name = "kick";
 export const data = new SlashCommandBuilder()
@@ -28,8 +26,8 @@ export async function run(client, interaction, options) {
   const member = options.getMember("user");
   const reason = options.getString("reason") ?? "No reason provided";
 
-  if (!interaction.member.permissions.has("KICK_MEMBERS")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Kick Members`", interaction, client, true);
-  if (!interaction.guild.me.permissions.has("KICK_MEMBERS")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Kick Members`", interaction, client, true);
+  if (!interaction.member.permissions.has("KickMembers")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Kick Members`", interaction, client, true);
+  if (!interaction.guild.me.permissions.has("KickMembers")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Kick Members`", interaction, client, true);
   if (interaction.user.id === member.user.id) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected other user, got same user", interaction, client, true);
   if (interaction.member.roles.highest.rawPosition <= member.roles.highest.rawPosition) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected user lower than executor, got user at or above executor", interaction, client, true);
   if (interaction.guild.me.roles.highest.rawPosition <= member.roles.highest.rawPosition) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected user lower than bot, got user at or above bot", interaction, client, true);

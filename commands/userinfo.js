@@ -1,8 +1,6 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-// eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed } from "discord.js";
-import { interactionEmbed } from "../functions.js";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed, SlashCommandBuilder } from "discord.js";
 import moment from "moment";
+import { interactionEmbed } from "../functions.js";
 
 export const name = "userinfo";
 export const ephemeral = false;

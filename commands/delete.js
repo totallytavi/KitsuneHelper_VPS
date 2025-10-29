@@ -1,7 +1,5 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
-// eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton, ChannelType } from "discord.js";
-import { interactionEmbed, awaitButtons } from "../functions.js";
+import { ChannelType, Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton, SlashCommandBuilder } from "discord.js";
+import { awaitButtons, interactionEmbed } from "../functions.js";
 
 export const name = "delete";
 export const data = new SlashCommandBuilder()
@@ -55,11 +53,11 @@ export async function run(client, interaction, options) {
   const confirmation = await awaitButtons(interaction, 15, buttons, "Are you sure you want to continue with deletion? This is irreversible!", true);
   if (confirmation.customId === "yes") {
     if (subcommand === "channel") {
-      if (!interaction.member.permissionsIn(option).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-UPRM]", `Missing: \`Manage Channels\` > ${option}`, interaction, client, true);
-      if (!interaction.guild.me.permissionsIn(option).has("MANAGE_CHANNELS")) return interactionEmbed(3, "[ERR-BRPM]", `Missing: \`Manage Channels\` > ${option}`, interaction, client, true);
+      if (!interaction.member.permissionsIn(option).has("ManageChannels")) return interactionEmbed(3, "[ERR-UPRM]", `Missing: \`Manage Channels\` > ${option}`, interaction, client, true);
+      if (!interaction.guild.me.permissionsIn(option).has("ManageChannels")) return interactionEmbed(3, "[ERR-BRPM]", `Missing: \`Manage Channels\` > ${option}`, interaction, client, true);
 
       await option.delete(`${reason} (Moderator ID: ${interaction.user.id})`);
-      if (option.type === ChannelType.GUILD_CATEGORY) {
+      if (option.type === ChannelType.GuildCategory) {
         const catCheck = await awaitButtons(interaction, 15, buttons, "Do you want to delete the children channels in the category? **This is permanent!**", true);
         if (catCheck.customId === "yes") {
           for (const c of option.children.values()) {
@@ -70,8 +68,8 @@ export async function run(client, interaction, options) {
       }
       return interactionEmbed(1, `Successfully removed channel: ${option.name} (${option.id})`, "", interaction, client, true);
     } else if (subcommand === "role") {
-      if (!interaction.member.permissions.has("MANAGE_ROLES")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Manage Roles`", interaction, client, true);
-      if (!interaction.guild.me.permissions.has("MANAGE_ROLES")) return interactionEmbed(3, "[ERR-BRPM]", "Missing: `Manage Roles`", interaction, client, true);
+      if (!interaction.member.permissions.has("ManageRoles")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Manage Roles`", interaction, client, true);
+      if (!interaction.guild.me.permissions.has("ManageRoles")) return interactionEmbed(3, "[ERR-BRPM]", "Missing: `Manage Roles`", interaction, client, true);
 
       await option.delete(`${reason} (Moderator ID: ${interaction.user.id})`);
       return interactionEmbed(1, `Successfully removed role: ${option.name} (${option.id})`, "", interaction, client, true);

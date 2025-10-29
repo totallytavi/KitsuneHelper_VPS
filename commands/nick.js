@@ -1,7 +1,5 @@
-// eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
-import { interactionEmbed, awaitButtons } from "../functions.js";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton, SlashCommandBuilder } from "discord.js";
+import { awaitButtons, interactionEmbed } from "../functions.js";
 
 export const name = "nickname";
 export const data = new SlashCommandBuilder()
@@ -36,12 +34,12 @@ export async function run(client, interaction, options) {
   const reason = options.getString("reason") ?? "No reason provided";
 
   if (member === interaction.guild.me) {
-    if (!interaction.guild.me.permissions.has("CHANGE_NICKNAME")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Change Nickname`", interaction, client, true);
+    if (!interaction.guild.me.permissions.has("ChangeNickname")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Change Nickname`", interaction, client, true);
   } else if (member === interaction.member) {
-    if (!interaction.member.permissions.has("CHANGE_NICKNAME")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Change Nickname`", interaction, client, true);
-    if (!interaction.guild.me.permissions.has("MANAGE_NICKNAMES")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Manage Nicknames`", interaction, client, true);
+    if (!interaction.member.permissions.has("ChangeNickname")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Change Nickname`", interaction, client, true);
+    if (!interaction.guild.me.permissions.has("ManageNicknames")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Manage Nicknames`", interaction, client, true);
   } else {
-    if (!interaction.guild.me.permissions.has("MANAGE_NICKNAMES")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Manage Nicknames`", interaction, client, true);
+    if (!interaction.guild.me.permissions.has("ManageNicknames")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Manage Nicknames`", interaction, client, true);
   }
   // If we can't manage them, reject it.
   if (!member.manageable && member != interaction.guild.me) return interactionEmbed(3, "[ERR-BPRM]", "I cannot change nicknames of those higher or equal to me", interaction, client, true);
