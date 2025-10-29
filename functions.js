@@ -1,6 +1,5 @@
-// eslint-disable-next-line no-unused-vars
-const { Client, CommandInteraction, MessageEmbed, Interaction, Message, MessageActionRow, MessageButton, MessageSelectMenu, MessageSelectOptionData, SelectMenuInteraction } = require("discord.js");
-const config = require("./config.json");
+import { Client, CommandInteraction, MessageEmbed, Interaction, Message, MessageActionRow, MessageButton, StringSelectMenu, MessageSelectOptionData, SelectMenuInteraction } from "discord.js";
+import { bot } from "./config.json";
 
 const errors = {
   "[SQL-ERR]": "An error has occurred while trying to execute a MySQL query",
@@ -15,26 +14,25 @@ const errors = {
   "[WARN-CMD]": "The requested slash command was not found",
   "[INFO-DEV]": "This command is in development. This should not be expected to work"
 };
+/**
+ * @description Sends a message to the console
+ * @param {String} message [REQUIRED] The message to send to the console
+ * @param {String} source [REQUIRED] Source of the message
+ * @param {Client} client [REQUIRED] A logged-in Client to send the message
+ * @returns {null} null
+ * @example toConsole(`Hello, World!`, `functions.js 12:15`, client);
+ * @example toConsole(`Published a ban`, `ban.js 14:35`, client);
+ */
+export async function toConsole(message, source, client) {
+  if (!message) return new SyntaxError("message is undefined");
+  if (!source) return new SyntaxError("source is undefined");
+  if (!client) return new SyntaxError("client is undefined");
+  if (!client.channels.cache.get(bot["errorChannel"])) return console.warn("[WARN] Error channel note found but data was sent to the console\n\n" + message + "\n> Source: " + source);
 
-module.exports = {
-  /**
-   * @description Sends a message to the console
-   * @param {String} message [REQUIRED] The message to send to the console
-   * @param {String} source [REQUIRED] Source of the message
-   * @param {Client} client [REQUIRED] A logged-in Client to send the message
-   * @returns {null} null
-   * @example toConsole(`Hello, World!`, `functions.js 12:15`, client);
-   * @example toConsole(`Published a ban`, `ban.js 14:35`, client);
-   */
-  toConsole: async (message, source, client) => {
-    if(!message) return new SyntaxError("message is undefined");
-    if(!source) return new SyntaxError("source is undefined");
-    if(!client) return new SyntaxError("client is undefined");
-    if(!client.channels.cache.get(config.bot["errorChannel"])) return console.warn("[WARN] Error channel note found but data was sent to the console\n\n" + message + "\n> Source: " + source);
+  client.channels.cache.get(bot["errorChannel"]).send(`Incoming message from ${source}`);
 
-    client.channels.cache.get(config.bot["errorChannel"]).send(`Incoming message from ${source}`);
-    
-    client.channels.cache.get(config.bot["errorChannel"]).send({ embeds: [
+  client.channels.cache.get(bot["errorChannel"]).send({
+    embeds: [
       new MessageEmbed({
         title: "Message to Console",
         color: "RED",
@@ -44,27 +42,28 @@ module.exports = {
         },
         timestamp: new Date()
       })
-    ]});
+    ]
+  });
 
-    return null;
-  },
-  /**
-   * @description Replies with a MessageEmbed to the Interaction
-   * @param {Number} type 1- Sucessful, 2- Warning, 3- Error, 4- Information
-   * @param {String} content The information to state
-   * @param {String} expected The expected argument (If applicable)
-   * @param {Interaction} interaction The Interaction object for responding
-   * @param {Client} client Client object for logging
-   * @param {Boolean} ephemeral Whether or not to ephemeral the message
-   * @example interactionEmbed(1, `Removed ${removed} roles`, ``, interaction, client, false)
-   * @example interactionEmbed(3, "[ERR-UPRM]"", "Missing: `Manage Messages`", interaction, client, true)
-   * @returns {null} 
-   */
-  interactionEmbed: async function(type, content, expected, interaction, client, ephemeral) {
-    if(!type || !content || !interaction || !client || ephemeral === undefined) return new SyntaxError(`One or more arguments for interactionEmbed have received an invalid value\n> type: ${type}\n> content: ${content}\n> interaction: ${interaction}\n> client: ${client}\n> ephemeral: ${ephemeral}`);
-    const embed = new MessageEmbed();
+  return null;
+}
+/**
+ * @description Replies with a MessageEmbed to the Interaction
+ * @param {Number} type 1- Sucessful, 2- Warning, 3- Error, 4- Information
+ * @param {String} content The information to state
+ * @param {String} expected The expected argument (If applicable)
+ * @param {Interaction} interaction The Interaction object for responding
+ * @param {Client} client Client object for logging
+ * @param {Boolean} ephemeral Whether or not to ephemeral the message
+ * @example interactionEmbed(1, `Removed ${removed} roles`, ``, interaction, client, false)
+ * @example interactionEmbed(3, "[ERR-UPRM]"", "Missing: `Manage Messages`", interaction, client, true)
+ * @returns {null} 
+ */
+export async function interactionEmbed(type, content, expected, interaction, client, ephemeral) {
+  if (!type || !content || !interaction || !client || ephemeral === undefined) return new SyntaxError(`One or more arguments for interactionEmbed have received an invalid value\n> type: ${type}\n> content: ${content}\n> interaction: ${interaction}\n> client: ${client}\n> ephemeral: ${ephemeral}`);
+  const embed = new MessageEmbed();
 
-    switch(type) {
+  switch (type) {
     case 1:
       embed
         .setTitle("Success")
@@ -75,7 +74,7 @@ module.exports = {
         .setTimestamp();
 
       // eslint-disable-next-line no-useless-escape
-      await interaction.editReply({ content: "\:unlock: [CMD-OK]"});
+      await interaction.editReply({ content: "\:unlock: [CMD-OK]" });
       await interaction.followUp({ embeds: [embed], ephemeral: ephemeral });
 
       break;
@@ -121,99 +120,98 @@ module.exports = {
       await interaction.followUp({ embeds: [embed], ephemeral: ephemeral });
 
       break;
-    }
-  },
-  /**
-     * Sends buttons to a user and awaits the response
-     * @param {CommandInteraction} interaction Interaction object
-     * @param {Number} time Seconds for which the buttons are valid
-     * @param {Array<MessageButton>} buttons The buttons to place on the message
-     * @param {String|null} content The content to display, can be blank
-     * @param {Boolean} remove Delete the message after the time expires
-     * @example awaitButtons(interaction, 15, [button1, button2], `Select a button`, true);
-     * @returns {MessageButton|null} The button the user clicked or null if no button was clicked
-     */
-  awaitButtons: async function (interaction, time, buttons, content, remove) {
-    if(!interaction || !time || !buttons || remove === null) return new SyntaxError(`One of the following values is not fulfilled:\n> interaction: ${interaction}\n> time: ${time}\n> buttons: ${buttons}\n> remove: ${remove}`);
-    content = content ?? "Please select an option";
-    
-    // Create a filter
-    const filter = i => {
-      i.deleteReply();
-      return i.user.id === interaction.user.id;
-    };
-    // Convert the time to milliseconds
-    time *= 1000;
-    // Create a MessageActionRow and add the buttons
-    const row = new MessageActionRow();
-    row.addComponents(buttons);
-    // Send a follow-up message with the buttons and await a response
-    const message = await interaction.followUp({ content: content, components: [row] });
-    const res = await message
-      .awaitMessageComponent({ filter, componentType: "BUTTON", time: time, errors: ["time"] })
-      .catch(() => { return null; });
-    // Disable the buttons on row
-    for(const button of row.components) {
-      button.setDisabled(true);
-    }
-    // Send the disabled row
-    // eslint-disable-next-line no-useless-escape
-    await message.edit({ content: res === null ? "\:lock: Cancelled" : content, components: [row] });
-    setTimeout(() => {
-      // Clear buttons
-      if(remove && res != null) message.edit({ content: interaction.fetchReply().content, components: [] });
-    }, 5000);
-    // Return the button (Or null if no response was given)
-    return res;
-  },
-  /**
-   * Send a MessageSelectMenu to a user and awaits the response
-   * @param {Interaction} interaction Interaction object
-   * @param {Number} time Seconds for which the menu is valid
-   * @param {Number[]} values [min, max] The amount of values that can be selected
-   * @param {MessageSelectOptionData|MessageSelectOptionData[]} options The options for the menu
-   * @param {String|null} content The content to display, can be blank
-   * @param {Boolean} remove Delete the message after the time expires
-   * @example awaitMenu(interaction, 15, [menu], `Select an option`, true);
-   * @returns {SelectMenuInteraction|null} The menu the user interacted with or null if nothing was selected
-   */
-  awaitMenu: async function (interaction, time, values, options, content, remove) {
-    // Step 0: Checks
-    if(!interaction || !time || !values || !options || remove === null) return new SyntaxError(`One of the following values is not fulfilled:\n> interaction: ${interaction}\n> time: ${time}\n> values: ${values}\n> options: ${options}\n> remove: ${remove}`);
-    content = content ?? "Please select an option";
-
-    // Step 1: Setup
-    const filter = i => {
-      i.deferUpdate();
-      return i.user.id === interaction.user.id;
-    };
-    time *= 1000;
-
-    // Step 2: Creation
-    const row = new MessageActionRow();
-    const menu = new MessageSelectMenu({
-      minValues: values[0],
-      maxValues: values[1],
-      customId: "await-menu"
-    });
-    menu.addOptions(options);
-    row.addComponents(menu);
-
-    // Step 3: Execution
-    const message = await interaction.followUp({ content: content, components: [row] });
-    const res = await message
-      .awaitMessageComponent({ filter, componentType: "SELECT_MENU", time: time, errors: ["time"] })
-      .catch(() => { return null; });
-
-    // Step 4: Processing
-    row.components[0].setDisabled(true);
-    // eslint-disable-next-line no-useless-escape
-    await message.edit({ content: res === null ? "\:lock: Cancelled" : content, components: [row] });
-
-    // Step 5: Cleanup
-    setTimeout(() => {
-      if(!message.deleted && remove && res != null) message.delete();
-    }, 1500);
-    return res;
   }
-};
+}
+/**
+ * Sends buttons to a user and awaits the response
+ * @param {CommandInteraction} interaction Interaction object
+ * @param {Number} time Seconds for which the buttons are valid
+ * @param {Array<MessageButton>} buttons The buttons to place on the message
+ * @param {String|null} content The content to display, can be blank
+ * @param {Boolean} remove Delete the message after the time expires
+ * @example awaitButtons(interaction, 15, [button1, button2], `Select a button`, true);
+ * @returns {MessageButton|null} The button the user clicked or null if no button was clicked
+ */
+export async function awaitButtons(interaction, time, buttons, content, remove) {
+  if (!interaction || !time || !buttons || remove === null) return new SyntaxError(`One of the following values is not fulfilled:\n> interaction: ${interaction}\n> time: ${time}\n> buttons: ${buttons}\n> remove: ${remove}`);
+  content = content ?? "Please select an option";
+
+  // Create a filter
+  const filter = i => {
+    i.deleteReply();
+    return i.user.id === interaction.user.id;
+  };
+  // Convert the time to milliseconds
+  time *= 1000;
+  // Create a MessageActionRow and add the buttons
+  const row = new MessageActionRow();
+  row.addComponents(buttons);
+  // Send a follow-up message with the buttons and await a response
+  const message = await interaction.followUp({ content: content, components: [row] });
+  const res = await message
+    .awaitMessageComponent({ filter, componentType: "BUTTON", time: time, errors: ["time"] })
+    .catch(() => { return null; });
+  // Disable the buttons on row
+  for (const button of row.components) {
+    button.setDisabled(true);
+  }
+  // Send the disabled row
+  // eslint-disable-next-line no-useless-escape
+  await message.edit({ content: res === null ? "\:lock: Cancelled" : content, components: [row] });
+  setTimeout(() => {
+    // Clear buttons
+    if (remove && res != null) message.edit({ content: interaction.fetchReply().content, components: [] });
+  }, 5000);
+  // Return the button (Or null if no response was given)
+  return res;
+}
+/**
+ * Send a MessageSelectMenu to a user and awaits the response
+ * @param {Interaction} interaction Interaction object
+ * @param {Number} time Seconds for which the menu is valid
+ * @param {Number[]} values [min, max] The amount of values that can be selected
+ * @param {MessageSelectOptionData|MessageSelectOptionData[]} options The options for the menu
+ * @param {String|null} content The content to display, can be blank
+ * @param {Boolean} remove Delete the message after the time expires
+ * @example awaitMenu(interaction, 15, [menu], `Select an option`, true);
+ * @returns {SelectMenuInteraction|null} The menu the user interacted with or null if nothing was selected
+ */
+export async function awaitMenu(interaction, time, values, options, content, remove) {
+  // Step 0: Checks
+  if (!interaction || !time || !values || !options || remove === null) return new SyntaxError(`One of the following values is not fulfilled:\n> interaction: ${interaction}\n> time: ${time}\n> values: ${values}\n> options: ${options}\n> remove: ${remove}`);
+  content = content ?? "Please select an option";
+
+  // Step 1: Setup
+  const filter = i => {
+    i.deferUpdate();
+    return i.user.id === interaction.user.id;
+  };
+  time *= 1000;
+
+  // Step 2: Creation
+  const row = new MessageActionRow();
+  const menu = new StringSelectMenu({
+    minValues: values[0],
+    maxValues: values[1],
+    customId: "await-menu"
+  });
+  menu.addOptions(options);
+  row.addComponents(menu);
+
+  // Step 3: Execution
+  const message = await interaction.followUp({ content: content, components: [row] });
+  const res = await message
+    .awaitMessageComponent({ filter, componentType: "StringSelectMenu", time: time, errors: ["time"] })
+    .catch(() => { return null; });
+
+  // Step 4: Processing
+  row.components[0].setDisabled(true);
+  // eslint-disable-next-line no-useless-escape
+  await message.edit({ content: res === null ? "\:lock: Cancelled" : content, components: [row] });
+
+  // Step 5: Cleanup
+  setTimeout(() => {
+    if (!message.deleted && remove && res != null) message.delete();
+  }, 1500);
+  return res;
+}
