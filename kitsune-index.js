@@ -3,12 +3,13 @@ import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
 import { interactionEmbed, toConsole } from "./functions.js";
 import AsciiTable from "ascii-table";
-import { bot, mysql as _mysql } from "./config.json" assert {"type": "json"};
+import { default as config } from "./config.json" with {"type": "json"};
 import EventEmitter from "node:events";
 import { writeFileSync, readdirSync } from "fs";
 import { createConnection } from "mysql2/promise";
 const rest = new REST({ version: 9 }).setToken(bot["token"]);
 const wait = require("node:util").promisify(setTimeout);
+const { bot, mysql } = config
 
 // State that the process is not ready yet
 let ready = false;
@@ -22,11 +23,11 @@ client.commands = new Collection();
 client.event = new EventEmitter();
 (async () => {
   client.connection = await createConnection({
-    host: _mysql["host"],
-    user: _mysql["user"],
-    password: _mysql["password"],
-    database: _mysql["database"],
-    port: _mysql["port"]
+    host: mysql["host"],
+    user: mysql["user"],
+    password: mysql["password"],
+    database: mysql["database"],
+    port: mysql["port"]
   });
 })();
 

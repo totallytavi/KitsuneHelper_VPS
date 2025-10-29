@@ -1,7 +1,8 @@
 import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed, SlashCommandBuilder } from "discord.js";
 import fetch from "node-fetch";
-import { danbooru } from "../config.json" assert {"type": "json"};
+import { default as config } from "../config.json" with {"type": "json"};
 import { interactionEmbed } from "../functions.js";
+const { danbooru } = config;
 
 export const name = "danbooru";
 export const data = new SlashCommandBuilder()
