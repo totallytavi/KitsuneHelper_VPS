@@ -43,9 +43,12 @@ Please note that you WILL need a config.json file. However, I've created a small
     "errorChannel": "123456789012345678",
     "token": "token_here"
   },
-  "danbooru": {
+  "image_board": {
+    "domain": "domain.here",
+    "name": "nameOfBoard",
     "username": "Username",
     "api_key": "ApiKey"
+  },
   "mysql": {
     "host": "0.0.0.0",
     "user": "Username",

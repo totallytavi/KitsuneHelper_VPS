@@ -2,12 +2,12 @@ import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEm
 import fetch from "node-fetch";
 import { default as config } from "../config.json" with {"type": "json"};
 import { interactionEmbed } from "../functions.js";
-const { danbooru } = config;
+const { image_board } = config;
 
-export const name = "danbooru";
+export const name = image_board.name;
 export const data = new SlashCommandBuilder()
-  .setName("danbooru")
-  .setDescription("Queries an image from Danbooru with the options provided")
+  .setName(image_board.name)
+  .setDescription(`Queries an image from ${image_board.name} with the options provided`)
   .addStringOption(option => {
     return option
       .setName("tag")
@@ -53,13 +53,13 @@ export async function run(client, interaction, options) {
   if (safe) tags += "+rating:g";
   tags += "+random:" + limit;
   const params = new URLSearchParams();
-  params.append("login", danbooru["username"]);
-  params.append("api_key", danbooru["api_key"]);
+  params.append("login", image_board["username"]);
+  params.append("api_key", image_board["api_key"]);
 
-  fetch(`https://danbooru.donmai.us/posts.json?tags=${tags}&${params.toString()}`, { headers: { "User-Agent": "KitsuneHelper/0 (+github.com/Coder-Tavi/KitsuneHelper_VPS)" }, timeout: 5000 })
+  fetch(`https://${image_board["domain"]}/posts.json?tags=${tags}&${params.toString()}`, { headers: { "User-Agent": "KitsuneHelper/0 (+github.com/totallytavi/KitsuneHelper_VPS)" }, timeout: 5000 })
     .then(res => res.json())
     .then(json => {
-      if (json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", json.length === 0 ? `\`${tags.split("+")[0]}\` doesn't exist on Danbooru` : `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Success? ${json.success}\nMessage: ${json.message}\nResponse:\n${json}`, interaction, client, false);
+      if (json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", json.length === 0 ? `\`${tags.split("+")[0]}\` doesn't exist on ${image_board["name"]}` : `Something went wrong when requesting data from ${image_board["name"]}. Please report this to the support server:\n>>> Success? ${json.success}\nMessage: ${json.message}\nResponse:\n${json}`, interaction, client, false);
       for (const post of json) {
         // Filters
         if (post.is_deleted || post.tag_string.split(" ").includes("loli")) {
@@ -93,7 +93,7 @@ export async function run(client, interaction, options) {
         // Embed
         const embed = new MessageEmbed({
           title: `${characters} by ${artists}`,
-          url: `https://danbooru.donmai.us/posts/${post.id}`,
+          url: `https://${image_board["domain"]}/posts/${post.id}`,
           image: {
             url: post.large_file_url || post.file_url || post.preview_file_url
           },
@@ -109,9 +109,9 @@ export async function run(client, interaction, options) {
     })
     .catch(e => {
       if (e.message.startsWith("network timeout"))
-        interactionEmbed(3, "[ERR-EXPT]", "The request to Danbooru timed out. Please try again later.", interaction, client, false);
+        interactionEmbed(3, "[ERR-EXPT]", `The request to ${image_board["name"]} timed out. Please try again later.`, interaction, client, false);
 
       else
-        interactionEmbed(3, "[ERR-EXPT]", `Something went wrong when requesting data from Danbooru. Please report this to the support server:\n>>> Error: FetchError: ${e.code} ${e.message.replace(danbooru["username"], "usernameHidden").replace(danbooru["api_key"], "api_keyHidden")}`, interaction, client, false);
+        interactionEmbed(3, "[ERR-EXPT]", `Something went wrong when requesting data from ${image_board["name"]}. Please report this to the support server:\n>>> Error: FetchError: ${e.code} ${e.message.replace(image_board["username"], "usernameHidden").replace(image_board["api_key"], "api_keyHidden")}`, interaction, client, false);
     });
 }
