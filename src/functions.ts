@@ -38,6 +38,10 @@ export async function toConsole(message: string, source: string, client: Kitsune
   if (!channel) return console.warn("[WARN] Error channel note found but data was sent to the console\n\n" + message + "\n> Source: " + source);
   if (!channel.isTextBased()) return console.warn("[WARN] Error channel is not a text channel but data was sent to the console\n\n" + message + "\n> Source: " + source);
 
+  if (source.includes("file:")) {
+    source = source.match(/\/(\w+\.js:\d+:\d+)/)![1] || source.split('\n')[1];
+  }
+
   (channel as GuildTextBasedChannel).send({
     content: `Incoming message from ${source}`,
     embeds: [
@@ -147,8 +151,9 @@ export async function awaitButtons(interaction: CommandInteraction, time: number
   content = content ?? "Please select an option";
 
   // Create a filter
-  const filter = (i: MessageComponentInteraction) => {
-    i.deleteReply();
+  const filter = async (i: MessageComponentInteraction) => {
+    await i.deferReply();
+    await i.deleteReply();
     return i.user.id === interaction.user.id;
   };
   // Convert the time to milliseconds
@@ -192,8 +197,9 @@ export async function awaitMenu(interaction: ReplyableInteraction, time: number,
   content = content ?? "Please select an option";
 
   // Step 1: Setup
-  const filter = (i: SelectMenuInteraction) => {
-    i.deferUpdate();
+  const filter = async (i: SelectMenuInteraction) => {
+    await i.deferReply();
+    await i.deleteReply();
     return i.user.id === interaction.user.id;
   };
   time *= 1000;
@@ -241,23 +247,4 @@ export async function getConfig(client: KitsuneClient, guildId = "0"): Promise<C
     .then((configs) => {
       return configs.find((c) => c.guildId === guildId) ?? configs.find((c) => c.guildId === "0")!;
     })
-}
-/**
- * Returns a {@link Temporal.Duration} object for the
- * given {@link Date} object, defauling to the current
- * date and time if none is specified
- * @param {Date} date Date to convert to a duration
- * @returns {Temporal.Duration} Duration representing the
- * specified {@link Date} object
- */
-export function dateToDuration(date = new Date()): Temporal.Duration {
-  return Temporal.Duration.from({
-    years: date.getUTCFullYear(),
-    months: date.getUTCMonth() + 1,
-    days: date.getUTCDate(),
-    hours: date.getUTCHours(),
-    minutes: date.getUTCMinutes(),
-    seconds: date.getUTCSeconds(),
-    milliseconds: date.getUTCMilliseconds()
-  })
 }

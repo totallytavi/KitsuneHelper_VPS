@@ -1,3 +1,4 @@
+import { toTemporalInstant } from '@js-temporal/polyfill';
 import { ActivityType, Client, Collection, GatewayIntentBits, RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
 import { readdirSync } from "node:fs";
 import { Op, Sequelize } from "sequelize";
@@ -7,6 +8,10 @@ import { interactionEmbed, toConsole } from "./functions.js";
 import { KitsuneClient } from "./types.js";
 const { bot, mysql } = config
 const wait = (await import("node:util")).promisify(setTimeout);
+
+// JS polyfill for Temporal
+// @ts-expect-error
+Date.prototype.toTemporalInstant = toTemporalInstant;
 
 // State that the process is not ready yet
 let ready = false;
@@ -29,6 +34,9 @@ process.on("unhandledRejection", async (promise: PromiseRejectedResult) => {
   if(!ready) {
     console.error(promise);
     return process.exit(18);
+  }
+  if (process.env.NODE_ENV === "development") {
+    console.error(promise);
   }
   return toConsole("A [unhandledRejection] has been emitted\n> Promise: " + promise, "process.on(\"unhandledRejection\")", client);
 });

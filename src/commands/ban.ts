@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Temporal } from "@js-temporal/polyfill";
 import { ButtonBuilder, ButtonStyle, CommandInteraction, CommandInteractionOptionResolver, GuildMemberRoleManager } from "discord.js";
-import { awaitButtons, dateToDuration, interactionEmbed, toConsole } from "../functions.js";
+import { awaitButtons, interactionEmbed, toConsole } from "../functions.js";
 import { KitsuneClient } from "../types.js";
 
 export const name = "ban";
@@ -52,39 +52,32 @@ export async function run(client: KitsuneClient, interaction: CommandInteraction
   const reason = options.getString("reason") ?? "No reason provided";
   const days = options.getNumber("days") ?? 0;
 
-  let expiry: Temporal.Duration;
+  let duration: Temporal.Duration;
   try {
     if (options.getString("duration")) {
       const rawDuration = options.getString("duration")!
         .replaceAll(/-/g, '');
-      expiry = Temporal.Duration.from("P" + rawDuration);
+      duration = Temporal.Duration.from("P" + rawDuration);
     } else {
-      expiry = Temporal.Duration.from("P100Y");
+      duration = Temporal.Duration.from("P100Y");
     }
-    expiry = dateToDuration().add(expiry);
-
-    // Dummy call to trigger errors sooner rather than later
-    expiry.total("milliseconds");
   } catch(err) {
     if (err instanceof RangeError) {
-      return interactionEmbed(3, "[ERR-ARGS]", `Arg: duration :-: Invalid duration format, ${err.message}`, interaction, client, true);
+      return interactionEmbed(3, "[ERR-ARGS]", `Arg: duration :-: ${err.message}`, interaction, client, true);
     } else {
       toConsole('Failed to parse duration for ban command: ' + String(err), new Error().stack!, client);
       return interactionEmbed(3, "[ERR-ARGS]", "Arg: duration :-: An unknown error occurred while parsing the duration", interaction, client, true);
     }
   }
 
-  if (!interaction.member) {
-    return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Expected magician, got no magician", interaction, client, true);
-  }
-
   if (!interaction.member.permissions.has("BanMembers")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Ban Members`", interaction, client, true);
   if (!interaction.guild!.members.me!.permissions.has("BanMembers")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Ban Members`", interaction, client, true);
   if (interaction.user.id === member.id) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Cannot ban yourself", interaction, client, true);
 
-  const guildMember = await interaction.guild!.members.fetch(member.id);
+  const guildMember = await interaction.guild!.members.fetch(member.id)
+    .catch((err) => !String(err).includes('Unknown Member') ? toConsole(`Failed to fetch member for ban (${member.id}): ${err}`, new Error().stack!, client) : null);
   if (guildMember) {
-    if (guildMember.roles.highest.position >= (interaction.member.roles as GuildMemberRoleManager).highest.position) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Target is higher than or equal to your highest role", interaction, client, true);
+    if (guildMember.roles.highest.position >= interaction.member.roles.highest.position) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: Target is higher than or equal to your highest role", interaction, client, true);
     if (guildMember.roles.highest.position >= interaction.guild!.members.me!.roles.highest.position) return interactionEmbed(3, "[ERR-ARGS]", "Arg: member :-: User is equal to or higher than the bot's highest role", interaction, client, true);
   }
 
@@ -103,17 +96,34 @@ export async function run(client: KitsuneClient, interaction: CommandInteraction
     return interactionEmbed(3, "[ERR-TIME]", "You took too long to respond, banishment cancelled", interaction, client, false);
   }
 
+  interaction.editReply({ components: [] });
   if (confirmation.customId === "yes") {
     await interaction.guild.bans.create(member.id, { deleteMessageSeconds: (days * 24 * 60 * 60), reason: `${reason} (Moderator ID: ${interaction.user.id})` });
-    await client.models.Bans.create({
-      userId: member.id,
-      guildId: interaction.guildId,
-      modId: interaction.user.id,
-      reason: reason,
-      expiry: new Date(expiry.total("milliseconds"))
-    })
-    return interactionEmbed(1, `${member} was banned for \`${reason}\`. \`${days}\` day(s) of messages sent by that user will be wiped away with magic`, "", interaction, client, false);
+    const now = Temporal.Now.instant().toZonedDateTimeISO(Temporal.Now.timeZoneId());
+    const expiry = new Date(now.add(duration).toString({ timeZoneName: "never", offset: "never" }));
+    const [user, created] = await client.models.Bans.findOrCreate({
+      where: {
+        userId: member.id,
+        guildId: interaction.guildId,
+      },
+      defaults: {
+        userId: member.id,
+        guildId: interaction.guildId,
+        modId: interaction.user.id,
+        reason: reason,
+        expiry
+      }
+    });
+    if (!created) {
+      // findOrUpdate does not exist yet
+      await user.update({
+        modId: interaction.user.id,
+        reason,
+        expiry 
+      })
+    }
+    return interactionEmbed(1, `${member} was banned for \`${reason}\`. \`${days}\` day(s) of messages sent by that user will be wiped away with magic. ${created ? 'Created' : 'Updated'} the database entry on their ban`, "", interaction, client, false);
   } else {
-    interaction.editReply({ content: ":x: Banishment cancelled, the magician remains in your forest!", components: [] });
+    interaction.editReply({ content: ":x: Banishment cancelled, the magician remains in your forest!" });
   }
 }

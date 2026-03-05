@@ -1,7 +1,7 @@
 import { GuildMember } from "discord.js";
 import { KitsuneClient } from "../../types.js";
-import { dateToDuration, getConfig, toConsole } from "../../functions.js";
-import { Temporal } from '@js-temporal/polyfill';
+import { getConfig, toConsole } from "../../functions.js";
+import { Temporal, toTemporalInstant } from '@js-temporal/polyfill';
 
 function replaceTemplates(str: string, replacers: Record<string, string>) {
   return str.replace(/\{\{\w+\}\}/g, (match: string) => {
@@ -22,12 +22,13 @@ export async function run(client: KitsuneClient, guildMember: GuildMember) {
     '{{until_relative}}': '' // Will be replaced later
   } as Record<string, string>;
 
-  const now = dateToDuration();
-  const createdAt = dateToDuration(guildMember.user.createdAt);
+  const now = Temporal.Now.zonedDateTimeISO(Temporal.Now.timeZoneId());
+  // @ts-ignore
+  const createdAt = guildMember.user.createdAt.toTemporalInstant().toZoneDatedTimeISO(Temporal.Now.timeZoneId()) as Temporal.ZonedDateTime;
   const kickTime = Temporal.Duration.from({ days: config.data.kickConfig.days || -1 })
   const banTime = Temporal.Duration.from({ days: config.data.banConfig.days || -1 });
 
-  if (Temporal.Duration.compare(createdAt.add(banTime), now) > 1 && config.data.banConfig.days !== -1) {
+  if (Temporal.ZonedDateTime.compare(createdAt.add(banTime), now) > 0 && config.data.banConfig.days !== -1) {
     if (!guildMember.guild.members.me!.permissions.has("BanMembers")) {
       return;
     }
@@ -35,7 +36,8 @@ export async function run(client: KitsuneClient, guildMember: GuildMember) {
       return;
     }
 
-    placeholders['{{until}}'] = String(Math.floor(createdAt.add(banTime).total('seconds')));
+    const expiry = new Date(createdAt.add(banTime).toString({ timeZoneName: "never", offset: "never" }))
+    placeholders['{{until}}'] = String(Math.floor(expiry.getTime() / 1000));
     placeholders['{{until_relative}}'] = `<t:${placeholders['{{until}}']}:R>`;
     const reason = replaceTemplates(config.data.banConfig.reason, placeholders);
 
@@ -54,9 +56,9 @@ export async function run(client: KitsuneClient, guildMember: GuildMember) {
       modId: client.user!.id,
       guildId: guildMember.guild.id,
       reason,
-      expiry: new Date(banTime.total('milliseconds'))
+      expiry
     });
-  } else if (Temporal.Duration.compare(createdAt.add(kickTime), now) < 0 && config.data.kickConfig.days !== -1) {
+  } else if (Temporal.ZonedDateTime.compare(createdAt.add(kickTime), now) > 0 && config.data.kickConfig.days !== -1) {
     if (!guildMember.guild.members.me!.permissions.has("KickMembers")) {
       return;
     }
@@ -64,7 +66,8 @@ export async function run(client: KitsuneClient, guildMember: GuildMember) {
       return;
     }
 
-    placeholders['{{until}}'] = String(Math.floor(createdAt.add(kickTime).total('seconds')));
+    const expiry = new Date(createdAt.add(kickTime).toString({ timeZoneName: "never", offset: "never" }))
+    placeholders['{{until}}'] = String(Math.floor(expiry.getTime() / 1000));
     placeholders['{{until_relative}}'] = `<t:${placeholders['{{until}}']}:R>`;
     const reason = replaceTemplates(config.data.kickConfig.reason, placeholders);
 

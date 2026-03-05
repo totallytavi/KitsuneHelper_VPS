@@ -14,8 +14,8 @@
     "skipLibCheck": true
   },
   // Ignores
-  "exclude": ["node_modules", "eslint.config.mjs", "dist", "assets", "homepage"],
+  "exclude": ["node_modules", "eslint.config.mjs", "dist"],
   "watchOptions": {
-    "excludeDirectories": ["**/node_modules", "eslint.config.mjs", "dist", "assets", "homepage"]
+    "excludeDirectories": ["**/node_modules", "eslint.config.mjs", "dist"]
   }
 }
