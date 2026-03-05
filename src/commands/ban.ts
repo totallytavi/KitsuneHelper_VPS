@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Temporal } from "@js-temporal/polyfill";
 import { ButtonBuilder, ButtonStyle, CommandInteraction, CommandInteractionOptionResolver, GuildMemberRoleManager } from "discord.js";
-import { awaitButtons, interactionEmbed, toConsole } from "../functions.js";
+import { awaitButtons, dateToDuration, interactionEmbed, toConsole } from "../functions.js";
 import { KitsuneClient } from "../types.js";
 
 export const name = "ban";
@@ -61,7 +61,7 @@ export async function run(client: KitsuneClient, interaction: CommandInteraction
     } else {
       expiry = Temporal.Duration.from("P100Y");
     }
-    expiry = Temporal.Duration.from(new Date().toISOString()).add(expiry);
+    expiry = dateToDuration().add(expiry);
 
     // Dummy call to trigger errors sooner rather than later
     expiry.total("milliseconds");

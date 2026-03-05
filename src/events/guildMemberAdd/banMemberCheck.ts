@@ -1,6 +1,6 @@
 import { GuildMember } from "discord.js";
 import { KitsuneClient } from "../../types.js";
-import { getConfig, toConsole } from "../../functions.js";
+import { dateToDuration, getConfig, toConsole } from "../../functions.js";
 import { Temporal } from '@js-temporal/polyfill';
 
 function replaceTemplates(str: string, replacers: Record<string, string>) {
@@ -22,8 +22,8 @@ export async function run(client: KitsuneClient, guildMember: GuildMember) {
     '{{until_relative}}': '' // Will be replaced later
   } as Record<string, string>;
 
-  const now = Temporal.Duration.from(new Date().toISOString());
-  const createdAt = Temporal.Duration.from(guildMember.user.createdAt.toISOString());
+  const now = dateToDuration();
+  const createdAt = dateToDuration(guildMember.user.createdAt);
   const kickTime = Temporal.Duration.from({ days: config.data.kickConfig.days || -1 })
   const banTime = Temporal.Duration.from({ days: config.data.banConfig.days || -1 });
 

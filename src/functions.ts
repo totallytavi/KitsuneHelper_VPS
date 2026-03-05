@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, Client, CommandInteraction, ComponentType, EmbedBuilder, GuildTextBasedChannel, Interaction, Message, MessageComponentInteraction, SelectMenuInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import { default as config } from "../config.json" with { "type": "json" };
 import { KitsuneClient } from "./types.js";
@@ -240,4 +241,23 @@ export async function getConfig(client: KitsuneClient, guildId = "0"): Promise<C
     .then((configs) => {
       return configs.find((c) => c.guildId === guildId) ?? configs.find((c) => c.guildId === "0")!;
     })
+}
+/**
+ * Returns a {@link Temporal.Duration} object for the
+ * given {@link Date} object, defauling to the current
+ * date and time if none is specified
+ * @param {Date} date Date to convert to a duration
+ * @returns {Temporal.Duration} Duration representing the
+ * specified {@link Date} object
+ */
+export function dateToDuration(date = new Date()): Temporal.Duration {
+  return Temporal.Duration.from({
+    years: date.getUTCFullYear(),
+    months: date.getUTCMonth() + 1,
+    days: date.getUTCDate(),
+    hours: date.getUTCHours(),
+    minutes: date.getUTCMinutes(),
+    seconds: date.getUTCSeconds(),
+    milliseconds: date.getUTCMilliseconds()
+  })
 }
