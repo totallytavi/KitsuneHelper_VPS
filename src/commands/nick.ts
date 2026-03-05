@@ -1,5 +1,6 @@
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton, SlashCommandBuilder } from "discord.js";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, ButtonBuilder, SlashCommandBuilder, GuildMember, ButtonStyle } from "discord.js";
 import { awaitButtons, interactionEmbed } from "../functions.js";
+import { KitsuneClient } from "../types.js";
 
 export const name = "nickname";
 export const data = new SlashCommandBuilder()
@@ -28,33 +29,35 @@ export const data = new SlashCommandBuilder()
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */
-export async function run(client, interaction, options) {
-  const member = options.getMember("user");
+export async function run(client: KitsuneClient, interaction: CommandInteraction<'cached'>, options: CommandInteractionOptionResolver) {
+  const member = options.getMember("user") as GuildMember;
   const nickname = options.getString("new_nickname");
   const reason = options.getString("reason") ?? "No reason provided";
+  const botMember = interaction.guild.members.me!;
 
-  if (member === interaction.guild.me) {
-    if (!interaction.guild.me.permissions.has("ChangeNickname")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Change Nickname`", interaction, client, true);
+  if (member.user.id === client.user!.id) {
+    if (!botMember.permissions.has("ChangeNickname")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Change Nickname`", interaction, client, true);
   } else if (member === interaction.member) {
     if (!interaction.member.permissions.has("ChangeNickname")) return interactionEmbed(3, "[ERR-UPRM]", "Missing: `Change Nickname`", interaction, client, true);
-    if (!interaction.guild.me.permissions.has("ManageNicknames")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Manage Nicknames`", interaction, client, true);
+    if (!botMember.permissions.has("ManageNicknames")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Manage Nicknames`", interaction, client, true);
   } else {
-    if (!interaction.guild.me.permissions.has("ManageNicknames")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Manage Nicknames`", interaction, client, true);
+    if (!botMember.permissions.has("ManageNicknames")) return interactionEmbed(3, "[ERR-BPRM]", "Missing: `Manage Nicknames`", interaction, client, true);
   }
   // If we can't manage them, reject it.
-  if (!member.manageable && member != interaction.guild.me) return interactionEmbed(3, "[ERR-BPRM]", "I cannot change nicknames of those higher or equal to me", interaction, client, true);
+  if (!member.manageable && member != botMember) return interactionEmbed(3, "[ERR-BPRM]", "I cannot change nicknames of those higher or equal to me", interaction, client, true);
   // If they can't manage them, reject it.
   if (member.roles.highest.rawPosition >= interaction.member.roles.highest.rawPosition) return interactionEmbed(3, "[ERR-UPRM]", "You cannot change nicknames of those higher or equal to you", interaction, client, true);
   // If the nickname is too long, reject it.
-  if (nickname.length > 32) return interactionEmbed(3, "[ERR-ARGS]", "Arg: new_nickname :-: Expected String.length < 32, got String.length > 32", interaction, client, true);
+  if (nickname && nickname.length > 32) return interactionEmbed(3, "[ERR-ARGS]", "Arg: new_nickname :-: Expected String.length < 32, got String.length > 32", interaction, client, true);
 
   // Create an Array of buttons.
   const buttons = [
-    new MessageButton().setLabel("Yes").setCustomId("yes").setStyle("SUCCESS"),
-    new MessageButton().setLabel("No").setCustomId("no").setStyle("DANGER")
+    new ButtonBuilder().setLabel("Yes").setCustomId("yes").setStyle(ButtonStyle.Success),
+    new ButtonBuilder().setLabel("No").setCustomId("no").setStyle(ButtonStyle.Danger)
   ];
   // Get the response from them
   const button = await awaitButtons(interaction, 10, buttons, `Confirm you wish to change ${member}'s nickname?`, true);
+  if (!button) return interaction.editReply({ content: ":negative_squared_cross_mark: No response after 10 seconds, spell cancelled! No need to worry", components: [] });
   // Reaction!
   if (button.customId === "yes") {
     // If they pressed the Yes button, act.
@@ -62,6 +65,6 @@ export async function run(client, interaction, options) {
     interactionEmbed(1, `Updated ${member}'s (${member.id}) nickname to \`${nickname}\` for \`${reason}\``, "", interaction, client, false);
   } else {
     // If they pressed the No button or didn't respond, reject it.
-    interaction.editReply(":negative_squared_cross_mark: Spell cancelled! No need to worry");
+    interaction.editReply({ content: ":negative_squared_cross_mark: Spell cancelled! No need to worry", components: [] });
   }
 }

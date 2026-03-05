@@ -1,7 +1,9 @@
 // eslint-disable-next-line no-unused-vars
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageButton } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { interactionEmbed, awaitButtons } from "../functions.js";
+import { InteractionContextType } from "discord-api-types/v9";
+import { BaseGuildTextChannel, BaseGuildVoiceChannel, ButtonBuilder, ButtonStyle, Client, CommandInteraction, CommandInteractionOptionResolver, GuildMember } from "discord.js";
+import { awaitButtons, interactionEmbed } from "../functions.js";
+import { KitsuneClient } from "../types.js";
 
 export const name = "createinvite";
 export const data = new SlashCommandBuilder()
@@ -11,7 +13,7 @@ export const data = new SlashCommandBuilder()
     return option
       .setName("channel")
       .setDescription("The channel to create the invite for (Default: This channel)")
-      .setRequired(false);
+      .setRequired(false)
   })
   .addIntegerOption((option) => {
     return option
@@ -36,26 +38,40 @@ export const data = new SlashCommandBuilder()
       .setName("temporary_membership")
       .setDescription("Should the magician be kicked 24 hours after joining if they have no roles? (Default: False)")
       .setRequired(false);
-  });
+  })
+  .setContexts(InteractionContextType.Guild)
 /**
  * @param {Client} client Client object
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */
-export async function run(client, interaction, options) {
-  const channel = options.getChannel("channel") ?? interaction.channel;
+export async function run(client: KitsuneClient, interaction: CommandInteraction<'cached'>, options: CommandInteractionOptionResolver) {
+  const channel = (options.getChannel("channel") ?? interaction.channel) as BaseGuildTextChannel|BaseGuildVoiceChannel;
   const age = options.getInteger("age") ?? 0;
   const max_uses = options.getInteger("max_uses") ?? 0;
   const temporary_membership = options.getBoolean("temporary_membership") ?? false;
 
-  const confirmation = await awaitButtons(interaction, client, [new MessageButton({ customId: "yes", label: "Yes, I want to create an invite", style: "SUCCESS" }), new MessageButton({ customId: "no", label: "No, I do not want to create an invite", style: "DANGER" })], "Are you sure you want to create an invite?", true);
+  const buttons = [
+    new ButtonBuilder()
+      .setCustomId("yes")
+      .setLabel("Yes, I want to create an invite")
+      .setStyle(ButtonStyle.Success),
+    new ButtonBuilder()
+      .setCustomId("no")
+      .setLabel("No, I do not want to create an invite")
+      .setStyle(ButtonStyle.Danger)
+  ];
+
+  const confirmation = await awaitButtons(interaction, 15, buttons, "Are you sure you want to create an invite?", true);
+  if (!confirmation) return interaction.followUp({ content: "The spell has been cancelled! No magic was performed" });
+
   if (confirmation.customId === "yes") {
-    if (!interaction.member.permissionsIn(channel).has("CreateInstantInvite")) return interactionEmbed(3, "[ERR-UPRM]", `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
-    if (!interaction.guild.me.permissionsIn(channel).has("CreateInstantInvite")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
+    if (!(interaction.member as GuildMember).permissionsIn(channel.id).has("CreateInstantInvite")) return interactionEmbed(3, "[ERR-UPRM]", `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
+    if (!interaction.guild!.members.me!.permissionsIn(channel.id).has("CreateInstantInvite")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Create Instant Invite\` > ${channel}`, interaction, client, true);
 
     const invite = await channel.createInvite({ maxAge: age, maxUses: max_uses, temporary: temporary_membership, reason: `Created on behalf of user ID: ${interaction.user.id}` });
     return interactionEmbed(1, `Here is the invite:\nhttps://discord.gg/${invite.code}`, "", interaction, client, false);
   } else {
-    return interaction.followUp({ content: "The spell has been cancelled! No magic was performed" });
+    return interaction.followUp({ content: "The spell has been cancelled! No magic was performed", components: [] });
   }
 }

@@ -1,5 +1,9 @@
-import { Client, CommandInteraction, CommandInteractionOptionResolver, SlashCommandBuilder } from "discord.js";
+import { CacheType, Client, CommandInteraction, CommandInteractionOptionResolver, GuildChannel, GuildMember, TextBasedChannel, VoiceBasedChannel } from "discord.js";
 import { interactionEmbed } from "../functions.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
+import { ChannelType } from "discord-api-types/v9";
+import { TextBasedChannels, VoiceBasedChannels } from "../utility_types.js";
+import { KitsuneClient } from "../types.js";
 
 export const name = "editchannel";
 export const data = new SlashCommandBuilder()
@@ -36,7 +40,8 @@ export const data = new SlashCommandBuilder()
         return option
           .setName("channel")
           .setDescription("Channel to be updated (Text based channel)")
-          .setRequired(true);
+          .setRequired(true)
+          .addChannelTypes(...TextBasedChannels)
       })
       .addStringOption(option => {
         return option
@@ -59,7 +64,8 @@ export const data = new SlashCommandBuilder()
         return option
           .setName("channel")
           .setDescription("Channel to be updated (Text based channel)")
-          .setRequired(true);
+          .setRequired(true)
+          .addChannelTypes(...TextBasedChannels)
       })
       .addBooleanOption(option => {
         return option
@@ -82,7 +88,8 @@ export const data = new SlashCommandBuilder()
         return option
           .setName("channel")
           .setDescription("Channel to be updated (Text based channel)")
-          .setRequired(true);
+          .setRequired(true)
+          .addChannelTypes(...TextBasedChannels)
       })
       .addNumberOption(option => {
         return option
@@ -105,7 +112,8 @@ export const data = new SlashCommandBuilder()
         return option
           .setName("channel")
           .setDescription("Channel to be updated (Voice based channel)")
-          .setRequired(true);
+          .setRequired(true)
+          .addChannelTypes(...VoiceBasedChannels)
       })
       .addNumberOption(option => {
         return option
@@ -128,7 +136,8 @@ export const data = new SlashCommandBuilder()
         return option
           .setName("channel")
           .setDescription("Channel to be updated")
-          .setRequired(true);
+          .setRequired(true)
+          .addChannelTypes(...VoiceBasedChannels)
       })
       .addStringOption(option => {
         return option
@@ -161,7 +170,15 @@ export const data = new SlashCommandBuilder()
         return option
           .setName("channel")
           .setDescription("Channel to be updated")
-          .setRequired(true);
+          .setRequired(true)
+          .addChannelTypes(
+            ChannelType.GuildAnnouncement,
+            ChannelType.GuildMedia,
+            ChannelType.GuildStageVoice,
+            ChannelType.GuildText,
+            ChannelType.GuildVoice,
+            ChannelType.AnnouncementThread
+          )
       })
       .addStringOption(option => {
         return option
@@ -175,40 +192,75 @@ export const data = new SlashCommandBuilder()
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */
-export async function run(client, interaction, options) {
-  const channel = options.getChannel("channel");
-  const reason = `${options.getString("reason")} (Moderator ID: ${interaction.member.id})` ?? "No reason provided";
+export async function run(client: KitsuneClient, interaction: CommandInteraction<'cached'>, options: CommandInteractionOptionResolver) {
+  const channel = options.getChannel("channel", true) as GuildChannel;
+  const reason = `${options.getString("reason") || "No reason provided"} (Moderator ID: ${interaction.member.id})`;
   const option = options.getString("name") ?? options.getString("topic") ?? options.getBoolean("nsfw") ?? options.getNumber("seconds") ?? options.getString("bitrate") ?? options.getNumber("limit");
 
   // If we cannot view the channel, stop
-  if (!interaction.guild.me.permissionsIn(channel).has("ViewChannel")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`View Channel\` > ${channel}`, interaction, client, true);
-  if (!interaction.member.permissionsIn(channel).has("ManageChannels")) return interactionEmbed(3, "[ERR-UPRM]", `Missing \`Manage Channel\` > ${channel}`, interaction, client, true);
-  if (!interaction.guild.me.permissionsIn(channel).has("ManageChannels")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
-  if (options._hoistedOptions[1].name === "name") {
-    channel.setName(option, reason)
+  if (!interaction.guild.members.me!.permissionsIn(channel.id).has("ViewChannel")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`View Channel\` > ${channel}`, interaction, client, true);
+  if (!interaction.member.permissionsIn(channel.id).has("ManageChannels")) return interactionEmbed(3, "[ERR-UPRM]", `Missing \`Manage Channel\` > ${channel}`, interaction, client, true);
+  if (!interaction.guild.members.me!.permissionsIn(channel.id).has("ManageChannels")) return interactionEmbed(3, "[ERR-BPRM]", `Missing: \`Manage Channel\` > ${channel}`, interaction, client, true);
+  switch (options.getSubcommand(true)) {
+  case 'name': {
+    channel
+      .setName(option as string, reason)
       .then(newChannel => interactionEmbed(1, `Set ${channel}'s name was set to \`${newChannel.name}\` for \`${reason}\``, "", interaction, client, false));
-  } else if (options._hoistedOptions[1].name === "topic") {
-    if (!channel.isText()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel", interaction, client, true);
-    channel.setTopic(option, reason)
+    break;
+  }
+  case 'topic': {
+    if (!channel.isTextBased() || !('setTopic' in channel)) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected text based channel, got invalid channel type", interaction, client, true);
+    
+    channel
+      .setTopic(option as string)
       .then(newChannel => interactionEmbed(1, `Set ${channel}'s topic was set to \`${newChannel.topic}\` for \`${reason}\``, "", interaction, client, false));
-  } else if (options._hoistedOptions[1].name === "nsfw") {
-    if (!channel.isText()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel", interaction, client, true);
-    channel.setNSFW(option, reason)
-      .then(newChannel => interactionEmbed(1, `Set ${channel}'s NSFW flag to \`${newChannel.nsfw}\` for \`${reason}\``, "", interaction, client, false));
-  } else if (options._hoistedOptions[1].name === "seconds") {
-    if (!channel.isText()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected TextBasedChannel, got Category/VoiceBasedChannel", interaction, client, true);
-    channel.setRateLimitPerUser(option, reason)
-      .then(newChannel => interactionEmbed(1, `Set ${channel}'s slowmode to \`${newChannel.rateLimitPerUser}\` for \`${reason}\``, "", interaction, client, false));
-  } else if (options._hoistedOptions[1].name === "bitrate") {
-    if (!channel.isVoice()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel", interaction, client, true);
-    channel.setBitrate(option, reason)
-      .then(newChannel => interactionEmbed(1, `Set ${channel}'s bitrate to \`${newChannel.bitrate}\` for \`${reason}\``, "", interaction, client, false));
-  } else if (options._hoistedOptions[1].name === "limit") {
-    if (!channel.isVoice()) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected VoiceBasedChannel, got TextBasedChannel", interaction, client, true);
-    channel.setUserLimit(option, reason)
+    break;
+  }
+  case 'nsfw': {
+    if (!channel.isTextBased() || !('nsfw' in channel)) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected text based channel, got invalid channel type", interaction, client, true);
+
+    channel
+      .setNSFW(option as boolean, reason)
+      .then(() => interactionEmbed(1, `Set ${channel}'s NSFW flag to \`${option}\` for \`${reason}\``, "", interaction, client, false));
+    break;
+  }
+  case 'slowmode': {
+    if (!channel.isTextBased() || !('setRateLimitPerUser' in channel)) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected text based channel, got invalid channel type", interaction, client, true);
+
+    channel
+      .setRateLimitPerUser(option as number, reason)
+      // rateLimitPerUser isn't available on newChannel
+      .then(() => interactionEmbed(1, `Set ${channel}'s slowmode to \`${option}\` for \`${reason}\``, "", interaction, client, false));
+    break;
+  }
+  case 'bitrate': {
+    if (!channel.isVoiceBased() || !('setBitrate' in channel)) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected voice based channel, got invalid channel type", interaction, client, true);
+    
+    channel
+      .setBitrate(parseInt(option as string), reason)
+      // bitrate isn't available on newChannel
+      .then(newChannel => interactionEmbed(1, `Set ${channel}'s bitrate to \`${newChannel.bitrate}kbps\` for \`${reason}\``, "", interaction, client, false));
+    break;
+  }
+  case 'limit': {
+    if (!channel.isVoiceBased() || !('setUserLimit' in channel)) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected voice based channel, got invalid channel type", interaction, client, true);
+    
+    channel
+      .setUserLimit(option as number, reason)
+      // userLimit isn't available on newChannel
       .then(newChannel => interactionEmbed(1, `Set ${channel}'s user limit to \`${newChannel.userLimit}\` for \`${reason}\``, "", interaction, client, false));
-  } else if (options._hoistedOptions[1].name === "permlock") {
-    channel.lockPermissions()
-      .then(newChannel => interactionEmbed(1, `Set ${newChannel}'s permissions to the category's permissions`, "", interaction, client, false));
+    break;
+  }
+  case 'permlock': {
+    if (!('lockPermissions' in channel)) return interactionEmbed(3, "[ERR-ARGS]", "Arg: channel :-: Expected text/voice based channel, got invalid channel type", interaction, client, true);
+    
+    channel
+      .lockPermissions()
+      .then(() => interactionEmbed(1, `Set ${channel}'s permissions to the category's permissions for \`${reason}\``, "", interaction, client, false));
+    break;
+  }
+  default: {
+    interactionEmbed(3, "[ERR-ARGS]", "Arg: subcommand :-: Invalid subcommand", interaction, client, true);
+  }
   }
 }

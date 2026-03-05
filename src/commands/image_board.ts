@@ -1,7 +1,8 @@
-import { Client, CommandInteraction, CommandInteractionOptionResolver, MessageEmbed, SlashCommandBuilder } from "discord.js";
+import { Client, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
 import fetch from "node-fetch";
-import { default as config } from "../config.json" with {"type": "json"};
+import { default as config } from "../../config.json" with { "type": "json" };
 import { interactionEmbed } from "../functions.js";
+import { KitsuneClient } from "../types.js";
 const { image_board } = config;
 
 export const name = image_board.name;
@@ -43,12 +44,14 @@ export const data = new SlashCommandBuilder()
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */
-export async function run(client, interaction, options) {
-  let tags = options.getString("tag").replace(/\(/g, "%28").replace(/\)/g, "%29");
-  let skipped, passed = 0;
+export async function run(client: KitsuneClient, interaction: CommandInteraction<'cached'>, options: CommandInteractionOptionResolver) {
+  if (!interaction.channel!.isTextBased()) return interactionEmbed(2, "[ERR-ARGS]", "This command can only be used in text channels!", interaction, client, true);
+
+  let tags = options.getString("tag", true).replace(/\(/g, "%28").replace(/\)/g, "%29");
+  let skipped = 0, passed = 0;
   if (tags.match(/[^1-6]\+/)) return interactionEmbed(2, "[ERR-ARGS]", "You cannot enter more than 1 tag!", interaction, client, true);
 
-  const safe = !interaction.channel.nsfw || options.getBoolean("safe_search") ? true : false;
+  const safe = !(interaction.channel as TextChannel).nsfw || options.getBoolean("safe_search") ? true : false;
   const limit = options.getNumber("limit") ?? 10;
   if (safe) tags += "+rating:g";
   tags += "+random:" + limit;
@@ -56,9 +59,12 @@ export async function run(client, interaction, options) {
   params.append("login", image_board["username"]);
   params.append("api_key", image_board["api_key"]);
 
-  fetch(`https://${image_board["domain"]}/posts.json?tags=${tags}&${params.toString()}`, { headers: { "User-Agent": "KitsuneHelper/0 (+github.com/totallytavi/KitsuneHelper_VPS)" }, timeout: 5000 })
+  const abort = new AbortController();
+  setTimeout(() => abort.abort(), 5000);
+
+  fetch(`https://${image_board["domain"]}/posts.json?tags=${tags}&${params.toString()}`, { headers: { "User-Agent": "KitsuneHelper/0 (+github.com/totallytavi/KitsuneHelper_VPS)" }, signal: abort.signal })
     .then(res => res.json())
-    .then(json => {
+    .then((json: any) => {
       if (json.length === 0 || json.success === false) return interactionEmbed(3, "[ERR-EXPT]", json.length === 0 ? `\`${tags.split("+")[0]}\` doesn't exist on ${image_board["name"]}` : `Something went wrong when requesting data from ${image_board["name"]}. Please report this to the support server:\n>>> Success? ${json.success}\nMessage: ${json.message}\nResponse:\n${json}`, interaction, client, false);
       for (const post of json) {
         // Filters
@@ -91,7 +97,7 @@ export async function run(client, interaction, options) {
         }
 
         // Embed
-        const embed = new MessageEmbed({
+        const embed = new EmbedBuilder({
           title: `${characters} by ${artists}`,
           url: `https://${image_board["domain"]}/posts/${post.id}`,
           image: {
