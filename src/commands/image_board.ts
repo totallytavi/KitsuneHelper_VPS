@@ -1,5 +1,4 @@
-import { Client, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
-import fetch from "node-fetch";
+import { CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, SlashCommandBuilder, TextChannel } from "discord.js";
 import { default as config } from "../../config.json" with { "type": "json" };
 import { interactionEmbed } from "../functions.js";
 import { KitsuneClient } from "../types.js";
@@ -40,7 +39,7 @@ export const data = new SlashCommandBuilder()
       .setRequired(false);
   });
 /**
- * @param {Client} client Client object
+ * @param {KitsuneClient} client Client object
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */

@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, CommandInteractionOptionResolver, GuildMember, ButtonBuilder, SlashCommandBuilder, ButtonStyle } from "discord.js";
+import { ButtonBuilder, ButtonStyle, CommandInteraction, CommandInteractionOptionResolver, GuildMember, SlashCommandBuilder } from "discord.js";
 import { awaitButtons, interactionEmbed } from "../functions.js";
 import { KitsuneClient } from "../types.js";
 
@@ -19,7 +19,7 @@ export const data = new SlashCommandBuilder()
       .setRequired(false);
   });
 /**
- * @param {Client} client Client object
+ * @param {KitsuneClient} client Client object
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */

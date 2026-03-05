@@ -1,6 +1,7 @@
 import { ActionRowBuilder, ButtonBuilder, ButtonInteraction, Client, CommandInteraction, ComponentType, EmbedBuilder, GuildTextBasedChannel, Interaction, Message, MessageComponentInteraction, SelectMenuInteraction, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 import { default as config } from "../config.json" with { "type": "json" };
 import { KitsuneClient } from "./types.js";
+import { Config } from "./models/Config.js";
 const { bot } = config;
 
 const errors = {
@@ -59,7 +60,7 @@ export async function toConsole(message: string, source: string, client: Kitsune
  * @param {string} content The information to state
  * @param {string} expected The expected argument (If applicable)
  * @param {ReplyableInteraction} interaction The Interaction object for responding
- * @param {Client} client Client object for logging
+ * @param {KitsuneClient} client Client object for logging
  * @param {boolean} ephemeral Whether or not to ephemeral the message
  * @example interactionEmbed(1, `Removed ${removed} roles`, ``, interaction, client, false)
  * @example interactionEmbed(3, "[ERR-UPRM]"", "Missing: `Manage Messages`", interaction, client, true)
@@ -222,4 +223,21 @@ export async function awaitMenu(interaction: ReplyableInteraction, time: number,
     if (remove && res != null) message.delete();
   }, 1500);
   return res;
+}
+/**
+ * Gets the configuration for a guild, falling
+ * back to the default configuration (GID 0)
+ * @param {string?} guildId Guild ID to fetch
+ * the config of
+ * @returns {Promise<Config>}
+ */
+export async function getConfig(client: KitsuneClient, guildId = "0"): Promise<Config> {
+  return client.models.Config.findAll({
+    where: {
+      guildId: [guildId, "0"]
+    }
+  })
+    .then((configs) => {
+      return configs.find((c) => c.guildId === guildId) ?? configs.find((c) => c.guildId === "0")!;
+    })
 }

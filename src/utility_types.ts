@@ -1,5 +1,4 @@
-import { ApplicationCommandOptionAllowedChannelTypes, RestOrArray } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types/v9";
+import { ApplicationCommandOptionAllowedChannelTypes, ChannelType, RestOrArray } from 'discord.js';
 
 export const TextBasedChannels = [
   ChannelType.AnnouncementThread,

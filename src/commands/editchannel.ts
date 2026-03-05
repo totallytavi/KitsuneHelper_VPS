@@ -1,9 +1,8 @@
-import { CacheType, Client, CommandInteraction, CommandInteractionOptionResolver, GuildChannel, GuildMember, TextBasedChannel, VoiceBasedChannel } from "discord.js";
-import { interactionEmbed } from "../functions.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types/v9";
-import { TextBasedChannels, VoiceBasedChannels } from "../utility_types.js";
+import { CommandInteraction, CommandInteractionOptionResolver, GuildChannel, ChannelType } from "discord.js";
+import { interactionEmbed } from "../functions.js";
 import { KitsuneClient } from "../types.js";
+import { TextBasedChannels, VoiceBasedChannels } from "../utility_types.js";
 
 export const name = "editchannel";
 export const data = new SlashCommandBuilder()
@@ -188,7 +187,7 @@ export const data = new SlashCommandBuilder()
       });
   });
 /**
- * @param {Client} client Client object
+ * @param {KitsuneClient} client Client object
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */

@@ -1,14 +1,11 @@
-import { REST } from "@discordjs/rest";
-import { Routes } from "discord-api-types/v9";
-import { ActivityType, Client, Collection, GatewayIntentBits } from "discord.js";
-import { readdirSync } from "fs";
+import { ActivityType, Client, Collection, GatewayIntentBits, RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
+import { readdirSync } from "node:fs";
 import { Op, Sequelize } from "sequelize";
 import { default as config } from "../config.json" with { "type": "json" };
 import { initModels } from "./models/init-models.js";
 import { interactionEmbed, toConsole } from "./functions.js";
 import { KitsuneClient } from "./types.js";
 const { bot, mysql } = config
-const rest = new REST({ version: "9" }).setToken(bot["token"]);
 const wait = (await import("node:util")).promisify(setTimeout);
 
 // State that the process is not ready yet
@@ -23,24 +20,6 @@ const client: KitsuneClient = new Client({
     GatewayIntentBits.GuildMembers
   ]
 });
-const slashCommands = [];
-// @ts-ignore
-client.commands = new Collection();
-
-const sequelize = new Sequelize(mysql["database"], mysql["user"], mysql["password"], {
-  host: mysql["host"],
-  port: mysql["port"],
-  dialect: "mysql"
-});
-(async () => {
-  // @ts-ignore
-  await sequelize.authenticate();
-  await sequelize.sync({
-    alter: process.env.NODE_ENV === "development"
-  });
-})();
-
-client.models = initModels(sequelize);
 
 // Error logging
 process.on("warning", async (name: string, message: string, stack: string) => {
@@ -64,46 +43,58 @@ process.on("exit", async (code) => {
   return console.error("[EXIT] Process exited with code: " + code);
 });
 
-// Slash command registration
+const sequelize = new Sequelize(mysql["database"], mysql["user"], mysql["password"], {
+  host: mysql["host"],
+  port: mysql["port"],
+  dialect: "mysql"
+});
 (async () => {
-  const commands = readdirSync("./commands").filter(file => file.endsWith(".js"));
-  console.info("[FILE-LOAD] Loading files, expecting " + commands.length + " files");
+  // @ts-ignore
+  await sequelize.authenticate();
+  await sequelize.sync({
+    alter: process.env.NODE_ENV === "development"
+  });
+})();
 
-  for(let file of commands) {
+client.models = initModels(sequelize);
+
+const slashCommands = [] as RESTPostAPIChatInputApplicationCommandsJSONBody[];
+// @ts-ignore
+client.commands = new Collection();
+
+const commands = readdirSync("./commands").filter(file => file.endsWith(".js"));
+console.info("[FILE-LOAD] Loading files, expecting " + commands.length + " files");
+
+for(let file of commands) {
+  try {
+    let command = await import("./commands/" + file);
+
+    if(command.name) {
+      console.info("[FILE-LOAD] Loaded: " + file);
+      slashCommands.push(command.data.toJSON());
+      // @ts-ignore
+      client.commands.set(command.name, command);
+      console.debug(`[✓] Loaded command ${command.name} from file ${file}`);
+    }
+  } catch(e: unknown) {
+    console.error(`[X] Failed to load command from file ${file}\n> Error: ${e}`);
+  }
+}
+
+const events = readdirSync("./events");
+console.info("[EVENT-LOAD] Loading events, expecting " + events.length + " events");
+for (const eventName of events) {
+  for (const file of readdirSync(`./events/${eventName}`).filter((f) => f.endsWith('.js'))) {
     try {
-      let command = await import("./commands/" + file);
-
-      if(command.name) {
-        console.info("[FILE-LOAD] Loaded: " + file);
-        slashCommands.push(command.data.toJSON());
-        // @ts-ignore
-        client.commands.set(command.name, command);
-        console.debug(`[✓] Loaded command ${command.name} from file ${file}`);
-      }
+      const handler = await import(`./events/${eventName}/${file}`);
+  
+      client.on(eventName, (...args) => handler.run(client, args));
+      console.info(`[EVENT-LOAD] Done loading ./events/${eventName}/${file}`)
     } catch(e: unknown) {
-      console.error(`[X] Failed to load command from file ${file}\n> Error: ${e}`);
+      console.error(`[X] Failed to load ./events/${eventName}/${file}\n> Error: ${e}`);
     }
   }
-
-  console.info("[FILE-LOAD] All files loaded into ASCII and ready to be sent");
-  await wait(500); // Artificial wait to prevent instant sending
-  const now = Date.now();
-
-  try {
-    console.info("[APP-REFR] Started refreshing application (/) commands.");
-
-    await rest.put(
-      Routes.applicationCommands(bot["applicationId"]),
-      { body: slashCommands },
-    );
-    
-    const then = Date.now();
-    console.info("[APP-REFR] Successfully reloaded application (/) commands after " + (then - now) + "ms.");
-  } catch(error) {
-    console.error("Failed to refresh application (/) commands\n> " + error);
-  }
-  console.info("[FILE-LOAD] All files loaded successfully");
-})();
+}
 
 // Client startup
 client.on("clientReady", async () => {
@@ -111,6 +102,10 @@ client.on("clientReady", async () => {
   if (!client.user) {
     console.error("[✕] Client user is null. Did login fail?");
     return;
+  }
+
+  if (client.application) {
+    await client.application.commands.set(slashCommands);
   }
 
   if (client.user) {
@@ -122,8 +117,8 @@ client.on("clientReady", async () => {
   setInterval(async () => {
     const validBans = await client.models.Bans.findAll({
       where: {
-        duration: {
-          [Op.lte]: Date.now()
+        expiry: {
+          [Op.lte]: new Date()
         }
       }
     })

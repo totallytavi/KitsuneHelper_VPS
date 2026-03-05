@@ -1,4 +1,4 @@
-import { Client, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildChannel, GuildMember, Role, SlashCommandBuilder } from "discord.js";
+import { CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildChannel, GuildMember, Role, SlashCommandBuilder } from "discord.js";
 import { KitsuneClient } from "../types.js";
 
 function serializedToBoolean(serialized: Record<string, boolean>, key?: string): string[] {
@@ -94,7 +94,7 @@ export const data = new SlashCommandBuilder()
       });
   });
 /**
- * @param {Client} client Client object
+ * @param {KitsuneClient} client Client object
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */

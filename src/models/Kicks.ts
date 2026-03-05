@@ -26,42 +26,42 @@ export class Kicks extends Model<KicksAttributes, KicksCreationAttributes> imple
 
   static initModel(sequelize: Sequelize.Sequelize): typeof Kicks {
     return Kicks.init({
-    kickId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
-    },
-    guildId: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    userId: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    modId: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    },
-    reason: {
-      type: DataTypes.TEXT,
-      allowNull: false
-    }
-  }, {
-    sequelize,
-    tableName: 'Kicks',
-    timestamps: true,
-    indexes: [
-      {
-        name: "PRIMARY",
-        unique: true,
-        using: "BTREE",
-        fields: [
-          { name: "kickId" },
-        ]
+      kickId: {
+        type: DataTypes.UUID,
+        allowNull: false,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4
       },
-    ]
-  });
+      guildId: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      userId: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      modId: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      },
+      reason: {
+        type: DataTypes.TEXT,
+        allowNull: false
+      }
+    }, {
+      sequelize,
+      tableName: 'Kicks',
+      timestamps: true,
+      indexes: [
+        {
+          name: "PRIMARY",
+          unique: true,
+          using: "BTREE",
+          fields: [
+            { name: "kickId" },
+          ]
+        },
+      ]
+    });
   }
 }

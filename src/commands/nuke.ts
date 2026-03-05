@@ -1,4 +1,4 @@
-import { ChannelType, Client, CommandInteraction, CommandInteractionOptionResolver, GuildChannel, GuildTextBasedChannel, ButtonBuilder, EmbedBuilder, PrivateThreadChannel, PublicThreadChannel, SlashCommandBuilder, TextChannel, VoiceChannel, ButtonStyle } from "discord.js";
+import { ButtonBuilder, ButtonStyle, ChannelType, CommandInteraction, CommandInteractionOptionResolver, EmbedBuilder, GuildChannel, PrivateThreadChannel, PublicThreadChannel, SlashCommandBuilder } from "discord.js";
 import { awaitButtons, interactionEmbed } from "../functions.js";
 import { KitsuneClient } from "../types.js";
 
@@ -27,7 +27,7 @@ export const data = new SlashCommandBuilder()
       .setRequired(false);
   });
 /**
- * @param {Client} client Client object
+ * @param {KitsuneClient} client Client object
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */

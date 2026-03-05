@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { BaseGuildTextChannel, BaseGuildVoiceChannel, CategoryChannel, Client, CommandInteraction, CommandInteractionOptionResolver, GuildMember, GuildMemberRoleManager, ButtonBuilder, Permissions, Role, ButtonStyle, ChannelType } from "discord.js";
+import { BaseGuildTextChannel, BaseGuildVoiceChannel, ButtonBuilder, ButtonStyle, CategoryChannel, CommandInteraction, CommandInteractionOptionResolver, GuildMember, GuildMemberRoleManager, Role } from "discord.js";
 import { awaitButtons, interactionEmbed } from "../functions.js";
 import { KitsuneClient } from "../types.js";
 
@@ -42,7 +42,7 @@ export const data = new SlashCommandBuilder()
       });
   });
 /**
- * @param {Client} client Client object
+ * @param {KitsuneClient} client Client object
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */

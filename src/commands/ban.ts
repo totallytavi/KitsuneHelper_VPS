@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { Temporal } from "@js-temporal/polyfill";
-import { ButtonBuilder, ButtonStyle, Client, CommandInteraction, CommandInteractionOptionResolver, GuildMemberRoleManager } from "discord.js";
+import { ButtonBuilder, ButtonStyle, CommandInteraction, CommandInteractionOptionResolver, GuildMemberRoleManager } from "discord.js";
 import { awaitButtons, interactionEmbed, toConsole } from "../functions.js";
 import { KitsuneClient } from "../types.js";
 
@@ -43,7 +43,7 @@ export const data = new SlashCommandBuilder()
       .setRequired(false);
   });
 /**
- * @param {Client} client Client object
+ * @param {KitsuneClient} client Client object
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */
@@ -52,16 +52,19 @@ export async function run(client: KitsuneClient, interaction: CommandInteraction
   const reason = options.getString("reason") ?? "No reason provided";
   const days = options.getNumber("days") ?? 0;
 
-  let duration;
+  let expiry: Temporal.Duration;
   try {
     if (options.getString("duration")) {
       const rawDuration = options.getString("duration")!
         .replaceAll(/-/g, '');
-      duration = Temporal.Duration.from("P" + rawDuration);
+      expiry = Temporal.Duration.from("P" + rawDuration);
     } else {
-      duration = Temporal.Duration.from("P100Y");
+      expiry = Temporal.Duration.from("P100Y");
     }
-    duration = Date.now() + duration.total("milliseconds");
+    expiry = Temporal.Duration.from(new Date().toISOString()).add(expiry);
+
+    // Dummy call to trigger errors sooner rather than later
+    expiry.total("milliseconds");
   } catch(err) {
     if (err instanceof RangeError) {
       return interactionEmbed(3, "[ERR-ARGS]", `Arg: duration :-: Invalid duration format, ${err.message}`, interaction, client, true);
@@ -107,7 +110,7 @@ export async function run(client: KitsuneClient, interaction: CommandInteraction
       guildId: interaction.guildId,
       modId: interaction.user.id,
       reason: reason,
-      duration: String(duration)
+      expiry: new Date(expiry.total("milliseconds"))
     })
     return interactionEmbed(1, `${member} was banned for \`${reason}\`. \`${days}\` day(s) of messages sent by that user will be wiped away with magic`, "", interaction, client, false);
   } else {

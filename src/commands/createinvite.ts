@@ -1,7 +1,5 @@
-// eslint-disable-next-line no-unused-vars
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { InteractionContextType } from "discord-api-types/v9";
-import { BaseGuildTextChannel, BaseGuildVoiceChannel, ButtonBuilder, ButtonStyle, Client, CommandInteraction, CommandInteractionOptionResolver, GuildMember } from "discord.js";
+import { BaseGuildTextChannel, BaseGuildVoiceChannel, ButtonBuilder, ButtonStyle, CommandInteraction, CommandInteractionOptionResolver, GuildMember, InteractionContextType } from "discord.js";
 import { awaitButtons, interactionEmbed } from "../functions.js";
 import { KitsuneClient } from "../types.js";
 
@@ -41,7 +39,7 @@ export const data = new SlashCommandBuilder()
   })
   .setContexts(InteractionContextType.Guild)
 /**
- * @param {Client} client Client object
+ * @param {KitsuneClient} client Client object
  * @param {CommandInteraction} interaction Interaction Object
  * @param {CommandInteractionOptionResolver} options Array of InteractionCommand options
  */
