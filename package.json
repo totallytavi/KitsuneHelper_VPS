@@ -15,7 +15,7 @@
     "discord.js": "14.25.1",
     "mysql2": "3.18.2",
     "sequelize": "6.37.7",
-    "typescript": "5.9.3"
+    "typescript": "6.0.3"
   },
   "devDependencies": {
     "@types/common-tags": "1.8.4",
