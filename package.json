@@ -23,7 +23,7 @@
     "eslint": "10.0.2"
   },
   "overrides": {
-    "undici": "6.23.0"
+    "undici": "8.10.2"
   },
   "type": "module"
 }
