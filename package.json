@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@types/common-tags": "1.8.4",
-    "@types/node": "^25.3.3",
+    "@types/node": "^26.0.0",
     "eslint": "10.0.2"
   },
   "overrides": {
